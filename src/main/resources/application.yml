@@ -1,0 +1,69 @@
+spring:
+  application:
+    name: cms
+
+  # 데이터소스 설정
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://localhost:3306/cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: root
+
+  # 파일 업로드 설정
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 50MB
+      file-size-threshold: 2KB
+
+  # Thymeleaf 설정
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+  # 정적 리소스 설정
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
+  type-aliases-package: com.example.cms
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# PageHelper 설정
+pagehelper:
+  helper-dialect: mariadb
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 파일 업로드 경로 설정
+file:
+  upload-dir: /uploads
+  max-image-count: 10
+
+# 로깅 설정
+logging:
+  level:
+    com.example.cms: DEBUG
+    org.springframework.security: DEBUG
+    org.mybatis: DEBUG
+
+# 서버 설정
+server:
+  port: 8080
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true

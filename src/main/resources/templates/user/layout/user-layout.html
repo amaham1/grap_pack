@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - CMS'">CMS</title>
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="user-header">
+        <div class="container">
+            <h1><a th:href="@{/user/content/list}">CMS</a></h1>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="user-footer">
+        <div class="container">
+            <p>&copy; 2024 CMS. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

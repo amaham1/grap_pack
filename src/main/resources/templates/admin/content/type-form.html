@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${contentType != null ? '콘텐츠 종류 수정' : '콘텐츠 종류 등록'}">콘텐츠 종류 관리</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="admin-header">
+        <div class="container">
+            <h1><a th:href="@{/admin/content/list}">CMS 관리자</a></h1>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/admin/content-type/list}" class="active">콘텐츠 종류 관리</a></li>
+                    <li><a th:href="@{/admin/content/list}">콘텐츠 관리</a></li>
+                    <li>
+                        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn-link">로그아웃</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <div class="page-header">
+            <h2 th:text="${contentType != null ? '콘텐츠 종류 수정' : '콘텐츠 종류 등록'}"></h2>
+            <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">목록으로</a>
+        </div>
+
+        <form th:action="${contentType != null ? '/admin/content-type/update' : '/admin/content-type/create'}"
+              method="post" class="form">
+
+            <input type="hidden" name="contentTypeId" th:value="${contentType?.contentTypeId}">
+
+            <div class="form-group">
+                <label for="typeName">종류명 *</label>
+                <input type="text" id="typeName" name="typeName"
+                       th:value="${contentType?.typeName}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="typeDesc">설명</label>
+                <textarea id="typeDesc" name="typeDesc" rows="3"
+                          th:text="${contentType?.typeDesc}"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="isActive"
+                           th:checked="${contentType == null or contentType.isActive}">
+                    활성화
+                </label>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">저장</button>
+                <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="admin-footer">
+        <div class="container">
+            <p>&copy; 2024 CMS Admin. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

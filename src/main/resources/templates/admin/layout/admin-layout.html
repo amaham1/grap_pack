@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title} + ' - CMS 관리자'">CMS 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="admin-header">
+        <div class="container">
+            <h1><a th:href="@{/admin/content/list}">CMS 관리자</a></h1>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/admin/content-type/list}">콘텐츠 종류 관리</a></li>
+                    <li><a th:href="@{/admin/content/list}">콘텐츠 관리</a></li>
+                    <li>
+                        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+                            <button type="submit" class="btn-link">로그아웃</button>
+                        </form>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메시지 알림 -->
+    <div th:if="${message}" class="alert alert-success">
+        <div class="container">
+            <p th:text="${message}"></p>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="alert alert-error">
+        <div class="container">
+            <p th:text="${error}"></p>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="admin-footer">
+        <div class="container">
+            <p>&copy; 2024 CMS Admin. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

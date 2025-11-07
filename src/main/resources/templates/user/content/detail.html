@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${content.title}">콘텐츠 상세</title>
+    <link rel="stylesheet" th:href="@{/css/user.css}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="user-header">
+        <div class="container">
+            <h1><a th:href="@{/user/content/list}">CMS</a></h1>
+            <nav>
+                <ul>
+                    <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="container">
+        <article class="content-detail">
+            <!-- 콘텐츠 헤더 -->
+            <div class="content-header">
+                <div class="meta">
+                    <span class="badge" th:text="${content.typeName}"></span>
+                    <span class="date" th:text="${#temporals.format(content.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                    <span class="view-count">조회 <span th:text="${content.viewCount}"></span></span>
+                </div>
+                <h1 th:text="${content.title}"></h1>
+            </div>
+
+            <!-- 콘텐츠 본문 -->
+            <div class="content-body">
+                <div th:utext="${#strings.replace(content.content, T(System).lineSeparator(), '<br>')}"></div>
+            </div>
+
+            <!-- 이미지 갤러리 -->
+            <div th:if="${content.imageList != null and !#lists.isEmpty(content.imageList)}"
+                 class="image-gallery">
+                <h3>이미지</h3>
+                <div class="gallery-grid">
+                    <div th:each="imagePath : ${content.imageList}" class="gallery-item">
+                        <img th:src="${imagePath}" alt="콘텐츠 이미지">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 버튼 -->
+            <div class="content-footer">
+                <a th:href="@{/user/content/list}" class="btn btn-secondary">목록으로</a>
+            </div>
+        </article>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="user-footer">
+        <div class="container">
+            <p>&copy; 2024 CMS. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
