@@ -103,8 +103,8 @@
                             <form th:action="@{/admin/content/publish/{id}(id=${content.contentId})}"
                                   method="post" style="display: inline;">
                                 <input type="hidden" name="isPublished" th:value="${!content.isPublished}">
-                                <button type="submit" class="btn btn-sm"
-                                        th:classappend="${content.isPublished ? 'btn-warning' : 'btn-success'}"
+                                <button type="submit"
+                                        th:class="|btn btn-sm ${content.isPublished ? 'btn-warning' : 'btn-success'}|"
                                         th:text="${content.isPublished ? '비공개' : '공개'}">
                                 </button>
                             </form>
@@ -131,8 +131,7 @@
             <span th:each="i : ${#numbers.sequence(1, totalPages)}">
                 <a th:href="@{/admin/content/list(page=${i}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId}, isPublished=${searchParam.isPublished})}"
                    th:text="${i}"
-                   th:classappend="${i == currentPage ? 'active' : ''}"
-                   class="btn btn-sm"></a>
+                   th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
             </span>
 
             <a th:if="${currentPage < totalPages}"
