@@ -54,22 +54,22 @@ public class Content {
     private Integer viewCount;
 
     /**
-     * 작성자 ID
+     * 생성자명
      */
-    private Long createdBy;
+    private String createName;
 
     /**
-     * 작성자명 (조인용)
+     * 수정자명
      */
-    private String creatorName;
+    private String updateName;
 
     /**
      * 생성일시
      */
-    private LocalDateTime createdAt;
+    private LocalDateTime createDt;
 
     /**
      * 수정일시
      */
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateDt;
 }

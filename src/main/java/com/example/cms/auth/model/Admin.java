@@ -39,10 +39,10 @@ public class Admin {
     /**
      * 생성일시
      */
-    private LocalDateTime createdAt;
+    private LocalDateTime createDt;
 
     /**
      * 수정일시
      */
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateDt;
 }

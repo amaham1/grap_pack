@@ -52,12 +52,12 @@ public class Content {
     /**
      * 생성일시
      */
-    private LocalDateTime createdAt;
+    private LocalDateTime createDt;
 
     /**
      * 수정일시
      */
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateDt;
 
     /**
      * 이미지 목록
