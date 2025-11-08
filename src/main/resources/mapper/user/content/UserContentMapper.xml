@@ -5,7 +5,7 @@
 <mapper namespace="com.example.cms.user.content.mapper.UserContentMapper">
 
     <!-- 콘텐츠 결과 매핑 -->
-    <resultMap id="contentResultMap" type="com.example.cms.user.content.model.Content">
+    <resultMap id="contentResultMap" type="UserContent">
         <id property="contentId" column="content_id"/>
         <result property="contentTypeId" column="content_type_id"/>
         <result property="typeName" column="type_name"/>
@@ -18,7 +18,7 @@
 
     <!-- 공개된 콘텐츠 목록 조회 -->
     <select id="selectPublishedContentList"
-            parameterType="com.example.cms.user.content.model.ContentSearchParam"
+            parameterType="UserContentSearchParam"
             resultMap="contentResultMap">
         SELECT
             c.content_id,
@@ -44,7 +44,7 @@
 
     <!-- 공개된 콘텐츠 전체 개수 조회 -->
     <select id="selectPublishedContentCount"
-            parameterType="com.example.cms.user.content.model.ContentSearchParam"
+            parameterType="UserContentSearchParam"
             resultType="int">
         SELECT COUNT(*)
         FROM content c
