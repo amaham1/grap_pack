@@ -4,8 +4,8 @@ spring:
 
   # 데이터소스 설정
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
     username: root
     password: root
 
@@ -41,7 +41,7 @@ mybatis:
 
 # PageHelper 설정
 pagehelper:
-  helper-dialect: mariadb
+  helper-dialect: mysql
   reasonable: true
   support-methods-arguments: true
   params: count=countSql
