@@ -54,5 +54,5 @@ public class Image {
     /**
      * 생성일시
      */
-    private LocalDateTime createdAt;
+    private LocalDateTime createDt;
 }
