@@ -33,7 +33,7 @@ spring:
 # MyBatis 설정
 mybatis:
   mapper-locations: classpath:/mapper/**/*.xml
-  type-aliases-package: com.example.cms
+  # type-aliases-package는 MyBatisConfig.java에서 설정 (중복 방지)
   configuration:
     map-underscore-to-camel-case: true
     default-fetch-size: 100
