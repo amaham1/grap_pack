@@ -58,6 +58,20 @@ logging:
     org.springframework.security: DEBUG
     org.mybatis: DEBUG
 
+# 스케줄러 설정
+spring.task.scheduling:
+  pool:
+    size: 5 # 스케줄러 스레드 풀 크기
+  thread-name-prefix: scheduler-
+
+# 외부 API 동기화 스케줄러 설정
+external-api:
+  scheduler:
+    enabled: true # 스케줄러 활성화 여부
+    # 크론 표현식: "초 분 시 일 월 요일"
+    # 기본값: "0 5 2,8,14,20 * * *" (매일 2시 5분, 8시 5분, 14시 5분, 20시 5분)
+    cron: "0 5 2,8,14,20 * * *"
+
 # 서버 설정
 server:
   port: 8080
