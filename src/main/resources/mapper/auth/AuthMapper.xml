@@ -10,13 +10,13 @@
         <result property="username" column="username"/>
         <result property="password" column="password"/>
         <result property="name" column="name"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
     </resultMap>
 
     <!-- 사용자명으로 관리자 조회 -->
     <select id="selectAdminByUsername" parameterType="string" resultMap="adminResultMap">
-        SELECT admin_id, username, password, name, created_at, updated_at
+        SELECT admin_id, username, password, name, create_dt, update_dt
         FROM admin
         WHERE username = #{username}
     </select>
@@ -24,7 +24,7 @@
     <!-- 관리자 등록 -->
     <insert id="insertAdmin" parameterType="com.example.cms.auth.model.Admin"
             useGeneratedKeys="true" keyProperty="adminId">
-        INSERT INTO admin (username, password, name, created_at, updated_at)
+        INSERT INTO admin (username, password, name, create_dt, update_dt)
         VALUES (#{username}, #{password}, #{name}, NOW(), NOW())
     </insert>
 

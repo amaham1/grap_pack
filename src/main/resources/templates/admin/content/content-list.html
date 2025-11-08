@@ -53,17 +53,17 @@
                     <option th:each="type : ${contentTypeList}"
                             th:value="${type.contentTypeId}"
                             th:text="${type.typeName}"
-                            th:selected="${searchParam.contentTypeId == type.contentTypeId}">
+                            th:selected="${searchParam.contentTypeId != null and searchParam.contentTypeId == type.contentTypeId}">
                     </option>
                 </select>
 
                 <select name="isPublished" class="form-control">
                     <option value="">전체 공개상태</option>
-                    <option value="true" th:selected="${searchParam.isPublished == true}">공개</option>
-                    <option value="false" th:selected="${searchParam.isPublished == false}">비공개</option>
+                    <option value="true" th:selected="${searchParam.isPublished != null and searchParam.isPublished}">공개</option>
+                    <option value="false" th:selected="${searchParam.isPublished != null and !searchParam.isPublished}">비공개</option>
                 </select>
 
-                <input type="text" name="keyword" th:value="${searchParam.keyword}"
+                <input type="text" name="keyword" th:value="${searchParam.keyword ?: ''}"
                        placeholder="제목 또는 내용 검색" class="form-control">
 
                 <button type="submit" class="btn btn-primary">검색</button>
@@ -103,8 +103,8 @@
                             <form th:action="@{/admin/content/publish/{id}(id=${content.contentId})}"
                                   method="post" style="display: inline;">
                                 <input type="hidden" name="isPublished" th:value="${!content.isPublished}">
-                                <button type="submit" class="btn btn-sm"
-                                        th:classappend="${content.isPublished ? 'btn-warning' : 'btn-success'}"
+                                <button type="submit"
+                                        th:class="|btn btn-sm ${content.isPublished ? 'btn-warning' : 'btn-success'}|"
                                         th:text="${content.isPublished ? '비공개' : '공개'}">
                                 </button>
                             </form>
@@ -125,18 +125,17 @@
         <!-- 페이징 -->
         <div th:if="${totalPages > 0}" class="pagination">
             <a th:if="${currentPage > 1}"
-               th:href="@{/admin/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId}, isPublished=${searchParam.isPublished})}"
+               th:href="@{/admin/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
                class="btn btn-sm">이전</a>
 
             <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{/admin/content/list(page=${i}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId}, isPublished=${searchParam.isPublished})}"
+                <a th:href="@{/admin/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
                    th:text="${i}"
-                   th:classappend="${i == currentPage ? 'active' : ''}"
-                   class="btn btn-sm"></a>
+                   th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
             </span>
 
             <a th:if="${currentPage < totalPages}"
-               th:href="@{/admin/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId}, isPublished=${searchParam.isPublished})}"
+               th:href="@{/admin/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
                class="btn btn-sm">다음</a>
         </div>
 

@@ -137,7 +137,6 @@ public class AdminContentController {
 
         // 작성자 정보 설정
         Admin admin = authService.getAdminByUsername(authentication.getName());
-        content.setCreatedBy(admin.getAdminId());
 
         adminContentService.createContent(content);
         redirectAttributes.addFlashAttribute("message", "콘텐츠가 등록되었습니다.");
