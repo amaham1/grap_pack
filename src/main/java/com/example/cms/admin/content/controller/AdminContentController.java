@@ -104,7 +104,7 @@ public class AdminContentController {
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
 
-        return "admin/content/list";
+        return "admin/content/content-list";
     }
 
     /**
@@ -123,7 +123,7 @@ public class AdminContentController {
             model.addAttribute("content", content);
         }
 
-        return "admin/content/form";
+        return "admin/content/content-form";
     }
 
     /**

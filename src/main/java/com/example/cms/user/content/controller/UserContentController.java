@@ -42,7 +42,7 @@ public class UserContentController {
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
 
-        return "user/content/list";
+        return "user/content/content-list";
     }
 
     /**

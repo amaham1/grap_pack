@@ -32,6 +32,6 @@ public class AuthController {
             model.addAttribute("message", "로그아웃 되었습니다.");
         }
 
-        return "admin/login";
+        return "admin/admin-login";
     }
 }
