@@ -5,7 +5,7 @@
 <mapper namespace="com.example.cms.admin.content.mapper.AdminContentMapper">
 
     <!-- 콘텐츠 결과 매핑 -->
-    <resultMap id="contentResultMap" type="com.example.cms.admin.content.model.Content">
+    <resultMap id="contentResultMap" type="AdminContent">
         <id property="contentId" column="content_id"/>
         <result property="contentTypeId" column="content_type_id"/>
         <result property="typeName" column="type_name"/>
@@ -20,7 +20,7 @@
     </resultMap>
 
     <!-- 콘텐츠 목록 조회 -->
-    <select id="selectContentList" parameterType="com.example.cms.admin.content.model.ContentSearchParam"
+    <select id="selectContentList" parameterType="AdminContentSearchParam"
             resultMap="contentResultMap">
         SELECT
             c.content_id,
@@ -52,7 +52,7 @@
     </select>
 
     <!-- 콘텐츠 전체 개수 조회 -->
-    <select id="selectContentCount" parameterType="com.example.cms.admin.content.model.ContentSearchParam"
+    <select id="selectContentCount" parameterType="AdminContentSearchParam"
             resultType="int">
         SELECT COUNT(*)
         FROM content c
@@ -90,14 +90,14 @@
     </select>
 
     <!-- 콘텐츠 등록 -->
-    <insert id="insertContent" parameterType="com.example.cms.admin.content.model.Content"
+    <insert id="insertContent" parameterType="AdminContent"
             useGeneratedKeys="true" keyProperty="contentId">
         INSERT INTO content (content_type_id, title, content, is_published, created_by, created_at, updated_at)
         VALUES (#{contentTypeId}, #{title}, #{content}, #{isPublished}, #{createdBy}, NOW(), NOW())
     </insert>
 
     <!-- 콘텐츠 수정 -->
-    <update id="updateContent" parameterType="com.example.cms.admin.content.model.Content">
+    <update id="updateContent" parameterType="AdminContent">
         UPDATE content
         SET content_type_id = #{contentTypeId},
             title = #{title},
