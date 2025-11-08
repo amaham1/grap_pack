@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Alias("UserContent")
 public class Content {
 
     /**
@@ -50,12 +52,12 @@ public class Content {
     /**
      * 생성일시
      */
-    private LocalDateTime createdAt;
+    private LocalDateTime createDt;
 
     /**
      * 수정일시
      */
-    private LocalDateTime updatedAt;
+    private LocalDateTime updateDt;
 
     /**
      * 이미지 목록

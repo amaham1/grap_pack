@@ -13,22 +13,22 @@
         <result property="filePath" column="file_path"/>
         <result property="fileSize" column="file_size"/>
         <result property="displayOrder" column="display_order"/>
-        <result property="createdAt" column="created_at"/>
+        <result property="createDt" column="create_dt"/>
     </resultMap>
 
     <!-- 콘텐츠별 이미지 목록 조회 -->
     <select id="selectImageListByContentId" parameterType="long" resultMap="imageResultMap">
         SELECT image_id, content_id, original_name, saved_name, file_path,
-               file_size, display_order, created_at
+               file_size, display_order, create_dt
         FROM image
         WHERE content_id = #{contentId}
-        ORDER BY display_order ASC, created_at ASC
+        ORDER BY display_order ASC, create_dt ASC
     </select>
 
     <!-- 이미지 상세 조회 -->
     <select id="selectImageById" parameterType="long" resultMap="imageResultMap">
         SELECT image_id, content_id, original_name, saved_name, file_path,
-               file_size, display_order, created_at
+               file_size, display_order, create_dt
         FROM image
         WHERE image_id = #{imageId}
     </select>
@@ -37,7 +37,7 @@
     <insert id="insertImage" parameterType="com.example.cms.admin.image.model.Image"
             useGeneratedKeys="true" keyProperty="imageId">
         INSERT INTO image (content_id, original_name, saved_name, file_path,
-                          file_size, display_order, created_at)
+                          file_size, display_order, create_dt)
         VALUES (#{contentId}, #{originalName}, #{savedName}, #{filePath},
                 #{fileSize}, #{displayOrder}, NOW())
     </insert>

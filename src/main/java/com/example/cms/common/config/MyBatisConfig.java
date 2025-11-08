@@ -33,7 +33,7 @@ public class MyBatisConfig {
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/**/*.xml"));
 
-        // Type Alias 패키지 설정
+        // Type Alias 패키지 설정 (application.yml 대신 여기서 설정)
         sessionFactory.setTypeAliasesPackage("com.example.cms");
 
         return sessionFactory.getObject();

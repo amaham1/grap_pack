@@ -5,20 +5,20 @@
 <mapper namespace="com.example.cms.user.content.mapper.UserContentMapper">
 
     <!-- 콘텐츠 결과 매핑 -->
-    <resultMap id="contentResultMap" type="com.example.cms.user.content.model.Content">
+    <resultMap id="contentResultMap" type="UserContent">
         <id property="contentId" column="content_id"/>
         <result property="contentTypeId" column="content_type_id"/>
         <result property="typeName" column="type_name"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
         <result property="viewCount" column="view_count"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
     </resultMap>
 
     <!-- 공개된 콘텐츠 목록 조회 -->
     <select id="selectPublishedContentList"
-            parameterType="com.example.cms.user.content.model.ContentSearchParam"
+            parameterType="UserContentSearchParam"
             resultMap="contentResultMap">
         SELECT
             c.content_id,
@@ -26,8 +26,8 @@
             ct.type_name,
             c.title,
             c.view_count,
-            c.created_at,
-            c.updated_at
+            c.create_dt,
+            c.update_dt
         FROM content c
         LEFT JOIN content_type ct ON c.content_type_id = ct.content_type_id
         WHERE c.is_published = TRUE
@@ -38,13 +38,13 @@
         <if test="contentTypeId != null">
             AND c.content_type_id = #{contentTypeId}
         </if>
-        ORDER BY c.created_at DESC
+        ORDER BY c.create_dt DESC
         LIMIT #{offset}, #{size}
     </select>
 
     <!-- 공개된 콘텐츠 전체 개수 조회 -->
     <select id="selectPublishedContentCount"
-            parameterType="com.example.cms.user.content.model.ContentSearchParam"
+            parameterType="UserContentSearchParam"
             resultType="int">
         SELECT COUNT(*)
         FROM content c
@@ -67,8 +67,8 @@
             c.title,
             c.content,
             c.view_count,
-            c.created_at,
-            c.updated_at
+            c.create_dt,
+            c.update_dt
         FROM content c
         LEFT JOIN content_type ct ON c.content_type_id = ct.content_type_id
         WHERE c.content_id = #{contentId}

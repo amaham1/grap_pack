@@ -35,6 +35,9 @@ dependencies {
     // MariaDB
     runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
+    // MySQL (MariaDB 호환성을 위해 추가)
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
