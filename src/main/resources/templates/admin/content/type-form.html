@@ -51,7 +51,8 @@
 
             <div class="form-group">
                 <label>
-                    <input type="checkbox" name="isActive"
+                    <input type="hidden" name="_isActive" value="on">
+                    <input type="checkbox" name="isActive" value="true"
                            th:checked="${contentType == null or contentType.isActive}">
                     활성화
                 </label>

@@ -27,7 +27,7 @@ public class AdminImageController {
      */
     @GetMapping("/list/{contentId}")
     @ResponseBody
-    public List<Image> getImageList(@PathVariable Long contentId) {
+    public List<Image> getImageList(@PathVariable("contentId") Long contentId) {
         return adminImageService.getImageList(contentId);
     }
 
@@ -36,9 +36,9 @@ public class AdminImageController {
      */
     @PostMapping("/upload")
     public String uploadImage(
-            @RequestParam Long contentId,
+            @RequestParam("contentId") Long contentId,
             @RequestParam("file") MultipartFile file,
-            @RequestParam(required = false) Integer displayOrder,
+            @RequestParam(value = "displayOrder", required = false) Integer displayOrder,
             RedirectAttributes redirectAttributes) {
 
         try {
@@ -58,8 +58,8 @@ public class AdminImageController {
      */
     @PostMapping("/delete/{imageId}")
     public String deleteImage(
-            @PathVariable Long imageId,
-            @RequestParam Long contentId,
+            @PathVariable("imageId") Long imageId,
+            @RequestParam("contentId") Long contentId,
             RedirectAttributes redirectAttributes) {
 
         try {

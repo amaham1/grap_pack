@@ -11,7 +11,7 @@
     <!-- 헤더 -->
     <header class="user-header">
         <div class="container">
-            <h1><a th:href="@{/user/content/list}">CMS</a></h1>
+            <h1><a th:href="@{/user/content/list}">Grap</a></h1>
             <nav>
                 <ul>
                     <li><a th:href="@{/user/content/list}" class="active">콘텐츠</a></li>
@@ -30,15 +30,15 @@
         <div class="search-section">
             <form th:action="@{/user/content/list}" method="get" class="search-form">
                 <select name="contentTypeId" class="form-control" onchange="this.form.submit()">
-                    <option value="">전체 종류</option>
+                    <option value="">전체 카테고리</option>
                     <option th:each="type : ${contentTypeList}"
                             th:value="${type.contentTypeId}"
                             th:text="${type.typeName}"
-                            th:selected="${searchParam.contentTypeId == type.contentTypeId}">
+                            th:selected="${searchParam.contentTypeId != null and searchParam.contentTypeId == type.contentTypeId}">
                     </option>
                 </select>
 
-                <input type="text" name="keyword" th:value="${searchParam.keyword}"
+                <input type="text" name="keyword" th:value="${searchParam.keyword ?: ''}"
                        placeholder="검색어를 입력하세요" class="form-control">
 
                 <button type="submit" class="btn btn-primary">검색</button>
@@ -50,14 +50,14 @@
             <div th:each="content : ${contentList}" class="content-card">
                 <div class="card-header">
                     <span class="badge" th:text="${content.typeName}"></span>
-                    <span class="date" th:text="${#temporals.format(content.createdAt, 'yyyy-MM-dd')}"></span>
+                    <span class="date" th:text="${#temporals.format(content.createDt, 'yyyy.MM.dd')}"></span>
                 </div>
                 <h3>
                     <a th:href="@{/user/content/detail/{id}(id=${content.contentId})}"
                        th:text="${content.title}"></a>
                 </h3>
                 <div class="card-footer">
-                    <span class="view-count">조회 <span th:text="${content.viewCount}"></span></span>
+                    <span class="view-count" th:text="${content.viewCount}"></span>
                 </div>
             </div>
 
@@ -69,15 +69,15 @@
         <!-- 페이징 (HTMX 적용) -->
         <div th:if="${totalPages > 0}" class="pagination">
             <a th:if="${currentPage > 1}"
-               th:href="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
-               hx-get="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
+               th:href="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:hx-get="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
                class="btn btn-sm">이전</a>
 
             <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{/user/content/list(page=${i}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
-                   hx-get="@{/user/content/list(page=${i}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
+                <a th:href="@{/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+                   th:hx-get="@{/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                    hx-target="#content-list"
                    hx-swap="innerHTML"
                    th:text="${i}"
@@ -86,24 +86,23 @@
             </span>
 
             <a th:if="${currentPage < totalPages}"
-               th:href="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
-               hx-get="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword}, contentTypeId=${searchParam.contentTypeId})}"
+               th:href="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:hx-get="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
                class="btn btn-sm">다음</a>
         </div>
 
         <div class="pagination-info">
-            전체 <span th:text="${totalCount}"></span>개 (
-            <span th:text="${currentPage}"></span> /
-            <span th:text="${totalPages}"></span> 페이지)
+            전체 <span th:text="${totalCount}"></span>개
+            (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
         </div>
     </main>
 
     <!-- 푸터 -->
     <footer class="user-footer">
         <div class="container">
-            <p>&copy; 2024 CMS. All rights reserved.</p>
+            <p>© 2024 Grap CMS. All rights reserved.</p>
         </div>
     </footer>
 </body>

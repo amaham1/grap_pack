@@ -11,7 +11,7 @@
     <!-- 헤더 -->
     <header class="user-header">
         <div class="container">
-            <h1><a th:href="@{/user/content/list}">CMS</a></h1>
+            <h1><a th:href="@{/user/content/list}">Grap</a></h1>
             <nav>
                 <ul>
                     <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
@@ -27,15 +27,15 @@
             <div class="content-header">
                 <div class="meta">
                     <span class="badge" th:text="${content.typeName}"></span>
-                    <span class="date" th:text="${#temporals.format(content.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-                    <span class="view-count">조회 <span th:text="${content.viewCount}"></span></span>
+                    <span class="date" th:text="${#temporals.format(content.createDt, 'yyyy.MM.dd HH:mm')}"></span>
+                    <span class="view-count" th:text="${content.viewCount}"></span>
                 </div>
                 <h1 th:text="${content.title}"></h1>
             </div>
 
             <!-- 콘텐츠 본문 -->
             <div class="content-body">
-                <div th:utext="${#strings.replace(content.content, T(System).lineSeparator(), '<br>')}"></div>
+                <div th:utext="${#strings.replace(#strings.replace(content.content, '\n', '<br>'), '\r', '')}"></div>
             </div>
 
             <!-- 이미지 갤러리 -->
@@ -59,7 +59,7 @@
     <!-- 푸터 -->
     <footer class="user-footer">
         <div class="container">
-            <p>&copy; 2024 CMS. All rights reserved.</p>
+            <p>© 2024 Grap CMS. All rights reserved.</p>
         </div>
     </footer>
 </body>

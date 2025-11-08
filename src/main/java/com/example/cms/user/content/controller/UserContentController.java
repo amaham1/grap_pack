@@ -49,7 +49,7 @@ public class UserContentController {
      * 콘텐츠 상세 페이지
      */
     @GetMapping("/detail/{contentId}")
-    public String contentDetail(@PathVariable Long contentId, Model model) {
+    public String contentDetail(@PathVariable("contentId") Long contentId, Model model) {
         Content content = userContentService.getContent(contentId);
 
         if (content == null) {

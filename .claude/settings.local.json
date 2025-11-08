@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew bootRun:*)",
+      "Bash(./gradlew clean build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

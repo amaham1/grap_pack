@@ -75,6 +75,6 @@ public class FileUtil {
      * @return 파일 경로
      */
     public String getFilePath(String filename) {
-        return uploadDir + "/" + filename;
+        return Paths.get(uploadDir, filename).toString();
     }
 }

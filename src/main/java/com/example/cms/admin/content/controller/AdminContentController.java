@@ -44,7 +44,7 @@ public class AdminContentController {
      */
     @GetMapping("/content-type/form")
     public String contentTypeForm(
-            @RequestParam(required = false) Long contentTypeId,
+            @RequestParam(value = "contentTypeId", required = false) Long contentTypeId,
             Model model) {
 
         if (contentTypeId != null) {
@@ -80,7 +80,7 @@ public class AdminContentController {
      */
     @PostMapping("/content-type/delete/{contentTypeId}")
     public String deleteContentType(
-            @PathVariable Long contentTypeId,
+            @PathVariable("contentTypeId") Long contentTypeId,
             RedirectAttributes redirectAttributes) {
 
         adminContentTypeService.deleteContentType(contentTypeId);
@@ -112,7 +112,7 @@ public class AdminContentController {
      */
     @GetMapping("/content/form")
     public String contentForm(
-            @RequestParam(required = false) Long contentId,
+            @RequestParam(value = "contentId", required = false) Long contentId,
             Model model) {
 
         List<ContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
@@ -137,6 +137,7 @@ public class AdminContentController {
 
         // 작성자 정보 설정
         Admin admin = authService.getAdminByUsername(authentication.getName());
+        content.setCreateName(admin.getName());
 
         adminContentService.createContent(content);
         redirectAttributes.addFlashAttribute("message", "콘텐츠가 등록되었습니다.");
@@ -147,7 +148,15 @@ public class AdminContentController {
      * 콘텐츠 수정
      */
     @PostMapping("/content/update")
-    public String updateContent(Content content, RedirectAttributes redirectAttributes) {
+    public String updateContent(
+            Content content,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+
+        // 수정자 정보 설정
+        Admin admin = authService.getAdminByUsername(authentication.getName());
+        content.setUpdateName(admin.getName());
+
         adminContentService.updateContent(content);
         redirectAttributes.addFlashAttribute("message", "콘텐츠가 수정되었습니다.");
         return "redirect:/admin/content/list";
@@ -158,11 +167,15 @@ public class AdminContentController {
      */
     @PostMapping("/content/delete/{contentId}")
     public String deleteContent(
-            @PathVariable Long contentId,
+            @PathVariable("contentId") Long contentId,
             RedirectAttributes redirectAttributes) {
 
-        adminContentService.deleteContent(contentId);
-        redirectAttributes.addFlashAttribute("message", "콘텐츠가 삭제되었습니다.");
+        try {
+            adminContentService.deleteContent(contentId);
+            redirectAttributes.addFlashAttribute("message", "콘텐츠가 삭제되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "콘텐츠 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
         return "redirect:/admin/content/list";
     }
 
@@ -171,8 +184,8 @@ public class AdminContentController {
      */
     @PostMapping("/content/publish/{contentId}")
     public String updatePublishStatus(
-            @PathVariable Long contentId,
-            @RequestParam Boolean isPublished,
+            @PathVariable("contentId") Long contentId,
+            @RequestParam("isPublished") Boolean isPublished,
             RedirectAttributes redirectAttributes) {
 
         adminContentService.updatePublishStatus(contentId, isPublished);

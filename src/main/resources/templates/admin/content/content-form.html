@@ -76,7 +76,8 @@
 
             <div class="form-group">
                 <label>
-                    <input type="checkbox" name="isPublished"
+                    <input type="hidden" name="_isPublished" value="on">
+                    <input type="checkbox" name="isPublished" value="true"
                            th:checked="${content != null and content.isPublished}">
                     공개
                 </label>

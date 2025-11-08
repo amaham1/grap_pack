@@ -8,22 +8,7 @@
 </head>
 <body>
     <!-- 헤더 -->
-    <header class="admin-header">
-        <div class="container">
-            <h1><a th:href="@{/admin/content/list}">CMS 관리자</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/admin/content-type/list}">콘텐츠 종류 관리</a></li>
-                    <li><a th:href="@{/admin/content/list}">콘텐츠 관리</a></li>
-                    <li>
-                        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                            <button type="submit" class="btn-link">로그아웃</button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{common/fragments/header :: admin-header}"></div>
 
     <!-- 메시지 알림 -->
     <div th:if="${message}" class="alert alert-success">
@@ -44,10 +29,6 @@
     </main>
 
     <!-- 푸터 -->
-    <footer class="admin-footer">
-        <div class="container">
-            <p>&copy; 2024 CMS Admin. All rights reserved.</p>
-        </div>
-    </footer>
+    <div th:replace="~{common/fragments/footer :: admin-footer}"></div>
 </body>
 </html>

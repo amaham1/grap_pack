@@ -48,7 +48,7 @@ pagehelper:
 
 # 파일 업로드 경로 설정
 file:
-  upload-dir: /uploads
+  upload-dir: ./uploads
   max-image-count: 10
 
 # 로깅 설정

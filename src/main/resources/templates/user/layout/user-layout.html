@@ -3,22 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} + ' - CMS'">CMS</title>
+    <title th:text="Grap"></title>
     <link rel="stylesheet" th:href="@{/css/user.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
     <!-- 헤더 -->
-    <header class="user-header">
-        <div class="container">
-            <h1><a th:href="@{/user/content/list}">CMS</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{common/fragments/header :: user-header}"></div>
 
     <!-- 메인 컨텐츠 -->
     <main class="container">
@@ -26,10 +17,6 @@
     </main>
 
     <!-- 푸터 -->
-    <footer class="user-footer">
-        <div class="container">
-            <p>&copy; 2024 CMS. All rights reserved.</p>
-        </div>
-    </footer>
+    <div th:replace="~{common/fragments/footer :: user-footer}"></div>
 </body>
 </html>

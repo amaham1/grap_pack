@@ -3,6 +3,7 @@ package com.example.cms.admin.content.mapper;
 import com.example.cms.admin.content.model.Content;
 import com.example.cms.admin.content.model.ContentSearchParam;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -45,5 +46,5 @@ public interface AdminContentMapper {
     /**
      * 콘텐츠 공개/비공개 설정
      */
-    void updateContentPublishStatus(Long contentId, Boolean isPublished);
+    void updateContentPublishStatus(@Param("contentId") Long contentId, @Param("isPublished") Boolean isPublished);
 }

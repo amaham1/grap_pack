@@ -95,8 +95,8 @@
                             <span th:unless="${content.isPublished}" class="badge badge-secondary">비공개</span>
                         </td>
                         <td th:text="${content.viewCount}"></td>
-                        <td th:text="${content.creatorName}"></td>
-                        <td th:text="${#temporals.format(content.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${content.createName}"></td>
+                        <td th:text="${#temporals.format(content.createDt, 'yyyy-MM-dd HH:mm')}"></td>
                         <td>
                             <a th:href="@{/admin/content/form(contentId=${content.contentId})}"
                                class="btn btn-sm btn-secondary">수정</a>

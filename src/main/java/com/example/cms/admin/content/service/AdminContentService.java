@@ -3,10 +3,12 @@ package com.example.cms.admin.content.service;
 import com.example.cms.admin.content.mapper.AdminContentMapper;
 import com.example.cms.admin.content.model.Content;
 import com.example.cms.admin.content.model.ContentSearchParam;
+import com.example.cms.admin.image.service.AdminImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.Map;
 public class AdminContentService {
 
     private final AdminContentMapper adminContentMapper;
+    private final AdminImageService adminImageService;
 
     /**
      * 콘텐츠 목록 조회 (페이징)
@@ -79,7 +82,10 @@ public class AdminContentService {
      * 콘텐츠 삭제
      */
     @Transactional
-    public void deleteContent(Long contentId) {
+    public void deleteContent(Long contentId) throws IOException {
+        // 이미지 파일 및 DB 레코드 삭제
+        adminImageService.deleteImagesByContentId(contentId);
+        // 콘텐츠 삭제
         adminContentMapper.deleteContent(contentId);
     }
 
