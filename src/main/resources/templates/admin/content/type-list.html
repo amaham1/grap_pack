@@ -23,18 +23,18 @@
             </thead>
             <tbody>
                 <tr th:each="type : ${contentTypeList}">
-                    <td th:text="${type.contentTypeId}"></td>
-                    <td th:text="${type.typeName}"></td>
-                    <td th:text="${type.typeDesc}"></td>
+                    <td th:text="${type['contentTypeId']}"></td>
+                    <td th:text="${type['typeName'] ?: '-'}"></td>
+                    <td th:text="${type['typeDesc'] ?: '-'}"></td>
                     <td>
-                        <span th:if="${type.isActive}" class="badge badge-success">활성</span>
-                        <span th:unless="${type.isActive}" class="badge badge-secondary">비활성</span>
+                        <span th:if="${type['isActive'] ?: false}" class="badge badge-success">활성</span>
+                        <span th:unless="${type['isActive'] ?: false}" class="badge badge-secondary">비활성</span>
                     </td>
-                    <td th:text="${#temporals.format(type.createDt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${type['createDt'] != null ? #temporals.format(type['createDt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/content-type/form(contentTypeId=${type.contentTypeId})}"
+                        <a th:href="@{/admin/content-type/form(contentTypeId=${type['contentTypeId']})}"
                            class="btn btn-sm btn-secondary">수정</a>
-                        <form th:action="@{/admin/content-type/delete/{id}(id=${type.contentTypeId})}"
+                        <form th:action="@{/admin/content-type/delete/{id}(id=${type['contentTypeId']})}"
                               method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>

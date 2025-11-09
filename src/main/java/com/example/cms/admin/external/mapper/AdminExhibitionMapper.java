@@ -40,6 +40,14 @@ public interface AdminExhibitionMapper {
     void updateAdminMemo(@Param("id") Long id, @Param("adminMemo") String adminMemo);
 
     /**
+     * 검수 처리
+     */
+    void updateConfirmStatus(@Param("id") Long id,
+                             @Param("confirmStatus") String confirmStatus,
+                             @Param("confirmedBy") String confirmedBy,
+                             @Param("confirmMemo") String confirmMemo);
+
+    /**
      * 공연/전시 삭제
      */
     void deleteExhibition(@Param("id") Long id);

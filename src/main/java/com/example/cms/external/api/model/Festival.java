@@ -72,6 +72,31 @@ public class Festival {
     private String adminMemo;
 
     /**
+     * 검수 완료 여부
+     */
+    private Boolean isConfirmed;
+
+    /**
+     * 검수 상태 (PENDING/APPROVED/REJECTED)
+     */
+    private String confirmStatus;
+
+    /**
+     * 검수자명
+     */
+    private String confirmedBy;
+
+    /**
+     * 검수일시
+     */
+    private LocalDateTime confirmedAt;
+
+    /**
+     * 검수 메모
+     */
+    private String confirmMemo;
+
+    /**
      * API 데이터 수집 시간
      */
     private LocalDateTime fetchedAt;

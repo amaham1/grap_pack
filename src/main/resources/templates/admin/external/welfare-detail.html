@@ -14,39 +14,59 @@
             <h3>기본 정보</h3>
             <table class="info-table">
                 <tr><th>ID</th><td th:text="${welfare.id}"></td></tr>
-                <tr><th>서비스명</th><td th:text="${welfare.service_name}"></td></tr>
+                <tr><th>서비스명</th><td th:text="${welfare.serviceName ?: '-'}"></td></tr>
                 <tr><th>지역</th>
                     <td>
-                        <span th:if="${welfare.is_all_location}" class="badge badge-info">전체</span>
-                        <span th:if="${welfare.is_jeju_location}" class="badge badge-info">제주시</span>
-                        <span th:if="${welfare.is_seogwipo_location}" class="badge badge-info">서귀포시</span>
+                        <span th:if="${welfare.isAllLocation ?: false}" class="badge badge-info">전체</span>
+                        <span th:if="${welfare.isJejuLocation ?: false}" class="badge badge-info">제주시</span>
+                        <span th:if="${welfare.isSeogwipoLocation ?: false}" class="badge badge-info">서귀포시</span>
                     </td>
                 </tr>
                 <tr><th>노출 여부</th>
                     <td>
-                        <span th:if="${welfare.is_show}" class="badge badge-success">노출</span>
-                        <span th:unless="${welfare.is_show}" class="badge badge-secondary">비노출</span>
+                        <span th:if="${welfare.isShow ?: false}" class="badge badge-success">노출</span>
+                        <span th:unless="${welfare.isShow ?: false}" class="badge badge-secondary">비노출</span>
                     </td>
+                </tr>
+                <tr>
+                    <th>검수 상태</th>
+                    <td>
+                        <span th:if="${welfare.confirmStatus == 'APPROVED'}" class="badge badge-success">승인</span>
+                        <span th:if="${welfare.confirmStatus == 'REJECTED'}" class="badge badge-danger">반려</span>
+                        <span th:if="${welfare.confirmStatus == 'PENDING'}" class="badge badge-warning">대기</span>
+                    </td>
+                </tr>
+                <tr th:if="${welfare.confirmedBy != null}">
+                    <th>검수자</th>
+                    <td th:text="${welfare.confirmedBy}"></td>
+                </tr>
+                <tr th:if="${welfare.confirmedAt != null}">
+                    <th>검수일시</th>
+                    <td th:text="${#temporals.format(welfare.confirmedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                <tr th:if="${welfare.confirmMemo != null}">
+                    <th>검수 메모</th>
+                    <td th:text="${welfare.confirmMemo}"></td>
                 </tr>
             </table>
         </div>
 
         <div class="content-section">
             <h3>지원 대상</h3>
-            <div class="html-content" th:if="${welfare.support_target_html != null}"
-                 th:utext="${welfare.support_target_html}"></div>
+            <div class="html-content" th:if="${welfare.supportTargetHtml != null}"
+                 th:utext="${welfare.supportTargetHtml}"></div>
         </div>
 
         <div class="content-section">
             <h3>지원 내용</h3>
-            <div class="html-content" th:if="${welfare.support_content_html != null}"
-                 th:utext="${welfare.support_content_html}"></div>
+            <div class="html-content" th:if="${welfare.supportContentHtml != null}"
+                 th:utext="${welfare.supportContentHtml}"></div>
         </div>
 
         <div class="content-section">
             <h3>신청 방법</h3>
-            <div class="html-content" th:if="${welfare.application_info_html != null}"
-                 th:utext="${welfare.application_info_html}"></div>
+            <div class="html-content" th:if="${welfare.applicationInfoHtml != null}"
+                 th:utext="${welfare.applicationInfoHtml}"></div>
         </div>
 
         <div class="memo-section">
@@ -54,18 +74,39 @@
             <form th:action="@{/admin/external/welfare/{id}/memo(id=${welfare.id})}"
                   method="post" class="form">
                 <textarea name="adminMemo" rows="5" class="form-control"
-                          th:text="${welfare.admin_memo}"></textarea>
+                          th:text="${welfare.adminMemo ?: ''}"></textarea>
                 <button type="submit" class="btn btn-primary">메모 저장</button>
+            </form>
+        </div>
+
+        <div class="confirm-section">
+            <h3>검수 처리</h3>
+            <form th:action="@{/admin/external/welfare/{id}/confirm(id=${welfare.id})}"
+                  method="post" class="form">
+                <div class="form-group">
+                    <label>검수 상태 선택</label>
+                    <select name="confirmStatus" class="form-control" required>
+                        <option value="APPROVED">승인</option>
+                        <option value="REJECTED">반려</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>검수 메모 (선택)</label>
+                    <textarea name="confirmMemo" rows="3" class="form-control"
+                              placeholder="검수 관련 메모를 입력하세요"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('검수를 처리하시겠습니까?')">검수 처리</button>
             </form>
         </div>
 
         <div class="action-section">
             <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare.id})}"
                   method="post" style="display: inline;">
-                <input type="hidden" name="isShow" th:value="${!welfare.is_show}">
+                <input type="hidden" name="isShow" th:value="${!(welfare.isShow ?: false)}">
                 <button type="submit"
-                        th:class="|btn ${welfare.is_show ? 'btn-warning' : 'btn-success'}|"
-                        th:text="${welfare.is_show ? '비노출로 변경' : '노출로 변경'}">
+                        th:class="|btn ${(welfare.isShow ?: false) ? 'btn-warning' : 'btn-success'}|"
+                        th:text="${(welfare.isShow ?: false) ? '비노출로 변경' : '노출로 변경'}">
                 </button>
             </form>
             <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare.id})}"

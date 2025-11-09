@@ -74,6 +74,14 @@ public class AdminExhibitionService {
     }
 
     /**
+     * 검수 처리
+     */
+    @Transactional
+    public void updateConfirmStatus(Long id, String confirmStatus, String confirmedBy, String confirmMemo) {
+        exhibitionMapper.updateConfirmStatus(id, confirmStatus, confirmedBy, confirmMemo);
+    }
+
+    /**
      * 공연/전시 삭제
      */
     @Transactional

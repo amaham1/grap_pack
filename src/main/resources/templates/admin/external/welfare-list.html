@@ -30,31 +30,31 @@
             </thead>
             <tbody>
                 <tr th:each="welfare : ${welfareList}">
-                    <td th:text="${welfare.id}"></td>
+                    <td th:text="${welfare['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare.id})}"
-                           th:text="${welfare.service_name}"></a>
+                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare['id']})}"
+                           th:text="${welfare['serviceName'] ?: '-'}"></a>
                     </td>
                     <td>
-                        <span th:if="${welfare.is_all_location}" class="badge badge-info">전체</span>
-                        <span th:if="${welfare.is_jeju_location}" class="badge badge-info">제주</span>
-                        <span th:if="${welfare.is_seogwipo_location}" class="badge badge-info">서귀포</span>
+                        <span th:if="${welfare['isAllLocation'] ?: false}" class="badge badge-info">전체</span>
+                        <span th:if="${welfare['isJejuLocation'] ?: false}" class="badge badge-info">제주</span>
+                        <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="badge badge-info">서귀포</span>
                     </td>
                     <td>
-                        <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare.id})}"
+                        <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare['id']})}"
                               method="post" style="display: inline;">
-                            <input type="hidden" name="isShow" th:value="${!welfare.is_show}">
+                            <input type="hidden" name="isShow" th:value="${!(welfare['isShow'] ?: false)}">
                             <button type="submit"
-                                    th:class="|btn btn-sm ${welfare.is_show ? 'btn-success' : 'btn-secondary'}|"
-                                    th:text="${welfare.is_show ? '노출' : '비노출'}">
+                                    th:class="|btn btn-sm ${(welfare['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${(welfare['isShow'] ?: false) ? '노출' : '비노출'}">
                             </button>
                         </form>
                     </td>
-                    <td th:text="${#temporals.format(welfare.fetched_at, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${welfare['fetchedAt'] != null ? #temporals.format(welfare['fetchedAt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare.id})}"
+                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare['id']})}"
                            class="btn btn-sm btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare.id})}"
+                        <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare['id']})}"
                               method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>

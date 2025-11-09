@@ -15,6 +15,11 @@
             is_seogwipo_location AS isSeogwipoLocation,
             is_show AS isShow,
             admin_memo AS adminMemo,
+            is_confirmed AS isConfirmed,
+            confirm_status AS confirmStatus,
+            confirmed_by AS confirmedBy,
+            confirmed_at AS confirmedAt,
+            confirm_memo AS confirmMemo,
             fetched_at AS fetchedAt,
             created_at AS createdAt,
             updated_at AS updatedAt
@@ -58,6 +63,11 @@
             api_raw_data AS apiRawData,
             is_show AS isShow,
             admin_memo AS adminMemo,
+            is_confirmed AS isConfirmed,
+            confirm_status AS confirmStatus,
+            confirmed_by AS confirmedBy,
+            confirmed_at AS confirmedAt,
+            confirm_memo AS confirmMemo,
             fetched_at AS fetchedAt,
             created_at AS createdAt,
             updated_at AS updatedAt
@@ -76,6 +86,17 @@
     <update id="updateAdminMemo">
         UPDATE welfare_services
         SET admin_memo = #{adminMemo}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검수 처리 -->
+    <update id="updateConfirmStatus">
+        UPDATE welfare_services
+        SET is_confirmed = CASE WHEN #{confirmStatus} = 'APPROVED' THEN TRUE ELSE FALSE END,
+            confirm_status = #{confirmStatus},
+            confirmed_by = #{confirmedBy},
+            confirmed_at = NOW(),
+            confirm_memo = #{confirmMemo}
         WHERE id = #{id}
     </update>
 

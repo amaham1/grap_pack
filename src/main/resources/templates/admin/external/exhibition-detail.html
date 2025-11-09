@@ -14,26 +14,46 @@
             <h3>기본 정보</h3>
             <table class="info-table">
                 <tr><th>ID</th><td th:text="${exhibition.id}"></td></tr>
-                <tr><th>제목</th><td th:text="${exhibition.title}"></td></tr>
-                <tr><th>카테고리</th><td th:text="${exhibition.category_name}"></td></tr>
+                <tr><th>제목</th><td th:text="${exhibition.title ?: '-'}"></td></tr>
+                <tr><th>카테고리</th><td th:text="${exhibition.categoryName ?: '-'}"></td></tr>
                 <tr><th>기간</th>
                     <td>
-                        <span th:if="${exhibition.start_date != null}"
-                              th:text="${#temporals.format(exhibition.start_date, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${exhibition.startDate != null}"
+                              th:text="${#temporals.format(exhibition.startDate, 'yyyy-MM-dd')}"></span>
                         ~
-                        <span th:if="${exhibition.end_date != null}"
-                              th:text="${#temporals.format(exhibition.end_date, 'yyyy-MM-dd')}"></span>
+                        <span th:if="${exhibition.endDate != null}"
+                              th:text="${#temporals.format(exhibition.endDate, 'yyyy-MM-dd')}"></span>
                     </td>
                 </tr>
-                <tr><th>장소</th><td th:text="${exhibition.location_name}"></td></tr>
-                <tr><th>주최/주관</th><td th:text="${exhibition.organizer_info}"></td></tr>
-                <tr><th>문의</th><td th:text="${exhibition.tel_number}"></td></tr>
-                <tr><th>요금</th><td th:text="${exhibition.pay_info}"></td></tr>
+                <tr><th>장소</th><td th:text="${exhibition.locationName ?: '-'}"></td></tr>
+                <tr><th>주최/주관</th><td th:text="${exhibition.organizerInfo ?: '-'}"></td></tr>
+                <tr><th>문의</th><td th:text="${exhibition.telNumber ?: '-'}"></td></tr>
+                <tr><th>요금</th><td th:text="${exhibition.payInfo ?: '-'}"></td></tr>
                 <tr><th>노출 여부</th>
                     <td>
-                        <span th:if="${exhibition.is_show}" class="badge badge-success">노출</span>
-                        <span th:unless="${exhibition.is_show}" class="badge badge-secondary">비노출</span>
+                        <span th:if="${exhibition.isShow ?: false}" class="badge badge-success">노출</span>
+                        <span th:unless="${exhibition.isShow ?: false}" class="badge badge-secondary">비노출</span>
                     </td>
+                </tr>
+                <tr>
+                    <th>검수 상태</th>
+                    <td>
+                        <span th:if="${exhibition.confirmStatus == 'APPROVED'}" class="badge badge-success">승인</span>
+                        <span th:if="${exhibition.confirmStatus == 'REJECTED'}" class="badge badge-danger">반려</span>
+                        <span th:if="${exhibition.confirmStatus == 'PENDING'}" class="badge badge-warning">대기</span>
+                    </td>
+                </tr>
+                <tr th:if="${exhibition.confirmedBy != null}">
+                    <th>검수자</th>
+                    <td th:text="${exhibition.confirmedBy}"></td>
+                </tr>
+                <tr th:if="${exhibition.confirmedAt != null}">
+                    <th>검수일시</th>
+                    <td th:text="${#temporals.format(exhibition.confirmedAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                <tr th:if="${exhibition.confirmMemo != null}">
+                    <th>검수 메모</th>
+                    <td th:text="${exhibition.confirmMemo}"></td>
                 </tr>
             </table>
         </div>
@@ -43,18 +63,39 @@
             <form th:action="@{/admin/external/exhibitions/{id}/memo(id=${exhibition.id})}"
                   method="post" class="form">
                 <textarea name="adminMemo" rows="5" class="form-control"
-                          th:text="${exhibition.admin_memo}"></textarea>
+                          th:text="${exhibition.adminMemo ?: ''}"></textarea>
                 <button type="submit" class="btn btn-primary">메모 저장</button>
+            </form>
+        </div>
+
+        <div class="confirm-section">
+            <h3>검수 처리</h3>
+            <form th:action="@{/admin/external/exhibitions/{id}/confirm(id=${exhibition.id})}"
+                  method="post" class="form">
+                <div class="form-group">
+                    <label>검수 상태 선택</label>
+                    <select name="confirmStatus" class="form-control" required>
+                        <option value="APPROVED">승인</option>
+                        <option value="REJECTED">반려</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>검수 메모 (선택)</label>
+                    <textarea name="confirmMemo" rows="3" class="form-control"
+                              placeholder="검수 관련 메모를 입력하세요"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('검수를 처리하시겠습니까?')">검수 처리</button>
             </form>
         </div>
 
         <div class="action-section">
             <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition.id})}"
                   method="post" style="display: inline;">
-                <input type="hidden" name="isShow" th:value="${!exhibition.is_show}">
+                <input type="hidden" name="isShow" th:value="${!(exhibition.isShow ?: false)}">
                 <button type="submit"
-                        th:class="|btn ${exhibition.is_show ? 'btn-warning' : 'btn-success'}|"
-                        th:text="${exhibition.is_show ? '비노출로 변경' : '노출로 변경'}">
+                        th:class="|btn ${(exhibition.isShow ?: false) ? 'btn-warning' : 'btn-success'}|"
+                        th:text="${(exhibition.isShow ?: false) ? '비노출로 변경' : '노출로 변경'}">
                 </button>
             </form>
             <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition.id})}"

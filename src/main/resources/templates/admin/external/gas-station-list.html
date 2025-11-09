@@ -32,32 +32,32 @@
             </thead>
             <tbody>
                 <tr th:each="station : ${gasStationList}">
-                    <td th:text="${station.id}"></td>
+                    <td th:text="${station['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/gas-stations/{id}(id=${station.id})}"
-                           th:text="${station.station_name}"></a>
+                        <a th:href="@{/admin/external/gas-stations/{id}(id=${station['id']})}"
+                           th:text="${station['stationName'] ?: '-'}"></a>
                     </td>
-                    <td th:text="${station.brand}"></td>
-                    <td th:text="${station.address}"></td>
+                    <td th:text="${station['brand'] ?: '-'}"></td>
+                    <td th:text="${station['address'] ?: '-'}"></td>
                     <td>
-                        <span th:if="${station.gasoline_price != null and station.gasoline_price > 0}"
-                              th:text="${#numbers.formatInteger(station.gasoline_price, 0, 'COMMA')} + '원'"></span>
-                        <span th:unless="${station.gasoline_price != null and station.gasoline_price > 0}">-</span>
-                    </td>
-                    <td>
-                        <span th:if="${station.diesel_price != null and station.diesel_price > 0}"
-                              th:text="${#numbers.formatInteger(station.diesel_price, 0, 'COMMA')} + '원'"></span>
-                        <span th:unless="${station.diesel_price != null and station.diesel_price > 0}">-</span>
+                        <span th:if="${station['gasolinePrice'] != null and station['gasolinePrice'] > 0}"
+                              th:text="${#numbers.formatInteger(station['gasolinePrice'], 0, 'COMMA')} + '원'"></span>
+                        <span th:unless="${station['gasolinePrice'] != null and station['gasolinePrice'] > 0}">-</span>
                     </td>
                     <td>
-                        <span th:if="${station.price_date != null}"
-                              th:text="${#temporals.format(station.price_date, 'yyyy-MM-dd')}"></span>
-                        <span th:unless="${station.price_date != null}">-</span>
+                        <span th:if="${station['dieselPrice'] != null and station['dieselPrice'] > 0}"
+                              th:text="${#numbers.formatInteger(station['dieselPrice'], 0, 'COMMA')} + '원'"></span>
+                        <span th:unless="${station['dieselPrice'] != null and station['dieselPrice'] > 0}">-</span>
                     </td>
                     <td>
-                        <a th:href="@{/admin/external/gas-stations/{id}(id=${station.id})}"
+                        <span th:if="${station['priceDate'] != null}"
+                              th:text="${#temporals.format(station['priceDate'], 'yyyy-MM-dd')}"></span>
+                        <span th:unless="${station['priceDate'] != null}">-</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/external/gas-stations/{id}(id=${station['id']})}"
                            class="btn btn-sm btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/gas-stations/{id}/delete(id=${station.id})}"
+                        <form th:action="@{/admin/external/gas-stations/{id}/delete(id=${station['id']})}"
                               method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까? 관련 가격 정보도 함께 삭제됩니다.');">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>

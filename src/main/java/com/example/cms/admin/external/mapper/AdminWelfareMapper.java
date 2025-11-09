@@ -40,6 +40,14 @@ public interface AdminWelfareMapper {
     void updateAdminMemo(@Param("id") Long id, @Param("adminMemo") String adminMemo);
 
     /**
+     * 검수 처리
+     */
+    void updateConfirmStatus(@Param("id") Long id,
+                             @Param("confirmStatus") String confirmStatus,
+                             @Param("confirmedBy") String confirmedBy,
+                             @Param("confirmMemo") String confirmMemo);
+
+    /**
      * 복지서비스 삭제
      */
     void deleteWelfare(@Param("id") Long id);

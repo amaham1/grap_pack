@@ -16,44 +16,62 @@
             <table class="info-table">
                 <tr>
                     <th>ID</th>
-                    <td th:text="${festival.id}"></td>
+                    <td th:text="${festival['id']}"></td>
                 </tr>
                 <tr>
                     <th>원본 API ID</th>
-                    <td th:text="${festival.original_api_id}"></td>
+                    <td th:text="${festival['originalApiId'] ?: '-'}"></td>
                 </tr>
                 <tr>
                     <th>제목</th>
-                    <td th:text="${festival.title}"></td>
+                    <td th:text="${festival['title'] ?: '-'}"></td>
                 </tr>
                 <tr>
                     <th>작성자</th>
-                    <td th:text="${festival.writer_name}"></td>
+                    <td th:text="${festival['writerName'] ?: '-'}"></td>
                 </tr>
                 <tr>
                     <th>작성일</th>
-                    <td th:if="${festival.written_date != null}"
-                        th:text="${#temporals.format(festival.written_date, 'yyyy-MM-dd HH:mm')}"></td>
-                    <td th:unless="${festival.written_date != null}">-</td>
+                    <td th:text="${festival['writtenDate'] != null ? #temporals.format(festival['writtenDate'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                 </tr>
                 <tr>
                     <th>원본 URL</th>
                     <td>
-                        <a th:if="${festival.source_url != null}"
-                           th:href="${festival.source_url}" target="_blank">바로가기</a>
-                        <span th:unless="${festival.source_url != null}">-</span>
+                        <a th:if="${festival['sourceUrl'] != null}"
+                           th:href="${festival['sourceUrl']}" target="_blank">바로가기</a>
+                        <span th:unless="${festival['sourceUrl'] != null}">-</span>
                     </td>
                 </tr>
                 <tr>
                     <th>노출 여부</th>
                     <td>
-                        <span th:if="${festival.is_show}" class="badge badge-success">노출</span>
-                        <span th:unless="${festival.is_show}" class="badge badge-secondary">비노출</span>
+                        <span th:if="${festival['isShow'] ?: false}" class="badge badge-success">노출</span>
+                        <span th:unless="${festival['isShow'] ?: false}" class="badge badge-secondary">비노출</span>
                     </td>
                 </tr>
                 <tr>
+                    <th>검수 상태</th>
+                    <td>
+                        <span th:if="${festival['confirmStatus'] == 'APPROVED'}" class="badge badge-success">승인</span>
+                        <span th:if="${festival['confirmStatus'] == 'REJECTED'}" class="badge badge-danger">반려</span>
+                        <span th:if="${festival['confirmStatus'] == 'PENDING'}" class="badge badge-warning">대기</span>
+                    </td>
+                </tr>
+                <tr th:if="${festival['confirmedBy'] != null}">
+                    <th>검수자</th>
+                    <td th:text="${festival['confirmedBy']}"></td>
+                </tr>
+                <tr th:if="${festival['confirmedAt'] != null}">
+                    <th>검수일시</th>
+                    <td th:text="${#temporals.format(festival['confirmedAt'], 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+                <tr th:if="${festival['confirmMemo'] != null}">
+                    <th>검수 메모</th>
+                    <td th:text="${festival['confirmMemo']}"></td>
+                </tr>
+                <tr>
                     <th>수집일시</th>
-                    <td th:text="${#temporals.format(festival.fetched_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${festival['fetchedAt'] != null ? #temporals.format(festival['fetchedAt'], 'yyyy-MM-dd HH:mm:ss') : '-'}"></td>
                 </tr>
             </table>
         </div>
@@ -61,35 +79,57 @@
         <!-- 내용 -->
         <div class="content-section">
             <h3>내용</h3>
-            <div class="html-content" th:if="${festival.content_html != null}"
-                 th:utext="${festival.content_html}"></div>
-            <p th:unless="${festival.content_html != null}">내용이 없습니다.</p>
+            <div class="html-content" th:if="${festival['contentHtml'] != null}"
+                 th:utext="${festival['contentHtml']}"></div>
+            <p th:unless="${festival['contentHtml'] != null}">내용이 없습니다.</p>
         </div>
 
         <!-- 관리자 메모 -->
         <div class="memo-section">
             <h3>관리자 메모</h3>
-            <form th:action="@{/admin/external/festivals/{id}/memo(id=${festival.id})}"
+            <form th:action="@{/admin/external/festivals/{id}/memo(id=${festival['id']})}"
                   method="post" class="form">
                 <div class="form-group">
                     <textarea name="adminMemo" rows="5" class="form-control"
-                              th:text="${festival.admin_memo}"></textarea>
+                              th:text="${festival['adminMemo'] ?: ''}"></textarea>
                 </div>
                 <button type="submit" class="btn btn-primary">메모 저장</button>
             </form>
         </div>
 
+        <!-- 검수 처리 -->
+        <div class="confirm-section">
+            <h3>검수 처리</h3>
+            <form th:action="@{/admin/external/festivals/{id}/confirm(id=${festival['id']})}"
+                  method="post" class="form">
+                <div class="form-group">
+                    <label>검수 상태 선택</label>
+                    <select name="confirmStatus" class="form-control" required>
+                        <option value="APPROVED">승인</option>
+                        <option value="REJECTED">반려</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>검수 메모 (선택)</label>
+                    <textarea name="confirmMemo" rows="3" class="form-control"
+                              placeholder="검수 관련 메모를 입력하세요"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                        onclick="return confirm('검수를 처리하시겠습니까?')">검수 처리</button>
+            </form>
+        </div>
+
         <!-- 관리 버튼 -->
         <div class="action-section">
-            <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival.id})}"
+            <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival['id']})}"
                   method="post" style="display: inline;">
-                <input type="hidden" name="isShow" th:value="${!festival.is_show}">
+                <input type="hidden" name="isShow" th:value="${!(festival['isShow'] ?: false)}">
                 <button type="submit"
-                        th:class="|btn ${festival.is_show ? 'btn-warning' : 'btn-success'}|"
-                        th:text="${festival.is_show ? '비노출로 변경' : '노출로 변경'}">
+                        th:class="|btn ${(festival['isShow'] ?: false) ? 'btn-warning' : 'btn-success'}|"
+                        th:text="${(festival['isShow'] ?: false) ? '비노출로 변경' : '노출로 변경'}">
                 </button>
             </form>
-            <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival.id})}"
+            <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival['id']})}"
                   method="post" style="display: inline;"
                   onsubmit="return confirm('정말 삭제하시겠습니까?');">
                 <button type="submit" class="btn btn-danger">삭제</button>
@@ -101,7 +141,7 @@
         .detail-container {
             max-width: 1000px;
         }
-        .info-section, .content-section, .memo-section, .action-section {
+        .info-section, .content-section, .memo-section, .confirm-section, .action-section {
             margin-bottom: 2rem;
             padding: 1.5rem;
             background-color: #f8f9fa;

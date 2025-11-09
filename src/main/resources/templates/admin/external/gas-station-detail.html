@@ -14,15 +14,15 @@
             <h3>기본 정보</h3>
             <table class="info-table">
                 <tr><th>ID</th><td th:text="${gasStation.id}"></td></tr>
-                <tr><th>Opinet ID</th><td th:text="${gasStation.opinet_id}"></td></tr>
-                <tr><th>주유소명</th><td th:text="${gasStation.station_name}"></td></tr>
+                <tr><th>Opinet ID</th><td th:text="${gasStation.opinetId}"></td></tr>
+                <tr><th>주유소명</th><td th:text="${gasStation.stationName}"></td></tr>
                 <tr><th>브랜드</th><td th:text="${gasStation.brand}"></td></tr>
                 <tr><th>주소</th><td th:text="${gasStation.address}"></td></tr>
                 <tr><th>전화번호</th><td th:text="${gasStation.phone}"></td></tr>
                 <tr><th>위도</th><td th:text="${gasStation.latitude}"></td></tr>
                 <tr><th>경도</th><td th:text="${gasStation.longitude}"></td></tr>
                 <tr><th>등록일</th>
-                    <td th:text="${#temporals.format(gasStation.created_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td th:text="${#temporals.format(gasStation.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
                 </tr>
             </table>
         </div>

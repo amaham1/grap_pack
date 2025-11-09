@@ -74,6 +74,14 @@ public class AdminFestivalService {
     }
 
     /**
+     * 검수 처리
+     */
+    @Transactional
+    public void updateConfirmStatus(Long id, String confirmStatus, String confirmedBy, String confirmMemo) {
+        festivalMapper.updateConfirmStatus(id, confirmStatus, confirmedBy, confirmMemo);
+    }
+
+    /**
      * 축제/행사 삭제
      */
     @Transactional

@@ -33,30 +33,28 @@
             </thead>
             <tbody>
                 <tr th:each="festival : ${festivalList}">
-                    <td th:text="${festival.id}"></td>
+                    <td th:text="${festival['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/festivals/{id}(id=${festival.id})}"
-                           th:text="${festival.title}"></a>
+                        <a th:href="@{/admin/external/festivals/{id}(id=${festival['id']})}"
+                           th:text="${festival['title'] ?: '-'}"></a>
                     </td>
-                    <td th:text="${festival.writer_name}"></td>
-                    <td th:if="${festival.written_date != null}"
-                        th:text="${#temporals.format(festival.written_date, 'yyyy-MM-dd')}"></td>
-                    <td th:unless="${festival.written_date != null}">-</td>
+                    <td th:text="${festival['writerName'] ?: '-'}"></td>
+                    <td th:text="${festival['writtenDate'] != null ? #temporals.format(festival['writtenDate'], 'yyyy-MM-dd') : '-'}"></td>
                     <td>
-                        <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival.id})}"
+                        <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival['id']})}"
                               method="post" style="display: inline;">
-                            <input type="hidden" name="isShow" th:value="${!festival.is_show}">
+                            <input type="hidden" name="isShow" th:value="${!(festival['isShow'] ?: false)}">
                             <button type="submit"
-                                    th:class="|btn btn-sm ${festival.is_show ? 'btn-success' : 'btn-secondary'}|"
-                                    th:text="${festival.is_show ? '노출' : '비노출'}">
+                                    th:class="|btn btn-sm ${(festival['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${(festival['isShow'] ?: false) ? '노출' : '비노출'}">
                             </button>
                         </form>
                     </td>
-                    <td th:text="${#temporals.format(festival.fetched_at, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${festival['fetchedAt'] != null ? #temporals.format(festival['fetchedAt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/external/festivals/{id}(id=${festival.id})}"
+                        <a th:href="@{/admin/external/festivals/{id}(id=${festival['id']})}"
                            class="btn btn-sm btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival.id})}"
+                        <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival['id']})}"
                               method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>

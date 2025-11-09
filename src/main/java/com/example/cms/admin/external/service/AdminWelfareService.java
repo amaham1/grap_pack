@@ -74,6 +74,14 @@ public class AdminWelfareService {
     }
 
     /**
+     * 검수 처리
+     */
+    @Transactional
+    public void updateConfirmStatus(Long id, String confirmStatus, String confirmedBy, String confirmMemo) {
+        welfareMapper.updateConfirmStatus(id, confirmStatus, confirmedBy, confirmMemo);
+    }
+
+    /**
      * 복지서비스 삭제
      */
     @Transactional

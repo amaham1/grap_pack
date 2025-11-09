@@ -2,6 +2,7 @@ package com.example.cms.admin.external.controller;
 
 import com.example.cms.admin.external.service.AdminFestivalService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -80,6 +81,27 @@ public class AdminFestivalController {
             redirectAttributes.addFlashAttribute("message", "메모가 저장되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "메모 저장 실패: " + e.getMessage());
+        }
+        return "redirect:/admin/external/festivals/" + id;
+    }
+
+    /**
+     * 검수 처리
+     */
+    @PostMapping("/{id}/confirm")
+    public String confirmFestival(@PathVariable("id") Long id,
+                                   @RequestParam("confirmStatus") String confirmStatus,
+                                   @RequestParam(value = "confirmMemo", required = false) String confirmMemo,
+                                   Authentication authentication,
+                                   RedirectAttributes redirectAttributes) {
+        try {
+            String confirmedBy = authentication.getName();
+            festivalService.updateConfirmStatus(id, confirmStatus, confirmedBy, confirmMemo);
+
+            String statusMessage = confirmStatus.equals("APPROVED") ? "승인" : "반려";
+            redirectAttributes.addFlashAttribute("message", "검수가 " + statusMessage + " 처리되었습니다.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "검수 처리 실패: " + e.getMessage());
         }
         return "redirect:/admin/external/festivals/" + id;
     }

@@ -34,33 +34,29 @@
             </thead>
             <tbody>
                 <tr th:each="exhibition : ${exhibitionList}">
-                    <td th:text="${exhibition.id}"></td>
+                    <td th:text="${exhibition['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition.id})}"
-                           th:text="${exhibition.title}"></a>
+                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
+                           th:text="${exhibition['title'] ?: '-'}"></a>
                     </td>
-                    <td th:text="${exhibition.category_name}"></td>
-                    <td th:if="${exhibition.start_date != null}"
-                        th:text="${#temporals.format(exhibition.start_date, 'yyyy-MM-dd')}"></td>
-                    <td th:unless="${exhibition.start_date != null}">-</td>
-                    <td th:if="${exhibition.end_date != null}"
-                        th:text="${#temporals.format(exhibition.end_date, 'yyyy-MM-dd')}"></td>
-                    <td th:unless="${exhibition.end_date != null}">-</td>
-                    <td th:text="${exhibition.location_name}"></td>
+                    <td th:text="${exhibition['categoryName'] ?: '-'}"></td>
+                    <td th:text="${exhibition['startDate'] != null ? #temporals.format(exhibition['startDate'], 'yyyy-MM-dd') : '-'}"></td>
+                    <td th:text="${exhibition['endDate'] != null ? #temporals.format(exhibition['endDate'], 'yyyy-MM-dd') : '-'}"></td>
+                    <td th:text="${exhibition['locationName'] ?: '-'}"></td>
                     <td>
-                        <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition.id})}"
+                        <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
                               method="post" style="display: inline;">
-                            <input type="hidden" name="isShow" th:value="${!exhibition.is_show}">
+                            <input type="hidden" name="isShow" th:value="${!(exhibition['isShow'] ?: false)}">
                             <button type="submit"
-                                    th:class="|btn btn-sm ${exhibition.is_show ? 'btn-success' : 'btn-secondary'}|"
-                                    th:text="${exhibition.is_show ? '노출' : '비노출'}">
+                                    th:class="|btn btn-sm ${(exhibition['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${(exhibition['isShow'] ?: false) ? '노출' : '비노출'}">
                             </button>
                         </form>
                     </td>
                     <td>
-                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition.id})}"
+                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
                            class="btn btn-sm btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition.id})}"
+                        <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
                               method="post" style="display: inline;"
                               onsubmit="return confirm('정말 삭제하시겠습니까?');">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>

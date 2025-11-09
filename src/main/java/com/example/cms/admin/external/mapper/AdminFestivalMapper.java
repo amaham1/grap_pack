@@ -40,6 +40,14 @@ public interface AdminFestivalMapper {
     void updateAdminMemo(@Param("id") Long id, @Param("adminMemo") String adminMemo);
 
     /**
+     * 검수 처리
+     */
+    void updateConfirmStatus(@Param("id") Long id,
+                             @Param("confirmStatus") String confirmStatus,
+                             @Param("confirmedBy") String confirmedBy,
+                             @Param("confirmMemo") String confirmMemo);
+
+    /**
      * 축제/행사 삭제
      */
     void deleteFestival(@Param("id") Long id);
