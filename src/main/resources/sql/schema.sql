@@ -145,6 +145,13 @@ CREATE TABLE IF NOT EXISTS festivals (
     is_show BOOLEAN DEFAULT FALSE COMMENT '노출 여부',
     admin_memo TEXT COMMENT '관리자 메모',
 
+    -- 검수 정보
+    is_confirmed BOOLEAN DEFAULT FALSE COMMENT '검수 완료 여부',
+    confirm_status VARCHAR(50) DEFAULT 'PENDING' COMMENT '검수 상태 (PENDING/APPROVED/REJECTED)',
+    confirmed_by VARCHAR(100) COMMENT '검수자명',
+    confirmed_at DATETIME COMMENT '검수일시',
+    confirm_memo TEXT COMMENT '검수 메모',
+
     -- 시스템 정보
     fetched_at DATETIME NOT NULL COMMENT 'API 데이터 수집 시간',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
@@ -152,6 +159,8 @@ CREATE TABLE IF NOT EXISTS festivals (
 
     INDEX idx_original_api_id (original_api_id),
     INDEX idx_is_show (is_show),
+    INDEX idx_is_confirmed (is_confirmed),
+    INDEX idx_confirm_status (confirm_status),
     INDEX idx_written_date (written_date),
     INDEX idx_fetched_at (fetched_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
@@ -189,6 +198,13 @@ CREATE TABLE IF NOT EXISTS exhibitions (
     is_show BOOLEAN DEFAULT FALSE COMMENT '노출 여부',
     admin_memo TEXT COMMENT '관리자 메모',
 
+    -- 검수 정보
+    is_confirmed BOOLEAN DEFAULT FALSE COMMENT '검수 완료 여부',
+    confirm_status VARCHAR(50) DEFAULT 'PENDING' COMMENT '검수 상태 (PENDING/APPROVED/REJECTED)',
+    confirmed_by VARCHAR(100) COMMENT '검수자명',
+    confirmed_at DATETIME COMMENT '검수일시',
+    confirm_memo TEXT COMMENT '검수 메모',
+
     -- 시스템 정보
     fetched_at DATETIME NOT NULL COMMENT 'API 데이터 수집 시간',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
@@ -196,6 +212,8 @@ CREATE TABLE IF NOT EXISTS exhibitions (
 
     INDEX idx_original_api_id (original_api_id),
     INDEX idx_is_show (is_show),
+    INDEX idx_is_confirmed (is_confirmed),
+    INDEX idx_confirm_status (confirm_status),
     INDEX idx_category_name (category_name),
     INDEX idx_start_date (start_date),
     INDEX idx_end_date (end_date),
@@ -228,6 +246,13 @@ CREATE TABLE IF NOT EXISTS welfare_services (
     is_show BOOLEAN DEFAULT FALSE COMMENT '노출 여부',
     admin_memo TEXT COMMENT '관리자 메모',
 
+    -- 검수 정보
+    is_confirmed BOOLEAN DEFAULT FALSE COMMENT '검수 완료 여부',
+    confirm_status VARCHAR(50) DEFAULT 'PENDING' COMMENT '검수 상태 (PENDING/APPROVED/REJECTED)',
+    confirmed_by VARCHAR(100) COMMENT '검수자명',
+    confirmed_at DATETIME COMMENT '검수일시',
+    confirm_memo TEXT COMMENT '검수 메모',
+
     -- 시스템 정보
     fetched_at DATETIME NOT NULL COMMENT 'API 데이터 수집 시간',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
@@ -235,6 +260,8 @@ CREATE TABLE IF NOT EXISTS welfare_services (
 
     INDEX idx_original_api_id (original_api_id),
     INDEX idx_is_show (is_show),
+    INDEX idx_is_confirmed (is_confirmed),
+    INDEX idx_confirm_status (confirm_status),
     INDEX idx_is_all_location (is_all_location),
     INDEX idx_is_jeju_location (is_jeju_location),
     INDEX idx_is_seogwipo_location (is_seogwipo_location),

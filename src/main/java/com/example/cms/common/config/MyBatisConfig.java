@@ -17,6 +17,7 @@ import javax.sql.DataSource;
     "com.example.cms.auth.mapper",
     "com.example.cms.admin.content.mapper",
     "com.example.cms.admin.image.mapper",
+    "com.example.cms.admin.external.mapper",  // 관리자 외부 API Mapper 추가
     "com.example.cms.user.content.mapper",
     "com.example.cms.external.api.mapper"  // 외부 API Mapper 추가
 })

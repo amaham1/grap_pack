@@ -2,126 +2,82 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${content != null ? '콘텐츠 수정' : '콘텐츠 등록'}">콘텐츠 관리</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-    <!-- 헤더 -->
-    <header class="admin-header">
-        <div class="container">
-            <h1><a th:href="@{/admin/content/list}">CMS 관리자</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/admin/content-type/list}">콘텐츠 종류 관리</a></li>
-                    <li><a th:href="@{/admin/content/list}" class="active">콘텐츠 관리</a></li>
-                    <li>
-                        <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                            <button type="submit" class="btn-link">로그아웃</button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <!-- 메시지 알림 -->
-    <div th:if="${message}" class="alert alert-success">
-        <div class="container">
-            <p th:text="${message}"></p>
-        </div>
+    <div class="page-header">
+        <h2 th:text="${contentData != null ? '콘텐츠 수정' : '콘텐츠 등록'}"></h2>
+        <a th:href="@{/admin/content/list}" class="btn btn-secondary">목록으로</a>
     </div>
 
-    <div th:if="${error}" class="alert alert-error">
-        <div class="container">
-            <p th:text="${error}"></p>
+    <form th:action="${contentData != null ? '/admin/content/update' : '/admin/content/create'}"
+          method="post" class="form">
+
+        <input type="hidden" name="contentId" th:value="${contentData?.contentId}">
+
+        <div class="form-group">
+            <label for="contentTypeId">콘텐츠 종류 *</label>
+            <select id="contentTypeId" name="contentTypeId" required>
+                <option value="">선택하세요</option>
+                <option th:each="type : ${contentTypeList}"
+                        th:value="${type.contentTypeId}"
+                        th:text="${type.typeName}"
+                        th:selected="${contentData != null and contentData.contentTypeId == type.contentTypeId}">
+                </option>
+            </select>
         </div>
-    </div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="container">
-        <div class="page-header">
-            <h2 th:text="${content != null ? '콘텐츠 수정' : '콘텐츠 등록'}"></h2>
-            <a th:href="@{/admin/content/list}" class="btn btn-secondary">목록으로</a>
+        <div class="form-group">
+            <label for="title">제목 *</label>
+            <input type="text" id="title" name="title"
+                   th:value="${contentData?.title}" required>
         </div>
 
-        <form th:action="${content != null ? '/admin/content/update' : '/admin/content/create'}"
-              method="post" class="form">
+        <div class="form-group">
+            <label for="content">내용 *</label>
+            <textarea id="content" name="content" rows="10" required
+                      th:text="${contentData?.content}"></textarea>
+        </div>
 
-            <input type="hidden" name="contentId" th:value="${content?.contentId}">
+        <div class="form-group">
+            <label>
+                <input type="hidden" name="_isPublished" value="on">
+                <input type="checkbox" name="isPublished" value="true"
+                       th:checked="${contentData != null and contentData.isPublished}">
+                공개
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">저장</button>
+            <a th:href="@{/admin/content/list}" class="btn btn-secondary">취소</a>
+        </div>
+    </form>
+
+    <!-- 이미지 관리 (수정 모드에서만 표시) -->
+    <div th:if="${contentData != null}" class="image-section">
+        <h3>이미지 관리 (최대 10개)</h3>
+
+        <!-- 이미지 업로드 폼 -->
+        <form th:action="@{/admin/image/upload}" method="post" enctype="multipart/form-data" class="form">
+            <input type="hidden" name="contentId" th:value="${contentData.contentId}">
 
             <div class="form-group">
-                <label for="contentTypeId">콘텐츠 종류 *</label>
-                <select id="contentTypeId" name="contentTypeId" required>
-                    <option value="">선택하세요</option>
-                    <option th:each="type : ${contentTypeList}"
-                            th:value="${type.contentTypeId}"
-                            th:text="${type.typeName}"
-                            th:selected="${content != null and content.contentTypeId == type.contentTypeId}">
-                    </option>
-                </select>
+                <label for="file">이미지 파일</label>
+                <input type="file" id="file" name="file" accept="image/*" required>
             </div>
 
             <div class="form-group">
-                <label for="title">제목 *</label>
-                <input type="text" id="title" name="title"
-                       th:value="${content?.title}" required>
+                <label for="displayOrder">표시 순서</label>
+                <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
             </div>
 
-            <div class="form-group">
-                <label for="content">내용 *</label>
-                <textarea id="content" name="content" rows="10" required
-                          th:text="${content?.content}"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label>
-                    <input type="hidden" name="_isPublished" value="on">
-                    <input type="checkbox" name="isPublished" value="true"
-                           th:checked="${content != null and content.isPublished}">
-                    공개
-                </label>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn btn-primary">저장</button>
-                <a th:href="@{/admin/content/list}" class="btn btn-secondary">취소</a>
-            </div>
+            <button type="submit" class="btn btn-primary">이미지 업로드</button>
         </form>
 
-        <!-- 이미지 관리 (수정 모드에서만 표시) -->
-        <div th:if="${content != null}" class="image-section">
-            <h3>이미지 관리 (최대 10개)</h3>
-
-            <!-- 이미지 업로드 폼 -->
-            <form th:action="@{/admin/image/upload}" method="post" enctype="multipart/form-data" class="form">
-                <input type="hidden" name="contentId" th:value="${content.contentId}">
-
-                <div class="form-group">
-                    <label for="file">이미지 파일</label>
-                    <input type="file" id="file" name="file" accept="image/*" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="displayOrder">표시 순서</label>
-                    <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
-                </div>
-
-                <button type="submit" class="btn btn-primary">이미지 업로드</button>
-            </form>
-
-            <!-- 업로드된 이미지 목록은 HTMX 또는 JavaScript로 동적 로드 가능 -->
-            <div class="image-list">
-                <p>이미지 목록은 콘텐츠 저장 후 관리할 수 있습니다.</p>
-            </div>
+        <!-- 업로드된 이미지 목록은 HTMX 또는 JavaScript로 동적 로드 가능 -->
+        <div class="image-list">
+            <p>이미지 목록은 콘텐츠 저장 후 관리할 수 있습니다.</p>
         </div>
-    </main>
-
-    <!-- 푸터 -->
-    <footer class="admin-footer">
-        <div class="container">
-            <p>&copy; 2024 CMS Admin. All rights reserved.</p>
-        </div>
-    </footer>
+    </div>
 </body>
 </html>

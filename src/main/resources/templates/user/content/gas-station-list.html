@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>제주 주유소 가격</h2>
+        <p class="text-muted">제주도 주유소의 실시간 유류 가격 정보를 확인하세요</p>
+    </div>
+
+    <!-- 검색 -->
+    <div class="search-section">
+        <form th:action="@{/user/content/gas-stations}" method="get" class="search-form">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="주유소명, 브랜드, 주소 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+    </div>
+
+    <!-- 주유소 목록 -->
+    <div class="gas-station-list" id="gas-station-list">
+        <div th:each="station : ${gasStationList}" class="gas-station-card">
+            <div class="station-header">
+                <h3>
+                    <a th:href="@{/user/content/gas-stations/{id}(id=${station['id']})}"
+                       th:text="${station['stationName']}"></a>
+                </h3>
+                <span class="badge badge-gas" th:if="${station['brand'] != null}"
+                      th:text="${station['brand']}"></span>
+            </div>
+
+            <div class="station-info">
+                <div th:if="${station['address'] != null}" class="address">
+                    <i class="icon-location"></i>
+                    <span th:text="${station['address']}"></span>
+                </div>
+                <div th:if="${station['phone'] != null}" class="phone">
+                    <i class="icon-phone"></i>
+                    <span th:text="${station['phone']}"></span>
+                </div>
+            </div>
+
+            <!-- 가격 정보 -->
+            <div class="price-grid" th:if="${station['priceDate'] != null}">
+                <div class="price-item" th:if="${station['gasolinePrice'] != null and station['gasolinePrice'] > 0}">
+                    <span class="price-label">휘발유</span>
+                    <span class="price-value" th:text="${#numbers.formatInteger(station['gasolinePrice'], 0, 'COMMA')} + '원'"></span>
+                </div>
+                <div class="price-item" th:if="${station['dieselPrice'] != null and station['dieselPrice'] > 0}">
+                    <span class="price-label">경유</span>
+                    <span class="price-value" th:text="${#numbers.formatInteger(station['dieselPrice'], 0, 'COMMA')} + '원'"></span>
+                </div>
+                <div class="price-item" th:if="${station['premiumGasolinePrice'] != null and station['premiumGasolinePrice'] > 0}">
+                    <span class="price-label">고급휘발유</span>
+                    <span class="price-value" th:text="${#numbers.formatInteger(station['premiumGasolinePrice'], 0, 'COMMA')} + '원'"></span>
+                </div>
+                <div class="price-item" th:if="${station['lpgPrice'] != null and station['lpgPrice'] > 0}">
+                    <span class="price-label">LPG</span>
+                    <span class="price-value" th:text="${#numbers.formatInteger(station['lpgPrice'], 0, 'COMMA')} + '원'"></span>
+                </div>
+            </div>
+
+            <div th:if="${station['priceDate'] != null}" class="price-date">
+                기준일: <span th:text="${#temporals.format(station['priceDate'], 'yyyy.MM.dd')}"></span>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(gasStationList)}" class="empty-message">
+            <p>등록된 주유소가 없습니다.</p>
+        </div>
+    </div>
+
+    <!-- 페이징 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/user/content/gas-stations(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/user/content/gas-stations(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage ? 'active' : ''}"
+               class="btn btn-sm"></a>
+        </span>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/user/content/gas-stations(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개
+        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
+    </div>
+
+    <style>
+        .badge-gas {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+        .gas-station-list {
+            display: grid;
+            gap: 1rem;
+        }
+        .gas-station-card {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background-color: white;
+        }
+        .station-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .station-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .station-info {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .station-info > div {
+            margin-bottom: 0.25rem;
+        }
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .price-item {
+            display: flex;
+            flex-direction: column;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        .price-label {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-bottom: 0.25rem;
+        }
+        .price-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #2d3436;
+        }
+        .price-date {
+            font-size: 0.875rem;
+            color: #6c757d;
+            text-align: right;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>복지서비스 상세</h2>
+        <a th:href="@{/admin/external/welfare}" class="btn btn-secondary">목록으로</a>
+    </div>
+
+    <div class="detail-container">
+        <div class="info-section">
+            <h3>기본 정보</h3>
+            <table class="info-table">
+                <tr><th>ID</th><td th:text="${welfare.id}"></td></tr>
+                <tr><th>서비스명</th><td th:text="${welfare.service_name}"></td></tr>
+                <tr><th>지역</th>
+                    <td>
+                        <span th:if="${welfare.is_all_location}" class="badge badge-info">전체</span>
+                        <span th:if="${welfare.is_jeju_location}" class="badge badge-info">제주시</span>
+                        <span th:if="${welfare.is_seogwipo_location}" class="badge badge-info">서귀포시</span>
+                    </td>
+                </tr>
+                <tr><th>노출 여부</th>
+                    <td>
+                        <span th:if="${welfare.is_show}" class="badge badge-success">노출</span>
+                        <span th:unless="${welfare.is_show}" class="badge badge-secondary">비노출</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="content-section">
+            <h3>지원 대상</h3>
+            <div class="html-content" th:if="${welfare.support_target_html != null}"
+                 th:utext="${welfare.support_target_html}"></div>
+        </div>
+
+        <div class="content-section">
+            <h3>지원 내용</h3>
+            <div class="html-content" th:if="${welfare.support_content_html != null}"
+                 th:utext="${welfare.support_content_html}"></div>
+        </div>
+
+        <div class="content-section">
+            <h3>신청 방법</h3>
+            <div class="html-content" th:if="${welfare.application_info_html != null}"
+                 th:utext="${welfare.application_info_html}"></div>
+        </div>
+
+        <div class="memo-section">
+            <h3>관리자 메모</h3>
+            <form th:action="@{/admin/external/welfare/{id}/memo(id=${welfare.id})}"
+                  method="post" class="form">
+                <textarea name="adminMemo" rows="5" class="form-control"
+                          th:text="${welfare.admin_memo}"></textarea>
+                <button type="submit" class="btn btn-primary">메모 저장</button>
+            </form>
+        </div>
+
+        <div class="action-section">
+            <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare.id})}"
+                  method="post" style="display: inline;">
+                <input type="hidden" name="isShow" th:value="${!welfare.is_show}">
+                <button type="submit"
+                        th:class="|btn ${welfare.is_show ? 'btn-warning' : 'btn-success'}|"
+                        th:text="${welfare.is_show ? '비노출로 변경' : '노출로 변경'}">
+                </button>
+            </form>
+            <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare.id})}"
+                  method="post" style="display: inline;"
+                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                <button type="submit" class="btn btn-danger">삭제</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

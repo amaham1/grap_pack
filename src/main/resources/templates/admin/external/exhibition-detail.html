@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>공연/전시 상세</h2>
+        <a th:href="@{/admin/external/exhibitions}" class="btn btn-secondary">목록으로</a>
+    </div>
+
+    <div class="detail-container">
+        <div class="info-section">
+            <h3>기본 정보</h3>
+            <table class="info-table">
+                <tr><th>ID</th><td th:text="${exhibition.id}"></td></tr>
+                <tr><th>제목</th><td th:text="${exhibition.title}"></td></tr>
+                <tr><th>카테고리</th><td th:text="${exhibition.category_name}"></td></tr>
+                <tr><th>기간</th>
+                    <td>
+                        <span th:if="${exhibition.start_date != null}"
+                              th:text="${#temporals.format(exhibition.start_date, 'yyyy-MM-dd')}"></span>
+                        ~
+                        <span th:if="${exhibition.end_date != null}"
+                              th:text="${#temporals.format(exhibition.end_date, 'yyyy-MM-dd')}"></span>
+                    </td>
+                </tr>
+                <tr><th>장소</th><td th:text="${exhibition.location_name}"></td></tr>
+                <tr><th>주최/주관</th><td th:text="${exhibition.organizer_info}"></td></tr>
+                <tr><th>문의</th><td th:text="${exhibition.tel_number}"></td></tr>
+                <tr><th>요금</th><td th:text="${exhibition.pay_info}"></td></tr>
+                <tr><th>노출 여부</th>
+                    <td>
+                        <span th:if="${exhibition.is_show}" class="badge badge-success">노출</span>
+                        <span th:unless="${exhibition.is_show}" class="badge badge-secondary">비노출</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="memo-section">
+            <h3>관리자 메모</h3>
+            <form th:action="@{/admin/external/exhibitions/{id}/memo(id=${exhibition.id})}"
+                  method="post" class="form">
+                <textarea name="adminMemo" rows="5" class="form-control"
+                          th:text="${exhibition.admin_memo}"></textarea>
+                <button type="submit" class="btn btn-primary">메모 저장</button>
+            </form>
+        </div>
+
+        <div class="action-section">
+            <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition.id})}"
+                  method="post" style="display: inline;">
+                <input type="hidden" name="isShow" th:value="${!exhibition.is_show}">
+                <button type="submit"
+                        th:class="|btn ${exhibition.is_show ? 'btn-warning' : 'btn-success'}|"
+                        th:text="${exhibition.is_show ? '비노출로 변경' : '노출로 변경'}">
+                </button>
+            </form>
+            <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition.id})}"
+                  method="post" style="display: inline;"
+                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                <button type="submit" class="btn btn-danger">삭제</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

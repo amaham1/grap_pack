@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>축제/행사 관리</h2>
+    </div>
+
+    <!-- 검색 -->
+    <form th:action="@{/admin/external/festivals}" method="get" class="search-form">
+        <div class="search-row">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="제목, 작성자 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </div>
+    </form>
+
+    <!-- 목록 -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>노출여부</th>
+                    <th>수집일시</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="festival : ${festivalList}">
+                    <td th:text="${festival.id}"></td>
+                    <td>
+                        <a th:href="@{/admin/external/festivals/{id}(id=${festival.id})}"
+                           th:text="${festival.title}"></a>
+                    </td>
+                    <td th:text="${festival.writer_name}"></td>
+                    <td th:if="${festival.written_date != null}"
+                        th:text="${#temporals.format(festival.written_date, 'yyyy-MM-dd')}"></td>
+                    <td th:unless="${festival.written_date != null}">-</td>
+                    <td>
+                        <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival.id})}"
+                              method="post" style="display: inline;">
+                            <input type="hidden" name="isShow" th:value="${!festival.is_show}">
+                            <button type="submit"
+                                    th:class="|btn btn-sm ${festival.is_show ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${festival.is_show ? '노출' : '비노출'}">
+                            </button>
+                        </form>
+                    </td>
+                    <td th:text="${#temporals.format(festival.fetched_at, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{/admin/external/festivals/{id}(id=${festival.id})}"
+                           class="btn btn-sm btn-secondary">상세</a>
+                        <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival.id})}"
+                              method="post" style="display: inline;"
+                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(festivalList)}">
+                    <td colspan="7" class="text-center">등록된 축제/행사가 없습니다.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이징 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/admin/external/festivals(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/admin/external/festivals(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
+        </span>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/admin/external/festivals(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개 (
+        <span th:text="${currentPage}"></span> /
+        <span th:text="${totalPages}"></span> 페이지)
+    </div>
+</body>
+</html>

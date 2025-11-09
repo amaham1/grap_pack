@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <article class="content-detail">
+        <!-- 커버 이미지 -->
+        <div th:if="${exhibition['coverImageUrl'] != null}" class="cover-image">
+            <img th:src="${exhibition['coverImageUrl']}" alt="공연/전시 이미지">
+        </div>
+
+        <!-- 헤더 -->
+        <div class="content-header">
+            <div class="meta">
+                <span class="badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
+                <span class="status" th:if="${exhibition['statusInfo'] != null}"
+                      th:text="${exhibition['statusInfo']}"></span>
+            </div>
+            <h1 th:text="${exhibition['title']}"></h1>
+        </div>
+
+        <!-- 상세 정보 -->
+        <div class="info-section">
+            <div class="info-row" th:if="${exhibition['startDate'] != null and exhibition['endDate'] != null}">
+                <strong>기간</strong>
+                <span>
+                    <span th:text="${#temporals.format(exhibition['startDate'], 'yyyy.MM.dd')}"></span>
+                    ~
+                    <span th:text="${#temporals.format(exhibition['endDate'], 'yyyy.MM.dd')}"></span>
+                </span>
+            </div>
+            <div class="info-row" th:if="${exhibition['timeInfo'] != null}">
+                <strong>운영시간</strong>
+                <span th:text="${exhibition['timeInfo']}"></span>
+            </div>
+            <div class="info-row" th:if="${exhibition['locationName'] != null}">
+                <strong>장소</strong>
+                <span th:text="${exhibition['locationName']}"></span>
+            </div>
+            <div class="info-row" th:if="${exhibition['organizerInfo'] != null}">
+                <strong>주최/주관</strong>
+                <span th:text="${exhibition['organizerInfo']}"></span>
+            </div>
+            <div class="info-row" th:if="${exhibition['telNumber'] != null}">
+                <strong>문의</strong>
+                <span th:text="${exhibition['telNumber']}"></span>
+            </div>
+            <div class="info-row" th:if="${exhibition['payInfo'] != null}">
+                <strong>요금</strong>
+                <span th:text="${exhibition['payInfo']}"></span>
+            </div>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="content-footer">
+            <a th:href="@{/user/content/exhibitions}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </article>
+
+    <style>
+        .badge-exhibition {
+            background-color: #a29bfe;
+            color: white;
+        }
+        .cover-image {
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        .cover-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .info-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-row {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-row strong {
+            width: 120px;
+            color: #495057;
+        }
+        .info-row span {
+            flex: 1;
+            color: #212529;
+        }
+        .status {
+            font-size: 0.875rem;
+            color: #666;
+        }
+    </style>
+</body>
+</html>

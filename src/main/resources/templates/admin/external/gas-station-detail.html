@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>주유소 상세</h2>
+        <a th:href="@{/admin/external/gas-stations}" class="btn btn-secondary">목록으로</a>
+    </div>
+
+    <div class="detail-container">
+        <div class="info-section">
+            <h3>기본 정보</h3>
+            <table class="info-table">
+                <tr><th>ID</th><td th:text="${gasStation.id}"></td></tr>
+                <tr><th>Opinet ID</th><td th:text="${gasStation.opinet_id}"></td></tr>
+                <tr><th>주유소명</th><td th:text="${gasStation.station_name}"></td></tr>
+                <tr><th>브랜드</th><td th:text="${gasStation.brand}"></td></tr>
+                <tr><th>주소</th><td th:text="${gasStation.address}"></td></tr>
+                <tr><th>전화번호</th><td th:text="${gasStation.phone}"></td></tr>
+                <tr><th>위도</th><td th:text="${gasStation.latitude}"></td></tr>
+                <tr><th>경도</th><td th:text="${gasStation.longitude}"></td></tr>
+                <tr><th>등록일</th>
+                    <td th:text="${#temporals.format(gasStation.created_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="action-section">
+            <form th:action="@{/admin/external/gas-stations/{id}/delete(id=${gasStation.id})}"
+                  method="post" style="display: inline;"
+                  onsubmit="return confirm('정말 삭제하시겠습니까? 관련 가격 정보도 함께 삭제됩니다.');">
+                <button type="submit" class="btn btn-danger">삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .detail-container {
+            max-width: 1000px;
+        }
+        .info-section, .action-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .info-table th,
+        .info-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-table th {
+            width: 150px;
+            text-align: left;
+            font-weight: 600;
+            background-color: #e9ecef;
+        }
+    </style>
+</body>
+</html>

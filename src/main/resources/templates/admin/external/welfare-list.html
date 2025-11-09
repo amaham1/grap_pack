@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>복지서비스 관리</h2>
+    </div>
+
+    <form th:action="@{/admin/external/welfare}" method="get" class="search-form">
+        <div class="search-row">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="서비스명 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </div>
+    </form>
+
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>서비스명</th>
+                    <th>지역</th>
+                    <th>노출여부</th>
+                    <th>수집일시</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="welfare : ${welfareList}">
+                    <td th:text="${welfare.id}"></td>
+                    <td>
+                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare.id})}"
+                           th:text="${welfare.service_name}"></a>
+                    </td>
+                    <td>
+                        <span th:if="${welfare.is_all_location}" class="badge badge-info">전체</span>
+                        <span th:if="${welfare.is_jeju_location}" class="badge badge-info">제주</span>
+                        <span th:if="${welfare.is_seogwipo_location}" class="badge badge-info">서귀포</span>
+                    </td>
+                    <td>
+                        <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare.id})}"
+                              method="post" style="display: inline;">
+                            <input type="hidden" name="isShow" th:value="${!welfare.is_show}">
+                            <button type="submit"
+                                    th:class="|btn btn-sm ${welfare.is_show ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${welfare.is_show ? '노출' : '비노출'}">
+                            </button>
+                        </form>
+                    </td>
+                    <td th:text="${#temporals.format(welfare.fetched_at, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <a th:href="@{/admin/external/welfare/{id}(id=${welfare.id})}"
+                           class="btn btn-sm btn-secondary">상세</a>
+                        <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare.id})}"
+                              method="post" style="display: inline;"
+                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(welfareList)}">
+                    <td colspan="6" class="text-center">등록된 복지서비스가 없습니다.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/admin/external/welfare(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/admin/external/welfare(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
+        </span>
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/admin/external/welfare(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개 (
+        <span th:text="${currentPage}"></span> /
+        <span th:text="${totalPages}"></span> 페이지)
+    </div>
+</body>
+</html>

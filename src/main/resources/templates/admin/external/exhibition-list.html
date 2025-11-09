@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <div class="page-header">
+        <h2>공연/전시 관리</h2>
+    </div>
+
+    <!-- 검색 -->
+    <form th:action="@{/admin/external/exhibitions}" method="get" class="search-form">
+        <div class="search-row">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="제목, 장소, 주최 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </div>
+    </form>
+
+    <!-- 목록 -->
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제목</th>
+                    <th>카테고리</th>
+                    <th>시작일</th>
+                    <th>종료일</th>
+                    <th>장소</th>
+                    <th>노출여부</th>
+                    <th>관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="exhibition : ${exhibitionList}">
+                    <td th:text="${exhibition.id}"></td>
+                    <td>
+                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition.id})}"
+                           th:text="${exhibition.title}"></a>
+                    </td>
+                    <td th:text="${exhibition.category_name}"></td>
+                    <td th:if="${exhibition.start_date != null}"
+                        th:text="${#temporals.format(exhibition.start_date, 'yyyy-MM-dd')}"></td>
+                    <td th:unless="${exhibition.start_date != null}">-</td>
+                    <td th:if="${exhibition.end_date != null}"
+                        th:text="${#temporals.format(exhibition.end_date, 'yyyy-MM-dd')}"></td>
+                    <td th:unless="${exhibition.end_date != null}">-</td>
+                    <td th:text="${exhibition.location_name}"></td>
+                    <td>
+                        <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition.id})}"
+                              method="post" style="display: inline;">
+                            <input type="hidden" name="isShow" th:value="${!exhibition.is_show}">
+                            <button type="submit"
+                                    th:class="|btn btn-sm ${exhibition.is_show ? 'btn-success' : 'btn-secondary'}|"
+                                    th:text="${exhibition.is_show ? '노출' : '비노출'}">
+                            </button>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition.id})}"
+                           class="btn btn-sm btn-secondary">상세</a>
+                        <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition.id})}"
+                              method="post" style="display: inline;"
+                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(exhibitionList)}">
+                    <td colspan="8" class="text-center">등록된 공연/전시가 없습니다.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 페이징 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/admin/external/exhibitions(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/admin/external/exhibitions(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
+        </span>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/admin/external/exhibitions(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개 (
+        <span th:text="${currentPage}"></span> /
+        <span th:text="${totalPages}"></span> 페이지)
+    </div>
+</body>
+</html>

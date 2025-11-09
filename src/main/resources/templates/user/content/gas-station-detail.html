@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <article class="content-detail">
+        <!-- 헤더 -->
+        <div class="content-header">
+            <div class="meta">
+                <span class="badge badge-gas" th:if="${gasStation['brand'] != null}"
+                      th:text="${gasStation['brand']}"></span>
+            </div>
+            <h1 th:text="${gasStation['stationName']}"></h1>
+        </div>
+
+        <!-- 기본 정보 -->
+        <div class="info-section">
+            <div class="info-row" th:if="${gasStation['address'] != null}">
+                <strong>주소</strong>
+                <span th:text="${gasStation['address']}"></span>
+            </div>
+            <div class="info-row" th:if="${gasStation['phone'] != null}">
+                <strong>전화</strong>
+                <span th:text="${gasStation['phone']}"></span>
+            </div>
+            <div class="info-row" th:if="${gasStation['latitude'] != null and gasStation['longitude'] != null}">
+                <strong>좌표</strong>
+                <span>
+                    위도: <span th:text="${gasStation['latitude']}"></span>,
+                    경도: <span th:text="${gasStation['longitude']}"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 현재 가격 정보 -->
+        <div th:if="${gasStation['priceDate'] != null}" class="price-section">
+            <h3>
+                현재 가격
+                <span class="price-date">
+                    (기준일: <span th:text="${#temporals.format(gasStation['priceDate'], 'yyyy.MM.dd')}"></span>)
+                </span>
+            </h3>
+            <div class="price-grid-large">
+                <div class="price-card" th:if="${gasStation['gasolinePrice'] != null and gasStation['gasolinePrice'] > 0}">
+                    <div class="price-label">휘발유</div>
+                    <div class="price-value" th:text="${#numbers.formatInteger(gasStation['gasolinePrice'], 0, 'COMMA')} + '원'"></div>
+                </div>
+                <div class="price-card" th:if="${gasStation['dieselPrice'] != null and gasStation['dieselPrice'] > 0}">
+                    <div class="price-label">경유</div>
+                    <div class="price-value" th:text="${#numbers.formatInteger(gasStation['dieselPrice'], 0, 'COMMA')} + '원'"></div>
+                </div>
+                <div class="price-card" th:if="${gasStation['premiumGasolinePrice'] != null and gasStation['premiumGasolinePrice'] > 0}">
+                    <div class="price-label">고급휘발유</div>
+                    <div class="price-value" th:text="${#numbers.formatInteger(gasStation['premiumGasolinePrice'], 0, 'COMMA')} + '원'"></div>
+                </div>
+                <div class="price-card" th:if="${gasStation['lpgPrice'] != null and gasStation['lpgPrice'] > 0}">
+                    <div class="price-label">LPG</div>
+                    <div class="price-value" th:text="${#numbers.formatInteger(gasStation['lpgPrice'], 0, 'COMMA')} + '원'"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 가격 이력 -->
+        <div th:if="${gasStation['priceHistory'] != null and !#lists.isEmpty(gasStation['priceHistory'])}" class="history-section">
+            <h3>가격 이력</h3>
+            <div class="history-table-wrapper">
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>휘발유</th>
+                            <th>경유</th>
+                            <th>고급휘발유</th>
+                            <th>LPG</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="history : ${gasStation['priceHistory']}">
+                            <td th:text="${#temporals.format(history['priceDate'], 'yyyy.MM.dd')}"></td>
+                            <td>
+                                <span th:if="${history['gasolinePrice'] != null and history['gasolinePrice'] > 0}"
+                                      th:text="${#numbers.formatInteger(history['gasolinePrice'], 0, 'COMMA')} + '원'"></span>
+                                <span th:unless="${history['gasolinePrice'] != null and history['gasolinePrice'] > 0}">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${history['dieselPrice'] != null and history['dieselPrice'] > 0}"
+                                      th:text="${#numbers.formatInteger(history['dieselPrice'], 0, 'COMMA')} + '원'"></span>
+                                <span th:unless="${history['dieselPrice'] != null and history['dieselPrice'] > 0}">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${history['premiumGasolinePrice'] != null and history['premiumGasolinePrice'] > 0}"
+                                      th:text="${#numbers.formatInteger(history['premiumGasolinePrice'], 0, 'COMMA')} + '원'"></span>
+                                <span th:unless="${history['premiumGasolinePrice'] != null and history['premiumGasolinePrice'] > 0}">-</span>
+                            </td>
+                            <td>
+                                <span th:if="${history['lpgPrice'] != null and history['lpgPrice'] > 0}"
+                                      th:text="${#numbers.formatInteger(history['lpgPrice'], 0, 'COMMA')} + '원'"></span>
+                                <span th:unless="${history['lpgPrice'] != null and history['lpgPrice'] > 0}">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="content-footer">
+            <a th:href="@{/user/content/gas-stations}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </article>
+
+    <style>
+        .badge-gas {
+            background-color: #55efc4;
+            color: #2d3436;
+        }
+        .info-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .info-row {
+            display: flex;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-row strong {
+            width: 120px;
+            color: #495057;
+        }
+        .info-row span {
+            flex: 1;
+            color: #212529;
+        }
+        .price-section {
+            margin: 2rem 0;
+        }
+        .price-section h3 {
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .price-date {
+            font-size: 0.875rem;
+            color: #6c757d;
+            font-weight: normal;
+        }
+        .price-grid-large {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .price-card {
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+        }
+        .price-card .price-label {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+        .price-card .price-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .history-section {
+            margin: 2rem 0;
+        }
+        .history-section h3 {
+            margin-bottom: 1rem;
+        }
+        .history-table-wrapper {
+            overflow-x: auto;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        .history-table th,
+        .history-table td {
+            padding: 0.75rem;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .history-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+        }
+        .history-table tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+    </style>
+</body>
+</html>

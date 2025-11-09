@@ -12,6 +12,11 @@
                 <ul>
                     <li><a th:href="@{/admin/content-type/list}">콘텐츠 종류 관리</a></li>
                     <li><a th:href="@{/admin/content/list}">콘텐츠 관리</a></li>
+                    <li><a th:href="@{/admin/sync}">외부 API 동기화</a></li>
+                    <li><a th:href="@{/admin/external/festivals}">축제/행사 관리</a></li>
+                    <li><a th:href="@{/admin/external/exhibitions}">공연/전시 관리</a></li>
+                    <li><a th:href="@{/admin/external/welfare}">복지서비스 관리</a></li>
+                    <li><a th:href="@{/admin/external/gas-stations}">주유소 관리</a></li>
                     <li>
                         <form th:action="@{/auth/logout}" method="post" style="display: inline;">
                             <button type="submit" class="btn-link">로그아웃</button>
@@ -29,6 +34,10 @@
             <nav>
                 <ul>
                     <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
+                    <li><a th:href="@{/user/content/festivals}">축제/행사</a></li>
+                    <li><a th:href="@{/user/content/exhibitions}">공연/전시</a></li>
+                    <li><a th:href="@{/user/content/welfare}">복지서비스</a></li>
+                    <li><a th:href="@{/user/content/gas-stations}">주유소</a></li>
                 </ul>
             </nav>
         </div>
