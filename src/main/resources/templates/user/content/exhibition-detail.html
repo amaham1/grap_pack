@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <article class="content-detail">
+<article class="content-detail">
         <!-- 커버 이미지 -->
         <div th:if="${exhibition['coverImageUrl'] != null}" class="cover-image">
             <img th:src="${exhibition['coverImageUrl']}" alt="공연/전시 이미지">
@@ -102,5 +96,3 @@
             color: #666;
         }
     </style>
-</body>
-</html>

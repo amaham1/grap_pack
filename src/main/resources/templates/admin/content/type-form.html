@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-</head>
-<body>
-    <div class="page-header">
+<div class="page-header">
         <h2 th:text="${contentType != null ? '콘텐츠 종류 수정' : '콘텐츠 종류 등록'}"></h2>
         <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">목록으로</a>
     </div>
@@ -40,5 +34,3 @@
             <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">취소</a>
         </div>
     </form>
-</body>
-</html>
