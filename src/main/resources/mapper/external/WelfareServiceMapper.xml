@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.cms.external.api.mapper.WelfareServiceMapper">
+
+    <!-- Result Map -->
+    <resultMap id="welfareServiceResultMap" type="com.example.cms.external.api.model.WelfareService">
+        <id property="id" column="id"/>
+        <result property="originalApiId" column="original_api_id"/>
+        <result property="serviceName" column="service_name"/>
+        <result property="isAllLocation" column="is_all_location"/>
+        <result property="isJejuLocation" column="is_jeju_location"/>
+        <result property="isSeogwipoLocation" column="is_seogwipo_location"/>
+        <result property="supportTargetHtml" column="support_target_html"/>
+        <result property="supportContentHtml" column="support_content_html"/>
+        <result property="applicationInfoHtml" column="application_info_html"/>
+        <result property="apiRawData" column="api_raw_data"/>
+        <result property="isShow" column="is_show"/>
+        <result property="adminMemo" column="admin_memo"/>
+        <result property="fetchedAt" column="fetched_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- Upsert -->
+    <insert id="upsert" parameterType="com.example.cms.external.api.model.WelfareService">
+        INSERT INTO welfare_services (
+            original_api_id, service_name, is_all_location, is_jeju_location, is_seogwipo_location,
+            support_target_html, support_content_html, application_info_html,
+            api_raw_data, is_show, admin_memo, fetched_at
+        ) VALUES (
+            #{originalApiId}, #{serviceName}, #{isAllLocation}, #{isJejuLocation}, #{isSeogwipoLocation},
+            #{supportTargetHtml}, #{supportContentHtml}, #{applicationInfoHtml},
+            #{apiRawData}, #{isShow}, #{adminMemo}, #{fetchedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            service_name = VALUES(service_name),
+            is_all_location = VALUES(is_all_location),
+            is_jeju_location = VALUES(is_jeju_location),
+            is_seogwipo_location = VALUES(is_seogwipo_location),
+            support_target_html = VALUES(support_target_html),
+            support_content_html = VALUES(support_content_html),
+            application_info_html = VALUES(application_info_html),
+            api_raw_data = VALUES(api_raw_data),
+            fetched_at = VALUES(fetched_at),
+            updated_at = NOW()
+    </insert>
+
+    <!-- Select by original_api_id -->
+    <select id="findByOriginalApiId" parameterType="string" resultMap="welfareServiceResultMap">
+        SELECT * FROM welfare_services WHERE original_api_id = #{originalApiId}
+    </select>
+
+    <!-- Select all -->
+    <select id="findAll" resultMap="welfareServiceResultMap">
+        SELECT * FROM welfare_services ORDER BY created_at DESC
+    </select>
+
+    <!-- Select all visible -->
+    <select id="findAllVisible" resultMap="welfareServiceResultMap">
+        SELECT * FROM welfare_services WHERE is_show = TRUE ORDER BY created_at DESC
+    </select>
+
+    <!-- Check exists -->
+    <select id="existsByOriginalApiId" parameterType="string" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM welfare_services WHERE original_api_id = #{originalApiId}
+    </select>
+
+</mapper>

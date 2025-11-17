@@ -1,0 +1,66 @@
+<div class="page-header">
+        <h2>제주 축제/행사</h2>
+        <p class="text-muted">제주도의 다양한 축제와 행사 정보를 확인하세요</p>
+    </div>
+
+    <!-- 검색 -->
+    <div class="search-section">
+        <form th:action="@{/user/content/festivals}" method="get" class="search-form" data-ajax="true">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="축제/행사명 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+    </div>
+
+    <!-- 축제/행사 목록 -->
+    <div class="content-grid" id="festival-list">
+        <div th:each="festival : ${festivalList}" class="content-card">
+            <div class="card-header">
+                <span class="badge badge-festival">축제/행사</span>
+                <span class="date" th:if="${festival['writtenDate'] != null}"
+                      th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
+            </div>
+            <h3>
+                <a th:href="@{/user/content/festivals/{id}(id=${festival['id']})}"
+                   th:text="${festival['title']}"></a>
+            </h3>
+            <div class="card-meta">
+                <span th:if="${festival['writerName'] != null}"
+                      th:text="${festival['writerName']}"></span>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(festivalList)}" class="empty-message">
+            <p>등록된 축제/행사가 없습니다.</p>
+        </div>
+    </div>
+
+    <!-- 페이징 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/user/content/festivals(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/user/content/festivals(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage ? 'active' : ''}"
+               class="btn btn-sm"></a>
+        </span>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/user/content/festivals(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개
+        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
+    </div>
+
+    <style>
+        .badge-festival {
+            background-color: #ff6b6b;
+            color: white;
+        }
+    </style>

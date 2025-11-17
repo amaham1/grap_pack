@@ -1,34 +1,10 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>콘텐츠 목록</title>
-    <link rel="stylesheet" th:href="@{/css/user.css}">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-</head>
-<body>
-    <!-- 헤더 -->
-    <header class="user-header">
-        <div class="container">
-            <h1><a th:href="@{/user/content/list}">Grap</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/user/content/list}" class="active">콘텐츠</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="container">
-        <div class="page-header">
-            <h2>콘텐츠</h2>
-        </div>
+<div class="page-header">
+        <h2>콘텐츠</h2>
+    </div>
 
         <!-- 검색 및 필터 -->
         <div class="search-section">
-            <form th:action="@{/user/content/list}" method="get" class="search-form">
+            <form th:action="@{/user/content/list}" method="get" class="search-form" data-ajax="true">
                 <select name="contentTypeId" class="form-control" onchange="this.form.submit()">
                     <option value="">전체 카테고리</option>
                     <option th:each="type : ${contentTypeList}"
@@ -49,15 +25,15 @@
         <div class="content-grid" id="content-list">
             <div th:each="content : ${contentList}" class="content-card">
                 <div class="card-header">
-                    <span class="badge" th:text="${content.typeName}"></span>
-                    <span class="date" th:text="${#temporals.format(content.createDt, 'yyyy.MM.dd')}"></span>
+                    <span class="badge" th:text="${content['typeName'] ?: '일반'}"></span>
+                    <span class="date" th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy.MM.dd') : ''}"></span>
                 </div>
                 <h3>
-                    <a th:href="@{/user/content/detail/{id}(id=${content.contentId})}"
-                       th:text="${content.title}"></a>
+                    <a th:href="@{/user/content/detail/{id}(id=${content['contentId']})}"
+                       th:text="${content['title'] ?: '제목 없음'}"></a>
                 </h3>
                 <div class="card-footer">
-                    <span class="view-count" th:text="${content.viewCount}"></span>
+                    <span class="view-count" th:text="${content['viewCount'] ?: 0}"></span>
                 </div>
             </div>
 
@@ -97,13 +73,3 @@
             전체 <span th:text="${totalCount}"></span>개
             (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
         </div>
-    </main>
-
-    <!-- 푸터 -->
-    <footer class="user-footer">
-        <div class="container">
-            <p>© 2024 Grap CMS. All rights reserved.</p>
-        </div>
-    </footer>
-</body>
-</html>

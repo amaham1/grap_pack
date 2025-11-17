@@ -36,7 +36,9 @@ public class AdminContentController {
     public String contentTypeList(Model model) {
         List<ContentType> contentTypeList = adminContentTypeService.getAllContentTypeList();
         model.addAttribute("contentTypeList", contentTypeList);
-        return "admin/content/type-list";
+        model.addAttribute("title", "콘텐츠 종류 관리");
+        model.addAttribute("content", "admin/content/type-list");
+        return "admin/layout/admin-layout";
     }
 
     /**
@@ -50,9 +52,13 @@ public class AdminContentController {
         if (contentTypeId != null) {
             ContentType contentType = adminContentTypeService.getContentType(contentTypeId);
             model.addAttribute("contentType", contentType);
+            model.addAttribute("title", "콘텐츠 종류 수정");
+        } else {
+            model.addAttribute("title", "콘텐츠 종류 등록");
         }
 
-        return "admin/content/type-form";
+        model.addAttribute("content", "admin/content/type-form");
+        return "admin/layout/admin-layout";
     }
 
     /**
@@ -103,8 +109,10 @@ public class AdminContentController {
         model.addAttribute("size", result.get("size"));
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
+        model.addAttribute("title", "콘텐츠 관리");
+        model.addAttribute("content", "admin/content/content-list");
 
-        return "admin/content/content-list";
+        return "admin/layout/admin-layout";
     }
 
     /**
@@ -119,11 +127,15 @@ public class AdminContentController {
         model.addAttribute("contentTypeList", contentTypeList);
 
         if (contentId != null) {
-            Content content = adminContentService.getContent(contentId);
-            model.addAttribute("content", content);
+            Content contentData = adminContentService.getContent(contentId);
+            model.addAttribute("contentData", contentData);
+            model.addAttribute("title", "콘텐츠 수정");
+        } else {
+            model.addAttribute("title", "콘텐츠 등록");
         }
 
-        return "admin/content/content-form";
+        model.addAttribute("content", "admin/content/content-form");
+        return "admin/layout/admin-layout";
     }
 
     /**

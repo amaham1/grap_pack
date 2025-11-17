@@ -1,0 +1,81 @@
+<div class="page-header">
+        <h2>제주 복지서비스</h2>
+        <p class="text-muted">제주도의 다양한 복지 서비스 정보를 확인하세요</p>
+    </div>
+
+    <!-- 검색 -->
+    <div class="search-section">
+        <form th:action="@{/user/content/welfare}" method="get" class="search-form" data-ajax="true">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="서비스명 검색" class="form-control">
+            <button type="submit" class="btn btn-primary">검색</button>
+        </form>
+    </div>
+
+    <!-- 복지서비스 목록 -->
+    <div class="content-grid" id="welfare-list">
+        <div th:each="welfare : ${welfareList}" class="content-card welfare-card">
+            <div class="card-header">
+                <span class="badge badge-welfare">복지서비스</span>
+                <div class="location-badges">
+                    <span th:if="${welfare['isAllLocation'] ?: false}" class="location-badge">전체</span>
+                    <span th:if="${welfare['isJejuLocation'] ?: false}" class="location-badge">제주시</span>
+                    <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="location-badge">서귀포시</span>
+                </div>
+            </div>
+            <h3>
+                <a th:href="@{/user/content/welfare/{id}(id=${welfare['id']})}"
+                   th:text="${welfare['serviceName']}"></a>
+            </h3>
+        </div>
+
+        <div th:if="${#lists.isEmpty(welfareList)}" class="empty-message">
+            <p>등록된 복지서비스가 없습니다.</p>
+        </div>
+    </div>
+
+    <!-- 페이징 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/user/content/welfare(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <a th:href="@{/user/content/welfare(page=${i}, keyword=${keyword})}"
+               th:text="${i}"
+               th:classappend="${i == currentPage ? 'active' : ''}"
+               class="btn btn-sm"></a>
+        </span>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/user/content/welfare(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개
+        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
+    </div>
+
+    <style>
+        .badge-welfare {
+            background-color: #74b9ff;
+            color: white;
+        }
+        .location-badges {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .location-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            color: #495057;
+        }
+        .welfare-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>

@@ -41,8 +41,9 @@ public class UserContentController {
         model.addAttribute("size", result.get("size"));
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
+        model.addAttribute("content", "user/content/content-list");
 
-        return "user/content/content-list";
+        return "user/layout/user-layout";
     }
 
     /**
@@ -50,13 +51,14 @@ public class UserContentController {
      */
     @GetMapping("/detail/{contentId}")
     public String contentDetail(@PathVariable("contentId") Long contentId, Model model) {
-        Content content = userContentService.getContent(contentId);
+        Content contentData = userContentService.getContent(contentId);
 
-        if (content == null) {
+        if (contentData == null) {
             return "redirect:/user/content/list";
         }
 
-        model.addAttribute("content", content);
-        return "user/content/detail";
+        model.addAttribute("contentData", contentData);
+        model.addAttribute("content", "user/content/detail");
+        return "user/layout/user-layout";
     }
 }

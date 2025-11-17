@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.cms.admin.external.mapper.AdminFestivalMapper">
+
+    <!-- 축제/행사 목록 조회 (페이징) -->
+    <select id="selectFestivalList" resultType="map">
+        SELECT
+            id,
+            original_api_id AS originalApiId,
+            title,
+            writer_name AS writerName,
+            written_date AS writtenDate,
+            is_show AS isShow,
+            admin_memo AS adminMemo,
+            is_confirmed AS isConfirmed,
+            confirm_status AS confirmStatus,
+            confirmed_by AS confirmedBy,
+            confirmed_at AS confirmedAt,
+            confirm_memo AS confirmMemo,
+            fetched_at AS fetchedAt,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM festivals
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%')
+                     OR content_html LIKE CONCAT('%', #{keyword}, '%')
+                     OR writer_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY written_date DESC, created_at DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 축제/행사 전체 개수 조회 -->
+    <select id="selectFestivalCount" resultType="int">
+        SELECT COUNT(*)
+        FROM festivals
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (title LIKE CONCAT('%', #{keyword}, '%')
+                     OR content_html LIKE CONCAT('%', #{keyword}, '%')
+                     OR writer_name LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <!-- 축제/행사 상세 조회 -->
+    <select id="selectFestivalById" resultType="map">
+        SELECT
+            id,
+            original_api_id AS originalApiId,
+            title,
+            content_html AS contentHtml,
+            source_url AS sourceUrl,
+            writer_name AS writerName,
+            written_date AS writtenDate,
+            files_info AS filesInfo,
+            api_raw_data AS apiRawData,
+            is_show AS isShow,
+            admin_memo AS adminMemo,
+            is_confirmed AS isConfirmed,
+            confirm_status AS confirmStatus,
+            confirmed_by AS confirmedBy,
+            confirmed_at AS confirmedAt,
+            confirm_memo AS confirmMemo,
+            fetched_at AS fetchedAt,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM festivals
+        WHERE id = #{id}
+    </select>
+
+    <!-- 노출 여부 업데이트 -->
+    <update id="updateIsShow">
+        UPDATE festivals
+        SET is_show = #{isShow}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 관리자 메모 업데이트 -->
+    <update id="updateAdminMemo">
+        UPDATE festivals
+        SET admin_memo = #{adminMemo}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 검수 처리 -->
+    <update id="updateConfirmStatus">
+        UPDATE festivals
+        SET is_confirmed = CASE WHEN #{confirmStatus} = 'APPROVED' THEN TRUE ELSE FALSE END,
+            confirm_status = #{confirmStatus},
+            confirmed_by = #{confirmedBy},
+            confirmed_at = NOW(),
+            confirm_memo = #{confirmMemo}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 축제/행사 삭제 -->
+    <delete id="deleteFestival">
+        DELETE FROM festivals
+        WHERE id = #{id}
+    </delete>
+
+</mapper>

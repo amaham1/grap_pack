@@ -1,0 +1,57 @@
+<article class="content-detail">
+        <!-- 헤더 -->
+        <div class="content-header">
+            <div class="meta">
+                <span class="badge badge-festival">축제/행사</span>
+                <span class="date" th:if="${festival['writtenDate'] != null}"
+                      th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
+            </div>
+            <h1 th:text="${festival['title']}"></h1>
+            <div class="meta-info">
+                <span th:if="${festival['writerName'] != null}">
+                    작성자: <span th:text="${festival['writerName']}"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 본문 (HTML 내용) -->
+        <div class="content-body">
+            <div th:if="${festival['contentHtml'] != null}"
+                 th:utext="${festival['contentHtml']}"></div>
+        </div>
+
+        <!-- 원본 페이지 링크 -->
+        <div th:if="${festival['sourceUrl'] != null}" class="source-link">
+            <a th:href="${festival['sourceUrl']}" target="_blank" class="btn btn-outline">
+                원본 페이지 보기
+            </a>
+        </div>
+
+        <!-- 첨부 파일 정보 (JSON 데이터가 있는 경우) -->
+        <div th:if="${festival['filesInfo'] != null}" class="files-section">
+            <h3>첨부 파일</h3>
+            <p class="text-muted">파일 정보는 원본 페이지에서 확인하세요.</p>
+        </div>
+
+        <!-- 하단 버튼 -->
+        <div class="content-footer">
+            <a th:href="@{/user/content/festivals}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </article>
+
+    <style>
+        .badge-festival {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        .source-link {
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .files-section {
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+    </style>

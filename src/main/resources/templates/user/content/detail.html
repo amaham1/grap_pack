@@ -1,66 +1,32 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${content.title}">콘텐츠 상세</title>
-    <link rel="stylesheet" th:href="@{/css/user.css}">
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-</head>
-<body>
-    <!-- 헤더 -->
-    <header class="user-header">
-        <div class="container">
-            <h1><a th:href="@{/user/content/list}">Grap</a></h1>
-            <nav>
-                <ul>
-                    <li><a th:href="@{/user/content/list}">콘텐츠</a></li>
-                </ul>
-            </nav>
+<article class="content-detail">
+        <!-- 콘텐츠 헤더 -->
+        <div class="content-header">
+            <div class="meta">
+                <span class="badge" th:text="${contentData['typeName'] ?: '일반'}"></span>
+                <span class="date" th:text="${contentData['createDt'] != null ? #temporals.format(contentData['createDt'], 'yyyy.MM.dd HH:mm') : ''}"></span>
+                <span class="view-count" th:text="${contentData['viewCount'] ?: 0}"></span>
+            </div>
+            <h1 th:text="${contentData['title'] ?: '제목 없음'}"></h1>
         </div>
-    </header>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="container">
-        <article class="content-detail">
-            <!-- 콘텐츠 헤더 -->
-            <div class="content-header">
-                <div class="meta">
-                    <span class="badge" th:text="${content.typeName}"></span>
-                    <span class="date" th:text="${#temporals.format(content.createDt, 'yyyy.MM.dd HH:mm')}"></span>
-                    <span class="view-count" th:text="${content.viewCount}"></span>
-                </div>
-                <h1 th:text="${content.title}"></h1>
-            </div>
+        <!-- 콘텐츠 본문 -->
+        <div class="content-body">
+            <div th:utext="${contentData['content'] != null ? #strings.replace(#strings.replace(contentData['content'], '\n', '<br>'), '\r', '') : ''}"></div>
+        </div>
 
-            <!-- 콘텐츠 본문 -->
-            <div class="content-body">
-                <div th:utext="${#strings.replace(#strings.replace(content.content, '\n', '<br>'), '\r', '')}"></div>
-            </div>
-
-            <!-- 이미지 갤러리 -->
-            <div th:if="${content.imageList != null and !#lists.isEmpty(content.imageList)}"
-                 class="image-gallery">
-                <h3>이미지</h3>
-                <div class="gallery-grid">
-                    <div th:each="imagePath : ${content.imageList}" class="gallery-item">
-                        <img th:src="${imagePath}" alt="콘텐츠 이미지">
-                    </div>
+        <!-- 이미지 갤러리 -->
+        <div th:if="${contentData['imageList'] != null and !#lists.isEmpty(contentData['imageList'])}"
+             class="image-gallery">
+            <h3>이미지</h3>
+            <div class="gallery-grid">
+                <div th:each="imagePath : ${contentData['imageList']}" class="gallery-item">
+                    <img th:src="${imagePath}" alt="콘텐츠 이미지">
                 </div>
             </div>
-
-            <!-- 하단 버튼 -->
-            <div class="content-footer">
-                <a th:href="@{/user/content/list}" class="btn btn-secondary">목록으로</a>
-            </div>
-        </article>
-    </main>
-
-    <!-- 푸터 -->
-    <footer class="user-footer">
-        <div class="container">
-            <p>© 2024 Grap CMS. All rights reserved.</p>
         </div>
-    </footer>
-</body>
-</html>
+
+        <!-- 하단 버튼 -->
+        <div class="content-footer">
+            <a th:href="@{/user/content/list}" class="btn btn-secondary">목록으로</a>
+        </div>
+    </article>
