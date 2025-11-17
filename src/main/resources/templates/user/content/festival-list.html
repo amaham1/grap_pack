@@ -5,7 +5,7 @@
 
     <!-- 검색 -->
     <div class="search-section">
-        <form th:action="@{/user/content/festivals}" method="get" class="search-form">
+        <form th:action="@{/user/content/festivals}" method="get" class="search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="축제/행사명 검색" class="form-control">
             <button type="submit" class="btn btn-primary">검색</button>

@@ -2,7 +2,7 @@
         <h2>복지서비스 관리</h2>
     </div>
 
-    <form th:action="@{/admin/external/welfare}" method="get" class="search-form">
+    <form th:action="@{/admin/external/welfare}" method="get" class="search-form" data-ajax="true">
         <div class="search-row">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="서비스명 검색" class="form-control">
@@ -36,7 +36,8 @@
                     </td>
                     <td>
                         <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare['id']})}"
-                              method="post" style="display: inline;">
+                              method="post" style="display: inline;"
+                              data-ajax="true">
                             <input type="hidden" name="isShow" th:value="${!(welfare['isShow'] ?: false)}">
                             <button type="submit"
                                     th:class="|btn btn-sm ${(welfare['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
@@ -50,7 +51,9 @@
                            class="btn btn-sm btn-secondary">상세</a>
                         <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare['id']})}"
                               method="post" style="display: inline;"
-                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                              data-ajax="true"
+                              data-confirm="정말 삭제하시겠습니까?"
+                              data-success-message="삭제되었습니다.">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                         </form>
                     </td>

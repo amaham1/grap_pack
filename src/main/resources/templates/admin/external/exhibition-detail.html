@@ -55,7 +55,9 @@
         <div class="memo-section">
             <h3>관리자 메모</h3>
             <form th:action="@{/admin/external/exhibitions/{id}/memo(id=${exhibition['id']})}"
-                  method="post" class="form">
+                  method="post" class="form"
+                  data-ajax="true"
+                  data-success-message="메모가 저장되었습니다.">
                 <textarea name="adminMemo" rows="5" class="form-control"
                           th:text="${exhibition['adminMemo'] ?: ''}"></textarea>
                 <button type="submit" class="btn btn-primary">메모 저장</button>
@@ -65,7 +67,10 @@
         <div class="confirm-section">
             <h3>검수 처리</h3>
             <form th:action="@{/admin/external/exhibitions/{id}/confirm(id=${exhibition['id']})}"
-                  method="post" class="form">
+                  method="post" class="form"
+                  data-ajax="true"
+                  data-confirm="검수를 처리하시겠습니까?"
+                  data-success-message="검수가 처리되었습니다.">
                 <div class="form-group">
                     <label>검수 상태 선택</label>
                     <select name="confirmStatus" class="form-control" required>
@@ -85,7 +90,8 @@
 
         <div class="action-section">
             <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
-                  method="post" style="display: inline;">
+                  method="post" style="display: inline;"
+                  data-ajax="true">
                 <input type="hidden" name="isShow" th:value="${!(exhibition['isShow'] ?: false)}">
                 <button type="submit"
                         th:class="|btn ${(exhibition['isShow'] ?: false) ? 'btn-warning' : 'btn-success'}|"
@@ -94,7 +100,9 @@
             </form>
             <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
                   method="post" style="display: inline;"
-                  onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                  data-ajax="true"
+                  data-confirm="정말 삭제하시겠습니까?"
+                  data-success-message="삭제되었습니다.">
                 <button type="submit" class="btn btn-danger">삭제</button>
             </form>
         </div>

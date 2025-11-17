@@ -30,7 +30,9 @@
                            class="btn btn-sm btn-secondary">수정</a>
                         <form th:action="@{/admin/content-type/delete/{id}(id=${type['contentTypeId']})}"
                               method="post" style="display: inline;"
-                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                              data-ajax="true"
+                              data-confirm="정말 삭제하시겠습니까?"
+                              data-success-message="콘텐츠 종류가 삭제되었습니다.">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                         </form>
                     </td>

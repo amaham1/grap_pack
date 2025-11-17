@@ -11,7 +11,14 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(gradle build:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gradlew.bat bootRun)",
+      "Bash(cmd //c gradlew.bat bootRun)",
+      "Bash(gradle --version:*)",
+      "Bash(powershell.exe -Command \"& { .\\gradlew.bat bootRun }\")"
     ],
     "deny": [],
     "ask": []

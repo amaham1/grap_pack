@@ -27,6 +27,61 @@ Spring Boot 3.2.0 기반의 Content Management System (CMS). MyBatis를 ORM으�
 ./gradlew clean build
 ```
 
+## Claude Code 협업 워크플로우
+
+### 기능 구현 및 검증 프로세스
+
+Claude Code와 효율적으로 협업하기 위한 표준 워크플로우:
+
+#### 1. 기능 구현 (Claude)
+- 요구사항에 맞게 코드 작성
+- 필요한 Service, Controller, Mapper, Model 구현
+
+#### 2. 검증 로그 추가 (Claude)
+- 기능의 핵심 지점에 검증용 로그 추가
+- 패턴화된 로그 메시지 사용으로 필터링 용이하게 구성
+```java
+log.info("✅ [CHECK] 사용자 권한 검증 완료");
+log.info("✅ [CHECK] 콘텐츠 저장 성공: contentId={}", contentId);
+log.error("❌ [ERROR] 파일 업로드 실패: {}", e.getMessage());
+```
+
+#### 3. 서버 실행 + 사용자 테스트 + 로그 확인 (협업)
+- **Claude**: 백그라운드로 서버 실행 및 로그 모니터링
+- **사용자**: 브라우저에서 실제 UI/기능 테스트
+- **Claude**: 필터링된 로그로 기능 정상 작동 검증
+
+#### 로그 레벨 최적화 (토큰 효율성)
+
+검증 시 불필요한 로그를 최소화하여 토큰 사용량을 줄입니다:
+
+```yaml
+# application.yml - 검증용 로그 설정
+logging:
+  level:
+    root: WARN                    # 기본 로그 레벨 최소화
+    com.grap: INFO                # 프로젝트 로그만 INFO
+    org.springframework: ERROR    # Spring Framework는 에러만
+    org.mybatis: ERROR            # MyBatis는 에러만
+```
+
+#### 로그 필터링
+
+백그라운드 실행 시 필요한 로그만 추출:
+```bash
+# 검증 로그와 에러만 확인
+./gradlew bootRun | grep -E "\[CHECK\]|\[ERROR\]|Exception"
+
+# 또는 특정 패턴만
+./gradlew bootRun | grep "✅"
+```
+
+#### 장점
+- ✅ **실제 사용자 시나리오 테스트**: JWT 인증, 복잡한 UI 상호작용 등 실제 환경에서 검증
+- ✅ **토큰 효율성**: 필요한 로그만 확인하여 토큰 소비 최소화
+- ✅ **빠른 피드백**: 에러 즉시 포착 및 수정
+- ✅ **협업 효율성**: Claude는 코드와 로그, 사용자는 UX 검증
+
 ## Architecture
 
 ### Domain-Driven Structure

@@ -3,7 +3,7 @@
     </div>
 
     <!-- 검색 -->
-    <form th:action="@{/admin/external/festivals}" method="get" class="search-form">
+    <form th:action="@{/admin/external/festivals}" method="get" class="search-form" data-ajax="true">
         <div class="search-row">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="제목, 작성자 검색" class="form-control">
@@ -36,7 +36,8 @@
                     <td th:text="${festival['writtenDate'] != null ? #temporals.format(festival['writtenDate'], 'yyyy-MM-dd') : '-'}"></td>
                     <td>
                         <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival['id']})}"
-                              method="post" style="display: inline;">
+                              method="post" style="display: inline;"
+                              data-ajax="true">
                             <input type="hidden" name="isShow" th:value="${!(festival['isShow'] ?: false)}">
                             <button type="submit"
                                     th:class="|btn btn-sm ${(festival['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
@@ -50,7 +51,9 @@
                            class="btn btn-sm btn-secondary">상세</a>
                         <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival['id']})}"
                               method="post" style="display: inline;"
-                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                              data-ajax="true"
+                              data-confirm="정말 삭제하시겠습니까?"
+                              data-success-message="삭제되었습니다.">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                         </form>
                     </td>

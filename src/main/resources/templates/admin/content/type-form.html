@@ -4,7 +4,9 @@
     </div>
 
     <form th:action="${contentType != null ? '/admin/content-type/update' : '/admin/content-type/create'}"
-          method="post" class="form">
+          method="post" class="form"
+          data-ajax="true"
+          data-success-message="저장되었습니다.">
 
         <input type="hidden" name="contentTypeId" th:value="${contentType?.contentTypeId}">
 

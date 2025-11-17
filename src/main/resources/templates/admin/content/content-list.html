@@ -4,7 +4,7 @@
     </div>
 
     <!-- 검색 폼 -->
-    <form th:action="@{/admin/content/list}" method="get" class="search-form">
+    <form th:action="@{/admin/content/list}" method="get" class="search-form" data-ajax="true">
         <div class="search-row">
             <select name="contentTypeId" class="form-control">
                 <option value="">전체 종류</option>
@@ -59,7 +59,8 @@
                         <a th:href="@{/admin/content/form(contentId=${content['contentId']})}"
                            class="btn btn-sm btn-secondary">수정</a>
                         <form th:action="@{/admin/content/publish/{id}(id=${content['contentId']})}"
-                              method="post" style="display: inline;">
+                              method="post" style="display: inline;"
+                              data-ajax="true">
                             <input type="hidden" name="isPublished" th:value="${!(content['isPublished'] ?: false)}">
                             <button type="submit"
                                     th:class="|btn btn-sm ${(content['isPublished'] ?: false) ? 'btn-warning' : 'btn-success'}|"
@@ -68,7 +69,9 @@
                         </form>
                         <form th:action="@{/admin/content/delete/{id}(id=${content['contentId']})}"
                               method="post" style="display: inline;"
-                              onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                              data-ajax="true"
+                              data-confirm="정말 삭제하시겠습니까?"
+                              data-success-message="삭제되었습니다.">
                             <button type="submit" class="btn btn-sm btn-danger">삭제</button>
                         </form>
                     </td>

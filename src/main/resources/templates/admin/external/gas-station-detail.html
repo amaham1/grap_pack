@@ -24,7 +24,9 @@
         <div class="action-section">
             <form th:action="@{/admin/external/gas-stations/{id}/delete(id=${gasStation.id})}"
                   method="post" style="display: inline;"
-                  onsubmit="return confirm('정말 삭제하시겠습니까? 관련 가격 정보도 함께 삭제됩니다.');">
+                  data-ajax="true"
+                  data-confirm="정말 삭제하시겠습니까? 관련 가격 정보도 함께 삭제됩니다."
+                  data-success-message="삭제되었습니다.">
                 <button type="submit" class="btn btn-danger">삭제</button>
             </form>
         </div>

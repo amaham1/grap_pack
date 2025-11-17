@@ -5,7 +5,7 @@
 
     <!-- 검색 -->
     <div class="search-section">
-        <form th:action="@{/user/content/gas-stations}" method="get" class="search-form">
+        <form th:action="@{/user/content/gas-stations}" method="get" class="search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="주유소명, 브랜드, 주소 검색" class="form-control">
             <button type="submit" class="btn btn-primary">검색</button>

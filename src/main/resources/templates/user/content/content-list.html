@@ -4,7 +4,7 @@
 
         <!-- 검색 및 필터 -->
         <div class="search-section">
-            <form th:action="@{/user/content/list}" method="get" class="search-form">
+            <form th:action="@{/user/content/list}" method="get" class="search-form" data-ajax="true">
                 <select name="contentTypeId" class="form-control" onchange="this.form.submit()">
                     <option value="">전체 카테고리</option>
                     <option th:each="type : ${contentTypeList}"
