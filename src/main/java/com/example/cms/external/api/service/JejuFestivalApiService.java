@@ -1,5 +1,6 @@
 package com.example.cms.external.api.service;
 
+import com.example.cms.admin.sync.service.SyncManager;
 import com.example.cms.external.api.mapper.FestivalMapper;
 import com.example.cms.external.api.model.Festival;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -125,14 +126,37 @@ public class JejuFestivalApiService {
      */
     @Transactional
     public void syncFestivalsFromExternalApi() {
+        syncFestivalsFromExternalApi(null, null);
+    }
+
+    /**
+     * 외부 API 동기화 전체 프로세스를 실행합니다 (중단 체크 포함).
+     */
+    @Transactional
+    public void syncFestivalsFromExternalApi(String sessionId, SyncManager syncManager) {
         try {
             log.info("=== 축제/행사 데이터 동기화 시작 ===");
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 1. API에서 데이터 가져오기
             Map<String, Object> apiResponse = fetchFestivalDataFromApi();
 
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
+
             // 2. Entity로 변환
             List<Festival> festivals = transformApiDataToEntity(apiResponse);
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 3. DB에 저장
             int savedCount = saveFestivals(festivals);

@@ -1,5 +1,6 @@
 package com.example.cms.external.api.service;
 
+import com.example.cms.admin.sync.service.SyncManager;
 import com.example.cms.external.api.mapper.ExhibitionMapper;
 import com.example.cms.external.api.model.Exhibition;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +38,13 @@ public class JejuExhibitionApiService {
      * 외부 API에서 공연/전시 데이터를 가져옵니다 (페이징).
      */
     public List<Map<String, Object>> fetchAllExhibitionDataFromApi() {
+        return fetchAllExhibitionDataFromApi(null, null);
+    }
+
+    /**
+     * 외부 API에서 공연/전시 데이터를 가져옵니다 (페이징, 중단 체크 포함).
+     */
+    public List<Map<String, Object>> fetchAllExhibitionDataFromApi(String sessionId, SyncManager syncManager) {
         List<Map<String, Object>> allItems = new ArrayList<>();
         int page = 1;
         int pageSize = 500;
@@ -45,6 +53,11 @@ public class JejuExhibitionApiService {
             log.info("제주 공연/전시 API 호출 시작");
 
             while (true) {
+                // 중단 체크
+                if (syncManager != null && sessionId != null) {
+                    syncManager.checkCancellation(sessionId);
+                }
+
                 String url = String.format("%s?page=%d&pageSize=%d", JEJU_EXHIBITION_API_URL, page, pageSize);
 
                 @SuppressWarnings("unchecked")
@@ -148,14 +161,37 @@ public class JejuExhibitionApiService {
      */
     @Transactional
     public void syncExhibitionsFromExternalApi() {
+        syncExhibitionsFromExternalApi(null, null);
+    }
+
+    /**
+     * 외부 API 동기화 전체 프로세스를 실행합니다 (중단 체크 포함).
+     */
+    @Transactional
+    public void syncExhibitionsFromExternalApi(String sessionId, SyncManager syncManager) {
         try {
             log.info("=== 공연/전시 데이터 동기화 시작 ===");
 
-            // 1. API에서 모든 페이지 데이터 가져오기
-            List<Map<String, Object>> items = fetchAllExhibitionDataFromApi();
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
+
+            // 1. API에서 모든 페이지 데이터 가져오기 (중단 체크 포함)
+            List<Map<String, Object>> items = fetchAllExhibitionDataFromApi(sessionId, syncManager);
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 2. Entity로 변환
             List<Exhibition> exhibitions = transformApiDataToEntity(items);
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 3. DB에 저장
             int savedCount = saveExhibitions(exhibitions);

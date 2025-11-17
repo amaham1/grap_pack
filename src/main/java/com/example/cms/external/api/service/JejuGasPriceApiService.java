@@ -1,5 +1,6 @@
 package com.example.cms.external.api.service;
 
+import com.example.cms.admin.sync.service.SyncManager;
 import com.example.cms.external.api.mapper.GasPriceMapper;
 import com.example.cms.external.api.mapper.GasStationMapper;
 import com.example.cms.external.api.model.GasPrice;
@@ -225,15 +226,38 @@ public class JejuGasPriceApiService {
      */
     @Transactional
     public void syncGasPricesFromExternalApi() {
+        syncGasPricesFromExternalApi(null, null);
+    }
+
+    /**
+     * 외부 API 동기화 전체 프로세스를 실행합니다 (중단 체크 포함).
+     */
+    @Transactional
+    public void syncGasPricesFromExternalApi(String sessionId, SyncManager syncManager) {
         try {
             log.info("=== 주유소 가격 데이터 동기화 시작 ===");
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 1. API에서 데이터 가져오기
             Map<String, Object> apiResponse = fetchGasPriceDataFromApi();
 
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
+
             // 2-1. 주유소 기본 정보 변환 및 저장
             List<GasStation> stations = transformApiDataToStationEntity(apiResponse);
             int stationCount = saveGasStations(stations);
+
+            // 중단 체크
+            if (syncManager != null && sessionId != null) {
+                syncManager.checkCancellation(sessionId);
+            }
 
             // 2-2. 주유소 가격 정보 변환 및 저장
             List<GasPrice> prices = transformApiDataToPriceEntity(apiResponse);

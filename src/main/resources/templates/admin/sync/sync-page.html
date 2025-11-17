@@ -1,173 +1,262 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>외부 API 동기화</title>
-</head>
-<body>
-    <div class="content-header">
-        <h2>외부 API 데이터 동기화</h2>
-        <p class="text-muted">제주도 공공 API에서 최신 데이터를 가져옵니다.</p>
-    </div>
+<div class="content-header">
+    <h2>외부 API 데이터 동기화</h2>
+    <p class="text-muted">제주도 공공 API에서 최신 데이터를 가져옵니다.</p>
+</div>
 
-    <!-- 동기화 안내 -->
-    <div class="alert alert-info mb-4">
-        <h4>자동 동기화 스케줄</h4>
-        <p class="mb-0">매일 02:05, 08:05, 14:05, 20:05에 자동으로 전체 데이터가 동기화됩니다.</p>
-    </div>
+<!-- 동기화 안내 -->
+<div class="alert alert-info mb-4">
+    <h4>자동 동기화 스케줄</h4>
+    <p class="mb-0">매일 02:05, 08:05, 14:05, 20:05에 자동으로 전체 데이터가 동기화됩니다.</p>
+</div>
 
-    <!-- 동기화 버튼 그리드 -->
-    <div class="row">
-        <!-- 축제/행사 -->
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-calendar-event" style="font-size: 3rem; color: #ff6b6b;"></i>
-                    </div>
-                    <h5 class="card-title">축제/행사</h5>
-                    <p class="card-text text-muted small">제주도 축제 및 행사 정보</p>
-                    <form th:action="@{/admin/sync/festivals}" method="post" class="mt-3">
-                        <button type="submit" class="btn btn-primary btn-block w-100">
-                            <i class="bi bi-arrow-clockwise"></i> 동기화
-                        </button>
-                    </form>
+<!-- 동기화 버튼 그리드 -->
+<div class="row">
+    <!-- 축제/행사 -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-calendar-event" style="font-size: 3rem; color: #ff6b6b;"></i>
                 </div>
-            </div>
-        </div>
-
-        <!-- 공연/전시 -->
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-palette" style="font-size: 3rem; color: #a29bfe;"></i>
-                    </div>
-                    <h5 class="card-title">공연/전시</h5>
-                    <p class="card-text text-muted small">제주도 공연 및 전시회 정보</p>
-                    <form th:action="@{/admin/sync/exhibitions}" method="post" class="mt-3">
-                        <button type="submit" class="btn btn-primary btn-block w-100">
-                            <i class="bi bi-arrow-clockwise"></i> 동기화
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- 복지서비스 -->
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-heart" style="font-size: 3rem; color: #74b9ff;"></i>
-                    </div>
-                    <h5 class="card-title">복지서비스</h5>
-                    <p class="card-text text-muted small">제주도 복지 서비스 정보</p>
-                    <form th:action="@{/admin/sync/welfare-services}" method="post" class="mt-3">
-                        <button type="submit" class="btn btn-primary btn-block w-100">
-                            <i class="bi bi-arrow-clockwise"></i> 동기화
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- 주유소 가격 -->
-        <div class="col-md-6 col-lg-3 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="mb-3">
-                        <i class="bi bi-fuel-pump" style="font-size: 3rem; color: #55efc4;"></i>
-                    </div>
-                    <h5 class="card-title">주유소 가격</h5>
-                    <p class="card-text text-muted small">제주도 주유소 가격 정보</p>
-                    <form th:action="@{/admin/sync/gas-prices}" method="post" class="mt-3">
-                        <button type="submit" class="btn btn-primary btn-block w-100">
-                            <i class="bi bi-arrow-clockwise"></i> 동기화
-                        </button>
-                    </form>
-                </div>
+                <h5 class="card-title">축제/행사</h5>
+                <p class="card-text text-muted small">제주도 축제 및 행사 정보</p>
+                <form th:action="@{/admin/sync/festivals}" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-block w-100">
+                        <i class="bi bi-arrow-clockwise"></i> 동기화
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- 전체 동기화 버튼 -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card bg-dark text-white">
-                <div class="card-body text-center py-4">
-                    <h4 class="card-title mb-3">전체 데이터 동기화</h4>
-                    <p class="card-text mb-4">모든 외부 API 데이터를 한 번에 동기화합니다. (시간이 다소 소요될 수 있습니다)</p>
-                    <form th:action="@{/admin/sync/all}" method="post">
-                        <button type="submit" class="btn btn-warning btn-lg"
-                                onclick="return confirm('전체 데이터 동기화를 시작하시겠습니까? 시간이 다소 소요될 수 있습니다.');">
-                            <i class="bi bi-arrow-repeat"></i> 전체 동기화 실행
-                        </button>
-                    </form>
+    <!-- 공연/전시 -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-palette" style="font-size: 3rem; color: #a29bfe;"></i>
                 </div>
+                <h5 class="card-title">공연/전시</h5>
+                <p class="card-text text-muted small">제주도 공연 및 전시회 정보</p>
+                <form th:action="@{/admin/sync/exhibitions}" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-block w-100">
+                        <i class="bi bi-arrow-clockwise"></i> 동기화
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- API 정보 -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">외부 API 정보</h5>
+    <!-- 복지서비스 -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-heart" style="font-size: 3rem; color: #74b9ff;"></i>
                 </div>
-                <div class="card-body">
-                    <table class="table table-sm">
-                        <thead>
-                            <tr>
-                                <th>데이터</th>
-                                <th>API URL</th>
-                                <th>제공기관</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>축제/행사</td>
-                                <td><code>https://www.jeju.go.kr/api/jejutoseoul/festival/</code></td>
-                                <td>제주특별자치도</td>
-                            </tr>
-                            <tr>
-                                <td>공연/전시</td>
-                                <td><code>http://www.jeju.go.kr/rest/JejuExhibitionService/getJejucultureExhibitionList</code></td>
-                                <td>제주특별자치도</td>
-                            </tr>
-                            <tr>
-                                <td>복지서비스</td>
-                                <td><code>http://www.jeju.go.kr/rest/JejuWelfareServiceInfo/getJejuWelfareServiceInfoList</code></td>
-                                <td>제주특별자치도</td>
-                            </tr>
-                            <tr>
-                                <td>주유소 가격</td>
-                                <td><code>http://api.jejuits.go.kr/api/infoGasPriceList</code></td>
-                                <td>제주특별자치도</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <h5 class="card-title">복지서비스</h5>
+                <p class="card-text text-muted small">제주도 복지 서비스 정보</p>
+                <form th:action="@{/admin/sync/welfare-services}" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-block w-100">
+                        <i class="bi bi-arrow-clockwise"></i> 동기화
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 
-    <style>
-        .card {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
+    <!-- 주유소 가격 -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-fuel-pump" style="font-size: 3rem; color: #55efc4;"></i>
+                </div>
+                <h5 class="card-title">주유소 가격</h5>
+                <p class="card-text text-muted small">제주도 주유소 가격 정보</p>
+                <form th:action="@{/admin/sync/gas-prices}" method="post" class="mt-3">
+                    <button type="submit" class="btn btn-primary btn-block w-100">
+                        <i class="bi bi-arrow-clockwise"></i> 동기화
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 전체 동기화 버튼 -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-dark text-white">
+            <div class="card-body text-center py-4">
+                <h4 class="card-title mb-3">전체 데이터 동기화</h4>
+                <p class="card-text mb-4">모든 외부 API 데이터를 한 번에 동기화합니다. (시간이 다소 소요될 수 있습니다)</p>
+                <form th:action="@{/admin/sync/all}" method="post" onsubmit="return handleSyncAll(event)">
+                    <button type="submit" class="btn btn-warning btn-lg">
+                        <i class="bi bi-arrow-repeat"></i> 전체 동기화 실행
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API 정보 -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">외부 API 정보</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>데이터</th>
+                            <th>API URL</th>
+                            <th>제공기관</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>축제/행사</td>
+                            <td><code>https://www.jeju.go.kr/api/jejutoseoul/festival/</code></td>
+                            <td>제주특별자치도</td>
+                        </tr>
+                        <tr>
+                            <td>공연/전시</td>
+                            <td><code>http://www.jeju.go.kr/rest/JejuExhibitionService/getJejucultureExhibitionList</code></td>
+                            <td>제주특별자치도</td>
+                        </tr>
+                        <tr>
+                            <td>복지서비스</td>
+                            <td><code>http://www.jeju.go.kr/rest/JejuWelfareServiceInfo/getJejuWelfareServiceInfoList</code></td>
+                            <td>제주특별자치도</td>
+                        </tr>
+                        <tr>
+                            <td>주유소 가격</td>
+                            <td><code>http://api.jejuits.go.kr/api/infoGasPriceList</code></td>
+                            <td>제주특별자치도</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .content-header {
+        margin-bottom: 2rem;
+    }
+    .bi {
+        vertical-align: middle;
+    }
+</style>
+
+<script th:inline="javascript">
+    // 전체 동기화 실행 중 플래그
+    let isSyncRunning = false;
+
+    function handleSyncAll(event) {
+        // 확인 다이얼로그
+        if (!confirm('전체 데이터 동기화를 시작하시겠습니까? 시간이 다소 소요될 수 있습니다.')) {
+            event.preventDefault();
+            return false;
         }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+
+        // 동기화 실행 중 플래그 설정
+        isSyncRunning = true;
+
+        // 현재 페이지의 모든 버튼 찾기
+        const allButtons = document.querySelectorAll('button[type="submit"]');
+
+        // 모든 버튼을 비활성화하고 로딩 표시로 변경
+        allButtons.forEach(button => {
+            button.disabled = true;
+            button.innerHTML = '<i class="bi bi-hourglass-split"></i> 로딩 중..';
+        });
+
+        return true;
+    }
+
+    // CSRF 토큰 가져오기
+    function getCsrfToken() {
+        const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+        const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
+        return { token, header };
+    }
+
+    // 페이지를 떠날 때 동기화 취소 요청 전송
+    window.addEventListener('beforeunload', function(event) {
+        if (isSyncRunning) {
+            console.log('[SYNC] beforeunload - 취소 요청 전송 중...');
+
+            // 동기화 취소 요청 전송
+            const cancelUrl = /*[[@{/admin/sync/cancel}]]*/ '/admin/sync/cancel';
+            const csrf = getCsrfToken();
+
+            // Fetch API with keepalive 사용 (현대적인 웹 통신 기술)
+            try {
+                fetch(cancelUrl, {
+                    method: 'POST',
+                    keepalive: true,  // 페이지가 닫혀도 요청 완료 보장
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        ...(csrf.token && csrf.header ? { [csrf.header]: csrf.token } : {})
+                    },
+                    body: new URLSearchParams({
+                        ...(csrf.token ? { _csrf: csrf.token } : {})
+                    })
+                }).then(response => {
+                    console.log('[SYNC] Fetch 취소 요청 전송 완료 - 상태:', response.status);
+                    return response.text();
+                }).then(text => {
+                    console.log('[SYNC] 서버 응답:', text);
+                }).catch(error => {
+                    console.error('[SYNC] Fetch 요청 실패:', error.message);
+                });
+            } catch(e) {
+                console.error('[SYNC] Fetch API 호출 실패:', e.message || e);
+            }
         }
-        .content-header {
-            margin-bottom: 2rem;
+    });
+
+    // pagehide 이벤트도 처리 (모바일 브라우저 대응)
+    window.addEventListener('pagehide', function(event) {
+        if (isSyncRunning) {
+            console.log('[SYNC] pagehide - 취소 요청 전송 중...');
+            const cancelUrl = /*[[@{/admin/sync/cancel}]]*/ '/admin/sync/cancel';
+            const csrf = getCsrfToken();
+
+            // Fetch API with keepalive 사용
+            try {
+                fetch(cancelUrl, {
+                    method: 'POST',
+                    keepalive: true,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        ...(csrf.token && csrf.header ? { [csrf.header]: csrf.token } : {})
+                    },
+                    body: new URLSearchParams({
+                        ...(csrf.token ? { _csrf: csrf.token } : {})
+                    })
+                }).then(response => {
+                    console.log('[SYNC] pagehide Fetch 완료 - 상태:', response.status);
+                }).catch(error => {
+                    console.error('[SYNC] pagehide Fetch 실패:', error.message);
+                });
+            } catch(e) {
+                console.error('[SYNC] pagehide Fetch API 호출 실패:', e.message || e);
+            }
         }
-        .bi {
-            vertical-align: middle;
-        }
-    </style>
-</body>
-</html>
+    });
+</script>
