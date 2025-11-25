@@ -185,14 +185,31 @@ public class JejuFestivalApiService {
             return null;
         }
 
-        try {
-            // 예: "2024-01-01"
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            return LocalDateTime.parse(dateStr + " 00:00:00",
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        } catch (Exception e) {
-            log.warn("날짜 파싱 실패: {}", dateStr, e);
-            return null;
+        dateStr = dateStr.trim();
+
+        // 여러 날짜 형식을 시도
+        DateTimeFormatter[] formatters = {
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"),  // "2025-06-09 10:05:00"
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"),     // "2025-06-09 10:05"
+                DateTimeFormatter.ofPattern("yyyy-MM-dd")            // "2025-06-09"
+        };
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                // 날짜만 있는 경우 시간을 00:00:00으로 설정
+                if (formatter.toString().contains("HH:mm")) {
+                    return LocalDateTime.parse(dateStr, formatter);
+                } else {
+                    // "yyyy-MM-dd" 형식인 경우
+                    return LocalDateTime.parse(dateStr + " 00:00:00",
+                            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                }
+            } catch (Exception e) {
+                // 다음 포맷 시도
+            }
         }
+
+        log.warn("날짜 파싱 실패 (모든 형식 시도): {}", dateStr);
+        return null;
     }
 }

@@ -113,14 +113,26 @@ async function handleFormSubmit(e) {
     }
 
     // 제출 버튼 비활성화 (중복 제출 방지)
-    const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+    // data-disable-all-buttons="true" 속성이 있으면 페이지의 모든 버튼 비활성화
+    const disableAllButtons = form.dataset.disableAllButtons === 'true';
+    const submitButtons = disableAllButtons
+        ? document.querySelectorAll('button[type="submit"], input[type="submit"]')
+        : form.querySelectorAll('button[type="submit"], input[type="submit"]');
     const originalTexts = [];
 
     submitButtons.forEach((btn, index) => {
         originalTexts[index] = btn.textContent || btn.value;
         btn.disabled = true;
         if (btn.tagName === 'BUTTON') {
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> 처리 중...';
+            // 현재 form의 버튼이면 "처리 중...", 다른 form의 버튼이면 "대기 중..."
+            const isCurrentFormButton = form.contains(btn);
+            btn.innerHTML = isCurrentFormButton
+                ? '<i class="bi bi-hourglass-split"></i> 처리 중...'
+                : '<i class="bi bi-hourglass-split"></i> 대기 중...';
+        }
+        if (disableAllButtons) {
+            btn.style.opacity = '0.5';
+            btn.style.cursor = 'not-allowed';
         }
     });
 

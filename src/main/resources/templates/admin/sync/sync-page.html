@@ -99,7 +99,11 @@
             <div class="card-body text-center py-4">
                 <h4 class="card-title mb-3">전체 데이터 동기화</h4>
                 <p class="card-text mb-4">모든 외부 API 데이터를 한 번에 동기화합니다. (시간이 다소 소요될 수 있습니다)</p>
-                <form th:action="@{/admin/sync/all}" method="post" onsubmit="return handleSyncAll(event)">
+                <form th:action="@{/admin/sync/all}" method="post"
+                      data-ajax="true"
+                      data-disable-all-buttons="true"
+                      data-confirm="전체 데이터 동기화를 시작하시겠습니까? 시간이 다소 소요될 수 있습니다."
+                      data-success-message="전체 데이터 동기화가 완료되었습니다.">
                     <button type="submit" class="btn btn-warning btn-lg">
                         <i class="bi bi-arrow-repeat"></i> 전체 동기화 실행
                     </button>
@@ -170,101 +174,3 @@
     }
 </style>
 
-<script th:inline="javascript">
-    // 전체 동기화 실행 중 플래그
-    let isSyncRunning = false;
-
-    function handleSyncAll(event) {
-        // 확인 다이얼로그
-        if (!confirm('전체 데이터 동기화를 시작하시겠습니까? 시간이 다소 소요될 수 있습니다.')) {
-            event.preventDefault();
-            return false;
-        }
-
-        // 동기화 실행 중 플래그 설정
-        isSyncRunning = true;
-
-        // 현재 페이지의 모든 버튼 찾기
-        const allButtons = document.querySelectorAll('button[type="submit"]');
-
-        // 모든 버튼을 비활성화하고 로딩 표시로 변경
-        allButtons.forEach(button => {
-            button.disabled = true;
-            button.innerHTML = '<i class="bi bi-hourglass-split"></i> 로딩 중..';
-        });
-
-        return true;
-    }
-
-    // CSRF 토큰 가져오기
-    function getCsrfToken() {
-        const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
-        const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute('content');
-        return { token, header };
-    }
-
-    // 페이지를 떠날 때 동기화 취소 요청 전송
-    window.addEventListener('beforeunload', function(event) {
-        if (isSyncRunning) {
-            console.log('[SYNC] beforeunload - 취소 요청 전송 중...');
-
-            // 동기화 취소 요청 전송
-            const cancelUrl = /*[[@{/admin/sync/cancel}]]*/ '/admin/sync/cancel';
-            const csrf = getCsrfToken();
-
-            // Fetch API with keepalive 사용 (현대적인 웹 통신 기술)
-            try {
-                fetch(cancelUrl, {
-                    method: 'POST',
-                    keepalive: true,  // 페이지가 닫혀도 요청 완료 보장
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        ...(csrf.token && csrf.header ? { [csrf.header]: csrf.token } : {})
-                    },
-                    body: new URLSearchParams({
-                        ...(csrf.token ? { _csrf: csrf.token } : {})
-                    })
-                }).then(response => {
-                    console.log('[SYNC] Fetch 취소 요청 전송 완료 - 상태:', response.status);
-                    return response.text();
-                }).then(text => {
-                    console.log('[SYNC] 서버 응답:', text);
-                }).catch(error => {
-                    console.error('[SYNC] Fetch 요청 실패:', error.message);
-                });
-            } catch(e) {
-                console.error('[SYNC] Fetch API 호출 실패:', e.message || e);
-            }
-        }
-    });
-
-    // pagehide 이벤트도 처리 (모바일 브라우저 대응)
-    window.addEventListener('pagehide', function(event) {
-        if (isSyncRunning) {
-            console.log('[SYNC] pagehide - 취소 요청 전송 중...');
-            const cancelUrl = /*[[@{/admin/sync/cancel}]]*/ '/admin/sync/cancel';
-            const csrf = getCsrfToken();
-
-            // Fetch API with keepalive 사용
-            try {
-                fetch(cancelUrl, {
-                    method: 'POST',
-                    keepalive: true,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        ...(csrf.token && csrf.header ? { [csrf.header]: csrf.token } : {})
-                    },
-                    body: new URLSearchParams({
-                        ...(csrf.token ? { _csrf: csrf.token } : {})
-                    })
-                }).then(response => {
-                    console.log('[SYNC] pagehide Fetch 완료 - 상태:', response.status);
-                }).catch(error => {
-                    console.error('[SYNC] pagehide Fetch 실패:', error.message);
-                });
-            } catch(e) {
-                console.error('[SYNC] pagehide Fetch API 호출 실패:', e.message || e);
-            }
-        }
-    });
-</script>

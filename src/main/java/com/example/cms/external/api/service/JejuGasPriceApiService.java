@@ -93,9 +93,15 @@ public class JejuGasPriceApiService {
                         continue;
                     }
 
+                    String stationName = getString(item, "name");
+                    if (stationName == null || stationName.trim().isEmpty()) {
+                        log.warn("station_name이 비어있는 데이터 건너뜀: opinetId={}", opinetId);
+                        continue;
+                    }
+
                     GasStation station = GasStation.builder()
                             .opinetId(opinetId.trim())
-                            .stationName(getString(item, "name"))
+                            .stationName(stationName.trim())
                             .brand(getString(item, "brand"))
                             .address(getString(item, "address"))
                             .latitude(parseBigDecimal(getString(item, "latitude")))
