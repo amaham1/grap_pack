@@ -134,6 +134,7 @@ src\main\resources\sql\schema.sql 분석
 - **파라미터 어노테이션**: `@PathVariable`, `@RequestParam`에 반드시 명시적인 이름 지정
   - 올바른 예: `@PathVariable("contentId") Long contentId`
   - 잘못된 예: `@PathVariable Long contentId` (컴파일 시 파라미터 이름 정보 손실 가능)
+- **네이밍**: 네이밍은 중복되지 않고 명확성있게 작성바람
 
 ## Common Patterns
 

@@ -11,11 +11,24 @@
         </div>
     </form>
 
+    <!-- 외부 데이터 일괄 작업 버튼 -->
+    <div style="margin-bottom: 10px;">
+        <button type="button" class="btn btn-success btn-sm external-data-bulk-btn"
+                onclick="externalDataBulkUpdateIsShow('/admin/external/exhibitions/bulk-update-show', true)">
+            선택 항목 노출
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm external-data-bulk-btn"
+                onclick="externalDataBulkUpdateIsShow('/admin/external/exhibitions/bulk-update-show', false)">
+            선택 항목 비노출
+        </button>
+    </div>
+
     <!-- 목록 -->
     <div class="table-container">
         <table class="table">
             <thead>
                 <tr>
+                    <th><input type="checkbox" id="externalDataMasterCheckbox" onchange="externalDataToggleAll(this, '.external-data-item-checkbox')"></th>
                     <th>ID</th>
                     <th>제목</th>
                     <th>카테고리</th>
@@ -28,6 +41,7 @@
             </thead>
             <tbody>
                 <tr th:each="exhibition : ${exhibitionList}">
+                    <td><input type="checkbox" class="external-data-item-checkbox" th:value="${exhibition['id']}"></td>
                     <td th:text="${exhibition['id']}"></td>
                     <td>
                         <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
@@ -61,7 +75,7 @@
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(exhibitionList)}">
-                    <td colspan="8" class="text-center">등록된 공연/전시가 없습니다.</td>
+                    <td colspan="9" class="text-center">등록된 공연/전시가 없습니다.</td>
                 </tr>
             </tbody>
         </table>

@@ -51,4 +51,9 @@ public interface AdminExhibitionMapper {
      * 공연/전시 삭제
      */
     void deleteExhibition(@Param("id") Long id);
+
+    /**
+     * 노출 여부 일괄 업데이트
+     */
+    void bulkUpdateIsShow(@Param("ids") List<Long> ids, @Param("isShow") Boolean isShow);
 }

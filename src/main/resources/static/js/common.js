@@ -164,8 +164,104 @@ function initAjaxForms() {
 }
 
 /**
+ * ===================================================================
+ * 외부 데이터 관리 - 노출여부 일괄 변경 기능
+ * (축제/행사, 공연/전시, 복지서비스 관리 페이지 공통 사용)
+ * ===================================================================
+ */
+
+/**
+ * 외부 데이터 체크박스 전체 선택/해제
+ * @param {HTMLInputElement} masterCheckbox - 전체 선택 체크박스
+ * @param {string} itemCheckboxSelector - 개별 체크박스 셀렉터
+ */
+function externalDataToggleAll(masterCheckbox, itemCheckboxSelector) {
+    const itemCheckboxes = document.querySelectorAll(itemCheckboxSelector);
+    itemCheckboxes.forEach(checkbox => {
+        checkbox.checked = masterCheckbox.checked;
+    });
+    externalDataUpdateBulkButtons();
+}
+
+/**
+ * 외부 데이터에서 선택된 ID 수집
+ * @param {string} checkboxSelector - 체크박스 셀렉터
+ * @returns {Array<string>} 선택된 ID 배열
+ */
+function externalDataGetSelectedIds(checkboxSelector) {
+    const selectedCheckboxes = document.querySelectorAll(`${checkboxSelector}:checked`);
+    return Array.from(selectedCheckboxes).map(checkbox => checkbox.value);
+}
+
+/**
+ * 외부 데이터 일괄 작업 버튼 활성화/비활성화
+ */
+function externalDataUpdateBulkButtons() {
+    const selectedCount = document.querySelectorAll('.external-data-item-checkbox:checked').length;
+    const bulkButtons = document.querySelectorAll('.external-data-bulk-btn');
+
+    bulkButtons.forEach(btn => {
+        btn.disabled = selectedCount === 0;
+    });
+}
+
+/**
+ * 외부 데이터 노출여부 일괄 변경
+ * @param {string} apiUrl - API 엔드포인트 URL
+ * @param {boolean} isShow - 노출 여부 (true: 노출, false: 비노출)
+ */
+async function externalDataBulkUpdateIsShow(apiUrl, isShow) {
+    const selectedIds = externalDataGetSelectedIds('.external-data-item-checkbox');
+
+    if (selectedIds.length === 0) {
+        alert('항목을 선택해주세요.');
+        return;
+    }
+
+    const action = isShow ? '노출' : '비노출';
+    if (!confirm(`선택한 ${selectedIds.length}개 항목을 ${action} 처리하시겠습니까?`)) {
+        return;
+    }
+
+    const csrf = getCsrfToken();
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                [csrf.header]: csrf.token
+            },
+            body: JSON.stringify({
+                ids: selectedIds,
+                isShow: isShow
+            })
+        });
+
+        if (response.ok) {
+            alert(`${selectedIds.length}개 항목이 ${action} 처리되었습니다.`);
+            window.location.reload();
+        } else {
+            const error = await response.text();
+            alert(`처리 실패: ${error}`);
+        }
+    } catch (error) {
+        console.error('External data bulk update error:', error);
+        alert('처리 중 오류가 발생했습니다.');
+    }
+}
+
+/**
  * 페이지 로드 시 초기화
  */
 document.addEventListener('DOMContentLoaded', () => {
     initAjaxForms();
+
+    // 외부 데이터 체크박스 변경 시 버튼 상태 업데이트
+    document.querySelectorAll('.external-data-item-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', externalDataUpdateBulkButtons);
+    });
+
+    // 외부 데이터 일괄 작업 버튼 초기 상태 설정
+    externalDataUpdateBulkButtons();
 });

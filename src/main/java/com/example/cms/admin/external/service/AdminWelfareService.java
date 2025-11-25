@@ -88,4 +88,15 @@ public class AdminWelfareService {
     public void deleteWelfare(Long id) {
         welfareMapper.deleteWelfare(id);
     }
+
+    /**
+     * 노출 여부 일괄 업데이트
+     */
+    @Transactional
+    public void bulkUpdateIsShow(List<Long> ids, Boolean isShow) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("선택된 항목이 없습니다.");
+        }
+        welfareMapper.bulkUpdateIsShow(ids, isShow);
+    }
 }

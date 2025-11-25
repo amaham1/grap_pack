@@ -106,4 +106,14 @@
         WHERE id = #{id}
     </delete>
 
+    <!-- 노출 여부 일괄 업데이트 -->
+    <update id="bulkUpdateIsShow">
+        UPDATE welfare_services
+        SET is_show = #{isShow}
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
 </mapper>

@@ -1,18 +1,23 @@
 package com.example.cms.admin.external.controller;
 
 import com.example.cms.admin.external.service.AdminFestivalService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * 관리자 축제/행사 컨트롤러
  */
+@Slf4j
 @Controller
 @RequestMapping("/admin/external/festivals")
 @RequiredArgsConstructor
@@ -119,5 +124,31 @@ public class AdminFestivalController {
             redirectAttributes.addFlashAttribute("error", "삭제 실패: " + e.getMessage());
         }
         return "redirect:/admin/external/festivals";
+    }
+
+    /**
+     * 노출 여부 일괄 변경
+     */
+    @PostMapping("/bulk-update-show")
+    @ResponseBody
+    public ResponseEntity<String> bulkUpdateIsShow(@RequestBody BulkUpdateRequest request) {
+        try {
+            log.info("✅ [CHECK] 축제/행사 노출여부 일괄 변경 요청: ids={}, isShow={}", request.getIds(), request.getIsShow());
+            festivalService.bulkUpdateIsShow(request.getIds(), request.getIsShow());
+            log.info("✅ [CHECK] 축제/행사 {}개 항목 노출여부 일괄 변경 완료", request.getIds().size());
+            return ResponseEntity.ok("일괄 처리 완료");
+        } catch (Exception e) {
+            log.error("❌ [ERROR] 축제/행사 노출여부 일괄 변경 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * 일괄 업데이트 요청 DTO
+     */
+    @Data
+    static class BulkUpdateRequest {
+        private List<Long> ids;
+        private Boolean isShow;
     }
 }

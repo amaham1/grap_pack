@@ -51,4 +51,9 @@ public interface AdminWelfareMapper {
      * 복지서비스 삭제
      */
     void deleteWelfare(@Param("id") Long id);
+
+    /**
+     * 노출 여부 일괄 업데이트
+     */
+    void bulkUpdateIsShow(@Param("ids") List<Long> ids, @Param("isShow") Boolean isShow);
 }

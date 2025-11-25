@@ -1,18 +1,23 @@
 package com.example.cms.admin.external.controller;
 
 import com.example.cms.admin.external.service.AdminWelfareService;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
 import java.util.Map;
 
 /**
  * 관리자 복지서비스 컨트롤러
  */
+@Slf4j
 @Controller
 @RequestMapping("/admin/external/welfare")
 @RequiredArgsConstructor
@@ -119,5 +124,31 @@ public class AdminWelfareController {
             redirectAttributes.addFlashAttribute("error", "삭제 실패: " + e.getMessage());
         }
         return "redirect:/admin/external/welfare";
+    }
+
+    /**
+     * 노출 여부 일괄 변경
+     */
+    @PostMapping("/bulk-update-show")
+    @ResponseBody
+    public ResponseEntity<String> bulkUpdateIsShow(@RequestBody BulkUpdateRequest request) {
+        try {
+            log.info("✅ [CHECK] 복지서비스 노출여부 일괄 변경 요청: ids={}, isShow={}", request.getIds(), request.getIsShow());
+            welfareService.bulkUpdateIsShow(request.getIds(), request.getIsShow());
+            log.info("✅ [CHECK] 복지서비스 {}개 항목 노출여부 일괄 변경 완료", request.getIds().size());
+            return ResponseEntity.ok("일괄 처리 완료");
+        } catch (Exception e) {
+            log.error("❌ [ERROR] 복지서비스 노출여부 일괄 변경 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * 일괄 업데이트 요청 DTO
+     */
+    @Data
+    static class BulkUpdateRequest {
+        private List<Long> ids;
+        private Boolean isShow;
     }
 }

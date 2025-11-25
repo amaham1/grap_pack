@@ -51,4 +51,9 @@ public interface AdminFestivalMapper {
      * 축제/행사 삭제
      */
     void deleteFestival(@Param("id") Long id);
+
+    /**
+     * 노출 여부 일괄 업데이트
+     */
+    void bulkUpdateIsShow(@Param("ids") List<Long> ids, @Param("isShow") Boolean isShow);
 }
