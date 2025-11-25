@@ -79,22 +79,12 @@
         </table>
     </div>
 
-    <div th:if="${totalPages > 0}" class="pagination">
-        <a th:if="${currentPage > 1}"
-           th:href="@{/admin/external/welfare(page=${currentPage - 1}, keyword=${keyword})}"
-           class="btn btn-sm">이전</a>
-        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/admin/external/welfare(page=${i}, keyword=${keyword})}"
-               th:text="${i}"
-               th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
-        </span>
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/admin/external/welfare(page=${currentPage + 1}, keyword=${keyword})}"
-           class="btn btn-sm">다음</a>
-    </div>
-
-    <div class="pagination-info">
-        전체 <span th:text="${totalCount}"></span>개 (
-        <span th:text="${currentPage}"></span> /
-        <span th:text="${totalPages}"></span> 페이지)
-    </div>
+    <!-- 페이지 크기 선택기 및 페이징 -->
+    <div th:replace="~{common/fragments/pagination :: admin-pagination(
+        ${paginationBaseUrl},
+        ${pageInfo},
+        ${currentPage},
+        ${totalPages},
+        ${totalCount},
+        ${keyword},
+        ${size})}"></div>

@@ -1,6 +1,8 @@
 package com.example.cms.admin.external.service;
 
 import com.example.cms.admin.external.mapper.AdminFestivalMapper;
+import com.example.cms.common.util.PageInfo;
+import com.example.cms.common.util.PaginationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,9 @@ public class AdminFestivalService {
         // 페이징 정보 계산
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
+        // 스마트 페이지네이션 정보 생성
+        PageInfo pageInfo = PaginationUtil.calculatePageInfo(page, totalPages);
+
         Map<String, Object> result = new HashMap<>();
         result.put("festivalList", festivalList);
         result.put("currentPage", page);
@@ -46,6 +51,8 @@ public class AdminFestivalService {
         result.put("totalCount", totalCount);
         result.put("size", size);
         result.put("keyword", keyword);
+        result.put("pageInfo", pageInfo);
+        result.put("paginationBaseUrl", "/admin/external/festivals");
 
         return result;
     }

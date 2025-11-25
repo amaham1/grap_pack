@@ -18,7 +18,11 @@
       "Bash(gradlew.bat bootRun)",
       "Bash(cmd //c gradlew.bat bootRun)",
       "Bash(gradle --version:*)",
-      "Bash(powershell.exe -Command \"& { .\\gradlew.bat bootRun }\")"
+      "Bash(powershell.exe -Command \"& { .\\gradlew.bat bootRun }\")",
+      "Bash(cmd /c gradlew.bat clean build)",
+      "Bash(timeout /t 30 /nobreak)",
+      "Bash(cmd /c gradlew.bat clean build -x test)",
+      "Bash(./gradlew.bat clean build:*)"
     ],
     "deny": [],
     "ask": []

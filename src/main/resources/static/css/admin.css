@@ -361,6 +361,12 @@ main {
     color: white;
 }
 
+.pagination-ellipsis {
+    padding: 5px 10px;
+    color: #999;
+    display: inline-block;
+}
+
 .pagination-info {
     text-align: center;
     color: #666;
