@@ -1,5 +1,6 @@
 package com.example.cms.user.content.service;
 
+import com.example.cms.common.util.PaginationUtil;
 import com.example.cms.user.content.mapper.UserGasStationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,33 +19,30 @@ import java.util.Map;
 public class UserGasStationService {
 
     private final UserGasStationMapper gasStationMapper;
+    private static final int DEFAULT_GAS_STATION_PAGE_SIZE = 20;  // 주유소는 기본 20개
 
     /**
      * 주유소 및 최신 가격 목록 조회 (페이징)
      */
     public Map<String, Object> getGasStationList(String keyword, Integer page, Integer size) {
-        // 기본값 설정
-        if (page == null || page < 1) {
-            page = 1;
-        }
-        if (size == null || size < 1) {
-            size = 20;
-        }
+        // 기본값 설정 (주유소는 기본 20개)
+        Integer requestedSize = (size == null || size < 1) ? DEFAULT_GAS_STATION_PAGE_SIZE : size;
 
-        int offset = (page - 1) * size;
-
-        List<Map<String, Object>> gasStationList = gasStationMapper.selectGasStationListWithLatestPrice(keyword, offset, size);
+        // 전체 데이터 개수 조회
         int totalCount = gasStationMapper.selectGasStationCount(keyword);
 
-        // 페이징 정보 계산
-        int totalPages = (int) Math.ceil((double) totalCount / size);
+        // 공통 페이징 정보 생성
+        Map<String, Object> paginationResult = PaginationUtil.createPaginationResult(totalCount, page, requestedSize);
+        int offset = (int) paginationResult.get("offset");
+        int currentSize = (int) paginationResult.get("size");
 
+        // 데이터 조회
+        List<Map<String, Object>> gasStationList = gasStationMapper.selectGasStationListWithLatestPrice(keyword, offset, currentSize);
+
+        // 최종 결과 구성
         Map<String, Object> result = new HashMap<>();
+        result.putAll(paginationResult);  // 페이징 정보 추가 (offset, currentPage, size, totalPages, totalCount, pageInfo)
         result.put("gasStationList", gasStationList);
-        result.put("currentPage", page);
-        result.put("totalPages", totalPages);
-        result.put("totalCount", totalCount);
-        result.put("size", size);
         result.put("keyword", keyword);
 
         return result;

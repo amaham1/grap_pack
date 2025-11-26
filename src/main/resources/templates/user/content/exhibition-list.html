@@ -16,20 +16,36 @@
     <div class="content-grid" id="exhibition-list">
         <div th:each="exhibition : ${exhibitionList}" class="content-card exhibition-card">
             <!-- 커버 이미지 -->
-            <div th:if="${exhibition['coverImageUrl'] != null}" class="card-image">
-                <img th:src="${exhibition['coverImageUrl']}" alt="공연/전시 이미지">
+            <div class="card-image">
+                <img th:if="${exhibition['coverImageUrl'] != null}"
+                     th:src="${exhibition['coverImageUrl']}"
+                     alt="공연/전시 이미지"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" th:style="${exhibition['coverImageUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                    <span>이미지 없음</span>
+                </div>
             </div>
 
             <div class="card-content">
                 <div class="card-header">
-                    <span class="badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
-                    <span class="status" th:if="${exhibition['statusInfo'] != null}"
-                          th:text="${exhibition['statusInfo']}"></span>
+                    <div class="badge-group">
+                        <span class="badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
+                        <!-- 마감임박 배지 (종료일까지 7일 이내) -->
+                        <span th:if="${exhibition['endDate'] != null and exhibition['daysUntilEnd'] != null and exhibition['daysUntilEnd'] <= 7 and exhibition['daysUntilEnd'] >= 0}"
+                              class="badge badge-urgent">마감임박</span>
+                    </div>
                 </div>
                 <h3>
                     <a th:href="@{/user/content/exhibitions/{id}(id=${exhibition['id']})}"
                        th:text="${exhibition['title']}"></a>
                 </h3>
+
+                <!-- 요금 정보 -->
+                <div class="card-price" th:if="${exhibition['payInfo'] != null and !#strings.isEmpty(exhibition['payInfo'])}">
+                    <span class="price-label">요금</span>
+                    <span class="price-value" th:text="${exhibition['payInfo']}"></span>
+                </div>
+
                 <div class="card-meta">
                     <div th:if="${exhibition['startDate'] != null and exhibition['endDate'] != null}">
                         <i class="icon-calendar"></i>
@@ -50,54 +66,38 @@
         </div>
     </div>
 
-    <!-- 페이징 -->
-    <div th:if="${totalPages > 0}" class="pagination">
-        <a th:if="${currentPage > 1}"
-           th:href="@{/user/content/exhibitions(page=${currentPage - 1}, keyword=${keyword})}"
-           class="btn btn-sm">이전</a>
-
-        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/user/content/exhibitions(page=${i}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i == currentPage ? 'active' : ''}"
-               class="btn btn-sm"></a>
-        </span>
-
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/user/content/exhibitions(page=${currentPage + 1}, keyword=${keyword})}"
-           class="btn btn-sm">다음</a>
-    </div>
-
-    <div class="pagination-info">
-        전체 <span th:text="${totalCount}"></span>개
-        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
-    </div>
+    <!-- 페이징 (공통 fragment 사용) -->
+    <div th:replace="~{common/fragments/pagination :: user-pagination(
+        baseUrl='/user/content/exhibitions',
+        pageInfo=${pageInfo},
+        currentPage=${currentPage},
+        totalPages=${totalPages},
+        totalCount=${totalCount},
+        keyword=${keyword}
+    )}"></div>
 
     <style>
+        /* 공연/전시 전용 스타일 */
         .badge-exhibition {
             background-color: #a29bfe;
             color: white;
         }
-        .exhibition-card {
-            display: flex;
-            flex-direction: column;
+        .card-price {
+            margin: 0.75rem 0;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .card-image {
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-            border-radius: 8px 8px 0 0;
+        .price-label {
+            min-width: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
         }
-        .card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .card-content {
-            flex: 1;
-        }
-        .status {
-            font-size: 0.875rem;
-            color: #666;
+        .price-value {
+            font-size: 0.9rem;
+            font-weight: 700;
         }
     </style>

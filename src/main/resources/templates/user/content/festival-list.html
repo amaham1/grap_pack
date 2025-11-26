@@ -14,19 +14,43 @@
 
     <!-- 축제/행사 목록 -->
     <div class="content-grid" id="festival-list">
-        <div th:each="festival : ${festivalList}" class="content-card">
-            <div class="card-header">
-                <span class="badge badge-festival">축제/행사</span>
-                <span class="date" th:if="${festival['writtenDate'] != null}"
-                      th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
+        <div th:each="festival : ${festivalList}" class="content-card festival-card">
+            <!-- 썸네일 이미지 -->
+            <div class="card-image">
+                <img th:if="${festival['thumbnailUrl'] != null}"
+                     th:src="${festival['thumbnailUrl']}"
+                     th:alt="${festival['title']}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" th:style="${festival['thumbnailUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                    <span>이미지 없음</span>
+                </div>
             </div>
-            <h3>
-                <a th:href="@{/user/content/festivals/{id}(id=${festival['id']})}"
-                   th:text="${festival['title']}"></a>
-            </h3>
-            <div class="card-meta">
-                <span th:if="${festival['writerName'] != null}"
-                      th:text="${festival['writerName']}"></span>
+
+            <div class="card-content">
+                <div class="card-header">
+                    <div class="badge-group">
+                        <span class="badge badge-festival">축제/행사</span>
+                        <!-- 마감임박 배지 (작성일로부터 7일 이내) -->
+                        <span th:if="${festival['writtenDate'] != null and festival['daysUntil'] != null and festival['daysUntil'] <= 7 and festival['daysUntil'] >= 0}"
+                              class="badge badge-urgent">마감임박</span>
+                    </div>
+                    <span class="date" th:if="${festival['writtenDate'] != null}"
+                          th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
+                </div>
+                <h3>
+                    <a th:href="@{/user/content/festivals/{id}(id=${festival['id']})}"
+                       th:text="${festival['title']}"></a>
+                </h3>
+
+                <!-- 내용 미리보기 -->
+                <div class="card-preview" th:if="${festival['contentPreview'] != null and !#strings.isEmpty(festival['contentPreview'])}">
+                    <p th:text="${festival['contentPreview']}"></p>
+                </div>
+
+                <div class="card-meta">
+                    <span th:if="${festival['writerName'] != null}"
+                          th:text="${festival['writerName']}"></span>
+                </div>
             </div>
         </div>
 
@@ -35,30 +59,18 @@
         </div>
     </div>
 
-    <!-- 페이징 -->
-    <div th:if="${totalPages > 0}" class="pagination">
-        <a th:if="${currentPage > 1}"
-           th:href="@{/user/content/festivals(page=${currentPage - 1}, keyword=${keyword})}"
-           class="btn btn-sm">이전</a>
-
-        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/user/content/festivals(page=${i}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i == currentPage ? 'active' : ''}"
-               class="btn btn-sm"></a>
-        </span>
-
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/user/content/festivals(page=${currentPage + 1}, keyword=${keyword})}"
-           class="btn btn-sm">다음</a>
-    </div>
-
-    <div class="pagination-info">
-        전체 <span th:text="${totalCount}"></span>개
-        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
-    </div>
+    <!-- 페이징 (공통 fragment 사용) -->
+    <div th:replace="~{common/fragments/pagination :: user-pagination(
+        baseUrl='/user/content/festivals',
+        pageInfo=${pageInfo},
+        currentPage=${currentPage},
+        totalPages=${totalPages},
+        totalCount=${totalCount},
+        keyword=${keyword}
+    )}"></div>
 
     <style>
+        /* 축제/행사 전용 스타일 */
         .badge-festival {
             background-color: #ff6b6b;
             color: white;

@@ -1,6 +1,44 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
+<!-- 사용자 페이지네이션 (간단한 버전) -->
+<div th:fragment="user-pagination(baseUrl, pageInfo, currentPage, totalPages, totalCount, keyword)">
+
+    <!-- 페이지 버튼 -->
+    <div th:if="${totalPages > 0}" class="pagination">
+
+        <!-- 이전 버튼 -->
+        <a th:if="${pageInfo.hasPrevious}"
+           th:href="@{${baseUrl}(page=${currentPage - 1}, keyword=${keyword})}"
+           class="btn btn-sm">이전</a>
+
+        <!-- 페이지 번호 -->
+        <span th:each="page : ${pageInfo.pages}">
+            <!-- 생략 부호 (...) -->
+            <span th:if="${page.isEllipsis}" class="pagination-ellipsis">...</span>
+
+            <!-- 페이지 번호 버튼 -->
+            <a th:if="${!page.isEllipsis}"
+               th:href="@{${baseUrl}(page=${page.number}, keyword=${keyword})}"
+               th:text="${page.number}"
+               th:class="|btn btn-sm ${page.isActive ? 'active' : ''}|"></a>
+        </span>
+
+        <!-- 다음 버튼 -->
+        <a th:if="${pageInfo.hasNext}"
+           th:href="@{${baseUrl}(page=${currentPage + 1}, keyword=${keyword})}"
+           class="btn btn-sm">다음</a>
+    </div>
+
+    <!-- 페이지 정보 -->
+    <div class="pagination-info">
+        전체 <span th:text="${totalCount}"></span>개 (
+        <span th:text="${currentPage}"></span> /
+        <span th:text="${totalPages}"></span> 페이지)
+    </div>
+
+</div>
+
 <!-- 관리자 페이지네이션 (페이지 크기 선택기 포함) -->
 <div th:fragment="admin-pagination(baseUrl, pageInfo, currentPage, totalPages, totalCount, keyword, size)">
 

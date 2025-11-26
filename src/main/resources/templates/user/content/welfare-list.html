@@ -15,18 +15,39 @@
     <!-- 복지서비스 목록 -->
     <div class="content-grid" id="welfare-list">
         <div th:each="welfare : ${welfareList}" class="content-card welfare-card">
-            <div class="card-header">
-                <span class="badge badge-welfare">복지서비스</span>
-                <div class="location-badges">
-                    <span th:if="${welfare['isAllLocation'] ?: false}" class="location-badge">전체</span>
-                    <span th:if="${welfare['isJejuLocation'] ?: false}" class="location-badge">제주시</span>
-                    <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="location-badge">서귀포시</span>
+            <!-- 썸네일 영역 (placeholder) -->
+            <div class="card-image">
+                <div class="image-placeholder">
+                    <span>이미지 없음</span>
                 </div>
             </div>
-            <h3>
-                <a th:href="@{/user/content/welfare/{id}(id=${welfare['id']})}"
-                   th:text="${welfare['serviceName']}"></a>
-            </h3>
+
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="badge badge-welfare">복지서비스</span>
+                    <div class="location-badges">
+                        <span th:if="${welfare['isAllLocation'] ?: false}" class="location-badge">전체</span>
+                        <span th:if="${welfare['isJejuLocation'] ?: false}" class="location-badge">제주시</span>
+                        <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="location-badge">서귀포시</span>
+                    </div>
+                </div>
+                <h3>
+                    <a th:href="@{/user/content/welfare/{id}(id=${welfare['id']})}"
+                       th:text="${welfare['serviceName']}"></a>
+                </h3>
+
+                <!-- 지원 대상 요약 -->
+                <div class="card-info" th:if="${welfare['supportTargetPreview'] != null and !#strings.isEmpty(welfare['supportTargetPreview'])}">
+                    <div class="info-label">지원대상</div>
+                    <div class="info-text" th:text="${welfare['supportTargetPreview']}"></div>
+                </div>
+
+                <!-- 지원 내용 미리보기 -->
+                <div class="card-info" th:if="${welfare['supportContentPreview'] != null and !#strings.isEmpty(welfare['supportContentPreview'])}">
+                    <div class="info-label">지원내용</div>
+                    <div class="info-text" th:text="${welfare['supportContentPreview']}"></div>
+                </div>
+            </div>
         </div>
 
         <div th:if="${#lists.isEmpty(welfareList)}" class="empty-message">
@@ -34,30 +55,18 @@
         </div>
     </div>
 
-    <!-- 페이징 -->
-    <div th:if="${totalPages > 0}" class="pagination">
-        <a th:if="${currentPage > 1}"
-           th:href="@{/user/content/welfare(page=${currentPage - 1}, keyword=${keyword})}"
-           class="btn btn-sm">이전</a>
-
-        <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/user/content/welfare(page=${i}, keyword=${keyword})}"
-               th:text="${i}"
-               th:classappend="${i == currentPage ? 'active' : ''}"
-               class="btn btn-sm"></a>
-        </span>
-
-        <a th:if="${currentPage < totalPages}"
-           th:href="@{/user/content/welfare(page=${currentPage + 1}, keyword=${keyword})}"
-           class="btn btn-sm">다음</a>
-    </div>
-
-    <div class="pagination-info">
-        전체 <span th:text="${totalCount}"></span>개
-        (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
-    </div>
+    <!-- 페이징 (공통 fragment 사용) -->
+    <div th:replace="~{common/fragments/pagination :: user-pagination(
+        baseUrl='/user/content/welfare',
+        pageInfo=${pageInfo},
+        currentPage=${currentPage},
+        totalPages=${totalPages},
+        totalCount=${totalCount},
+        keyword=${keyword}
+    )}"></div>
 
     <style>
+        /* 복지서비스 전용 스타일 */
         .badge-welfare {
             background-color: #74b9ff;
             color: white;
@@ -77,5 +86,30 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        .card-info {
+            margin: 0.75rem 0;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #74b9ff;
+        }
+        .info-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-text {
+            font-size: 0.9rem;
+            color: #212529;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
