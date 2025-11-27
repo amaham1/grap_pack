@@ -1,6 +1,6 @@
 package com.example.cms.admin.image.controller;
 
-import com.example.cms.admin.image.model.Image;
+import com.example.cms.admin.image.model.AdminImage;
 import com.example.cms.admin.image.service.AdminImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -27,7 +27,7 @@ public class AdminImageController {
      */
     @GetMapping("/list/{contentId}")
     @ResponseBody
-    public List<Image> getImageList(@PathVariable("contentId") Long contentId) {
+    public List<AdminImage> getImageList(@PathVariable("contentId") Long contentId) {
         return adminImageService.getImageList(contentId);
     }
 

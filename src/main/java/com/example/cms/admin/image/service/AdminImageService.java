@@ -1,7 +1,7 @@
 package com.example.cms.admin.image.service;
 
 import com.example.cms.admin.image.mapper.AdminImageMapper;
-import com.example.cms.admin.image.model.Image;
+import com.example.cms.admin.image.model.AdminImage;
 import com.example.cms.common.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,14 +29,14 @@ public class AdminImageService {
     /**
      * 콘텐츠별 이미지 목록 조회
      */
-    public List<Image> getImageList(Long contentId) {
+    public List<AdminImage> getImageList(Long contentId) {
         return adminImageMapper.selectImageListByContentId(contentId);
     }
 
     /**
      * 이미지 상세 조회
      */
-    public Image getImage(Long imageId) {
+    public AdminImage getImage(Long imageId) {
         return adminImageMapper.selectImageById(imageId);
     }
 
@@ -56,7 +56,7 @@ public class AdminImageService {
         String filePath = fileUtil.getFilePath(savedName);
 
         // 이미지 정보 저장
-        Image image = Image.builder()
+        AdminImage image = AdminImage.builder()
                 .contentId(contentId)
                 .originalName(file.getOriginalFilename())
                 .savedName(savedName)
@@ -74,7 +74,7 @@ public class AdminImageService {
     @Transactional
     public void deleteImage(Long imageId) throws IOException {
         // 이미지 정보 조회
-        Image image = adminImageMapper.selectImageById(imageId);
+        AdminImage image = adminImageMapper.selectImageById(imageId);
         if (image == null) {
             throw new IllegalArgumentException("이미지를 찾을 수 없습니다.");
         }
@@ -92,10 +92,10 @@ public class AdminImageService {
     @Transactional
     public void deleteImagesByContentId(Long contentId) throws IOException {
         // 모든 이미지 조회
-        List<Image> imageList = adminImageMapper.selectImageListByContentId(contentId);
+        List<AdminImage> imageList = adminImageMapper.selectImageListByContentId(contentId);
 
         // 파일 삭제
-        for (Image image : imageList) {
+        for (AdminImage image : imageList) {
             fileUtil.deleteFile(image.getSavedName());
         }
 

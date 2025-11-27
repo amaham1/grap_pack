@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Alias("Image")
-public class Image {
+@Alias("AdminImage")
+public class AdminImage {
 
     /**
      * 이미지 ID

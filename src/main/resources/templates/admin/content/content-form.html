@@ -1,16 +1,16 @@
-<div class="page-header">
+<div class="admin-page-header">
         <h2 th:text="${contentData != null ? '콘텐츠 수정' : '콘텐츠 등록'}"></h2>
-        <a th:href="@{/admin/content/list}" class="btn btn-secondary">목록으로</a>
+        <a th:href="@{/admin/content/list}" class="admin-btn admin-btn-secondary">목록으로</a>
     </div>
 
     <form th:action="${contentData != null ? '/admin/content/update' : '/admin/content/create'}"
-          method="post" class="form"
+          method="post" class="admin-form"
           data-ajax="true"
           data-success-message="저장되었습니다.">
 
         <input type="hidden" name="contentId" th:value="${contentData?.contentId}">
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label for="contentTypeId">콘텐츠 종류 *</label>
             <select id="contentTypeId" name="contentTypeId" required>
                 <option value="">선택하세요</option>
@@ -22,19 +22,19 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label for="title">제목 *</label>
             <input type="text" id="title" name="title"
                    th:value="${contentData?.title}" required>
         </div>
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label for="content">내용 *</label>
             <textarea id="content" name="content" rows="10" required
                       th:text="${contentData?.content}"></textarea>
         </div>
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label>
                 <input type="hidden" name="_isPublished" value="on">
                 <input type="checkbox" name="isPublished" value="true"
@@ -43,37 +43,37 @@
             </label>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">저장</button>
-            <a th:href="@{/admin/content/list}" class="btn btn-secondary">취소</a>
+        <div class="admin-form-actions">
+            <button type="submit" class="admin-btn admin-btn-primary">저장</button>
+            <a th:href="@{/admin/content/list}" class="admin-btn admin-btn-secondary">취소</a>
         </div>
     </form>
 
     <!-- 이미지 관리 (수정 모드에서만 표시) -->
-    <div th:if="${contentData != null}" class="image-section">
+    <div th:if="${contentData != null}" class="admin-image-section">
         <h3>이미지 관리 (최대 10개)</h3>
 
         <!-- 이미지 업로드 폼 -->
-        <form th:action="@{/admin/image/upload}" method="post" enctype="multipart/form-data" class="form"
+        <form th:action="@{/admin/image/upload}" method="post" enctype="multipart/form-data" class="admin-form"
               data-ajax="true"
               data-success-message="이미지가 업로드되었습니다.">
             <input type="hidden" name="contentId" th:value="${contentData.contentId}">
 
-            <div class="form-group">
+            <div class="admin-form-group">
                 <label for="file">이미지 파일</label>
                 <input type="file" id="file" name="file" accept="image/*" required>
             </div>
 
-            <div class="form-group">
+            <div class="admin-form-group">
                 <label for="displayOrder">표시 순서</label>
                 <input type="number" id="displayOrder" name="displayOrder" value="0" min="0">
             </div>
 
-            <button type="submit" class="btn btn-primary">이미지 업로드</button>
+            <button type="submit" class="admin-btn admin-btn-primary">이미지 업로드</button>
         </form>
 
         <!-- 업로드된 이미지 목록은 HTMX 또는 JavaScript로 동적 로드 가능 -->
-        <div class="image-list">
+        <div class="admin-image-list">
             <p>이미지 목록은 콘텐츠 저장 후 관리할 수 있습니다.</p>
         </div>
     </div>

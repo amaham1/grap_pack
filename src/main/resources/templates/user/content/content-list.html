@@ -1,11 +1,11 @@
-<div class="page-header">
+<div class="user-page-header">
         <h2>콘텐츠</h2>
     </div>
 
         <!-- 검색 및 필터 -->
-        <div class="search-section">
-            <form th:action="@{/user/content/list}" method="get" class="search-form" data-ajax="true">
-                <select name="contentTypeId" class="form-control" onchange="this.form.submit()">
+        <div class="user-search-section">
+            <form th:action="@{/user/content/list}" method="get" class="user-search-form" data-ajax="true">
+                <select name="contentTypeId" class="user-form-control" onchange="this.form.submit()">
                     <option value="">전체 카테고리</option>
                     <option th:each="type : ${contentTypeList}"
                             th:value="${type.contentTypeId}"
@@ -15,41 +15,42 @@
                 </select>
 
                 <input type="text" name="keyword" th:value="${searchParam.keyword ?: ''}"
-                       placeholder="검색어를 입력하세요" class="form-control">
+                       placeholder="검색어를 입력하세요" class="user-form-control">
 
-                <button type="submit" class="btn btn-primary">검색</button>
+                <button type="submit" class="user-btn user-btn-primary">검색</button>
             </form>
         </div>
 
         <!-- 콘텐츠 목록 -->
-        <div class="content-grid" id="content-list">
-            <div th:each="content : ${contentList}" class="content-card">
-                <div class="card-header">
-                    <span class="badge" th:text="${content['typeName'] ?: '일반'}"></span>
-                    <span class="date" th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy.MM.dd') : ''}"></span>
+        <div class="user-content-grid" id="content-list">
+            <div th:each="content : ${contentList}" class="user-content-card user-clickable-card"
+                 th:data-href="@{/user/content/detail/{id}(id=${content['contentId']})}">
+                <div class="user-card-header">
+                    <span class="user-badge" th:text="${content['typeName'] ?: '일반'}"></span>
+                    <span class="user-date" th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy.MM.dd') : ''}"></span>
                 </div>
                 <h3>
                     <a th:href="@{/user/content/detail/{id}(id=${content['contentId']})}"
                        th:text="${content['title'] ?: '제목 없음'}"></a>
                 </h3>
-                <div class="card-footer">
-                    <span class="view-count" th:text="${content['viewCount'] ?: 0}"></span>
+                <div class="user-card-footer">
+                    <span class="user-view-count" th:text="${content['viewCount'] ?: 0}"></span>
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(contentList)}" class="empty-message">
+            <div th:if="${#lists.isEmpty(contentList)}" class="user-empty-message">
                 <p>등록된 콘텐츠가 없습니다.</p>
             </div>
         </div>
 
         <!-- 페이징 (HTMX 적용) -->
-        <div th:if="${totalPages > 0}" class="pagination">
+        <div th:if="${totalPages > 0}" class="user-pagination">
             <a th:if="${currentPage > 1}"
                th:href="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                th:hx-get="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
-               class="btn btn-sm">이전</a>
+               class="user-btn user-btn-sm">이전</a>
 
             <span th:each="i : ${#numbers.sequence(1, totalPages)}">
                 <a th:href="@{/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
@@ -58,7 +59,7 @@
                    hx-swap="innerHTML"
                    th:text="${i}"
                    th:classappend="${i == currentPage ? 'active' : ''}"
-                   class="btn btn-sm"></a>
+                   class="user-btn user-btn-sm"></a>
             </span>
 
             <a th:if="${currentPage < totalPages}"
@@ -66,10 +67,10 @@
                th:hx-get="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
-               class="btn btn-sm">다음</a>
+               class="user-btn user-btn-sm">다음</a>
         </div>
 
-        <div class="pagination-info">
+        <div class="user-pagination-info">
             전체 <span th:text="${totalCount}"></span>개
             (페이지 <span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span>)
         </div>

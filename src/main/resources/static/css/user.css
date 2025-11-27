@@ -1,4 +1,4 @@
-/* 심플 블로그 CSS */
+/* 사용자 페이지 CSS */
 
 * {
     margin: 0;
@@ -14,7 +14,7 @@ body {
     background: #ffffff;
 }
 
-.container {
+.user-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
@@ -71,24 +71,25 @@ body {
     border-bottom: 2px solid #000000;
 }
 
-.user-header .container {
+.user-header .user-container {
     overflow: auto;
 }
 
 /* 메인 컨텐츠 */
-main {
+.user-main {
     padding: 60px 0;
     min-height: calc(100vh - 200px);
 }
 
 /* 페이지 헤더 */
-.page-header {
+.user-page-header {
+    margin-top: 50px;
     margin-bottom: 50px;
     padding-bottom: 20px;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.page-header h2 {
+.user-page-header h2 {
     font-size: 32px;
     font-weight: 600;
     color: #000000;
@@ -96,20 +97,20 @@ main {
 }
 
 /* 검색 섹션 */
-.search-section {
+.user-search-section {
     background: #fafafa;
     padding: 25px;
     margin-bottom: 50px;
     border: 1px solid #e0e0e0;
 }
 
-.search-form {
+.user-search-form {
     display: flex;
     gap: 10px;
     align-items: center;
 }
 
-.form-control {
+.user-form-control {
     flex: 1;
     padding: 12px 15px;
     border: 1px solid #d0d0d0;
@@ -117,30 +118,30 @@ main {
     background-color: #ffffff;
 }
 
-.form-control:focus {
+.user-form-control:focus {
     outline: none;
     border-color: #000000;
 }
 
 /* 콘텐츠 그리드 */
-.content-grid {
+.user-content-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 30px;
     margin-bottom: 50px;
 }
 
-.content-card {
+.user-content-card {
     background: #ffffff;
     padding: 25px;
     border: 1px solid #e0e0e0;
 }
 
-.content-card:hover {
+.user-content-card:hover {
     border-color: #000000;
 }
 
-.content-card .card-header {
+.user-content-card .user-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -149,23 +150,23 @@ main {
     border-bottom: 1px solid #f0f0f0;
 }
 
-.content-card h3 {
+.user-content-card h3 {
     font-size: 20px;
     font-weight: 600;
     margin: 0 0 20px 0;
     line-height: 1.4;
 }
 
-.content-card h3 a {
+.user-content-card h3 a {
     color: #000000;
     text-decoration: none;
 }
 
-.content-card h3 a:hover {
+.user-content-card h3 a:hover {
     text-decoration: underline;
 }
 
-.content-card .card-footer {
+.user-content-card .user-card-footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -176,7 +177,7 @@ main {
 }
 
 /* 배지 */
-.badge {
+.user-badge {
     display: inline-block;
     padding: 4px 12px;
     font-size: 12px;
@@ -185,46 +186,46 @@ main {
     color: #ffffff;
 }
 
-.date {
+.user-date {
     color: #999999;
     font-size: 13px;
 }
 
-.view-count {
+.user-view-count {
     color: #999999;
     font-size: 13px;
 }
 
-.view-count::before {
+.user-view-count::before {
     content: 'views: ';
 }
 
 /* 빈 메시지 */
-.empty-message {
+.user-empty-message {
     grid-column: 1 / -1;
     text-align: center;
     padding: 60px 20px;
     color: #999999;
 }
 
-.empty-message p {
+.user-empty-message p {
     font-size: 16px;
 }
 
 /* 콘텐츠 상세 */
-.content-detail {
+.user-content-detail {
     background: #ffffff;
     padding: 40px 50px;
     border: 1px solid #e0e0e0;
 }
 
-.content-header {
+.user-content-header {
     margin-bottom: 40px;
     padding-bottom: 25px;
     border-bottom: 1px solid #e0e0e0;
 }
 
-.content-header .meta {
+.user-content-header .user-meta {
     display: flex;
     gap: 15px;
     margin-bottom: 20px;
@@ -233,7 +234,7 @@ main {
     align-items: center;
 }
 
-.content-header h1 {
+.user-content-header h1 {
     font-size: 32px;
     font-weight: 600;
     color: #000000;
@@ -241,53 +242,52 @@ main {
     line-height: 1.4;
 }
 
-.content-body {
+.user-content-body {
     font-size: 16px;
     line-height: 1.8;
     color: #333333;
     margin-bottom: 40px;
 }
 
-.content-body p {
+.user-content-body p {
     margin-bottom: 15px;
 }
 
 /* 이미지 갤러리 */
-.image-gallery {
+.user-image-gallery {
     margin: 40px 0;
     padding: 40px 0;
-    border-top: 1px solid #e0e0e0;
 }
 
-.image-gallery h3 {
+.user-image-gallery h3 {
     font-size: 20px;
     font-weight: 600;
     margin-bottom: 25px;
     color: #000000;
 }
 
-.gallery-grid {
+.user-gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
 }
 
-.gallery-item {
+.user-gallery-item {
     overflow: hidden;
     border: 1px solid #e0e0e0;
 }
 
-.gallery-item:hover {
+.user-gallery-item:hover {
     border-color: #000000;
 }
 
-.gallery-item img {
+.user-gallery-item img {
     width: 100%;
     height: auto;
     display: block;
 }
 
-.content-footer {
+.user-content-footer {
     margin-top: 40px;
     padding-top: 25px;
     border-top: 1px solid #e0e0e0;
@@ -296,7 +296,7 @@ main {
 }
 
 /* 버튼 */
-.btn {
+.user-btn {
     display: inline-block;
     padding: 12px 24px;
     font-size: 14px;
@@ -309,32 +309,32 @@ main {
     color: #000000;
 }
 
-.btn-primary {
+.user-btn-primary {
     background: #000000;
     color: #ffffff;
 }
 
-.btn-primary:hover {
+.user-btn-primary:hover {
     background: #333333;
 }
 
-.btn-secondary {
+.user-btn-secondary {
     background: #ffffff;
     color: #000000;
 }
 
-.btn-secondary:hover {
+.user-btn-secondary:hover {
     background: #000000;
     color: #ffffff;
 }
 
-.btn-sm {
+.user-btn-sm {
     padding: 8px 16px;
     font-size: 13px;
 }
 
 /* 페이징 */
-.pagination {
+.user-pagination {
     display: flex;
     justify-content: center;
     gap: 5px;
@@ -342,7 +342,7 @@ main {
     flex-wrap: wrap;
 }
 
-.pagination .btn {
+.user-pagination .user-btn {
     min-width: 40px;
     padding: 10px 15px;
     background: #ffffff;
@@ -350,19 +350,19 @@ main {
     border: 1px solid #d0d0d0;
 }
 
-.pagination .btn:hover {
+.user-pagination .user-btn:hover {
     background: #000000;
     color: #ffffff;
     border-color: #000000;
 }
 
-.pagination .btn.active {
+.user-pagination .user-btn.active {
     background: #000000;
     color: #ffffff;
     border-color: #000000;
 }
 
-.pagination-info {
+.user-pagination-info {
     text-align: center;
     color: #666666;
     font-size: 14px;
@@ -386,32 +386,32 @@ main {
 
 /* 반응형 */
 @media (max-width: 768px) {
-    .content-grid {
+    .user-content-grid {
         grid-template-columns: 1fr;
         gap: 20px;
     }
 
-    .search-form {
+    .user-search-form {
         flex-direction: column;
     }
 
-    .gallery-grid {
+    .user-gallery-grid {
         grid-template-columns: 1fr;
     }
 
-    .content-detail {
+    .user-content-detail {
         padding: 30px 25px;
     }
 
-    .content-header h1 {
+    .user-content-header h1 {
         font-size: 24px;
     }
 
-    .content-body {
+    .user-content-body {
         font-size: 15px;
     }
 
-    .page-header h2 {
+    .user-page-header h2 {
         font-size: 24px;
     }
 
@@ -446,7 +446,7 @@ main {
    ============================================ */
 
 /* 마감임박 배지 */
-.badge-urgent {
+.user-badge-urgent {
     background-color: #ff3838;
     color: white;
     animation: pulse 1.5s ease-in-out infinite;
@@ -458,14 +458,14 @@ main {
 }
 
 /* 배지 그룹 */
-.badge-group {
+.user-badge-group {
     display: flex;
     gap: 0.5rem;
     align-items: center;
 }
 
 /* 카드 이미지 영역 */
-.card-image {
+.user-card-image {
     width: 100%;
     height: 180px;
     overflow: hidden;
@@ -476,18 +476,18 @@ main {
 }
 
 /* 공연/전시는 높이가 다름 */
-.exhibition-card .card-image {
+.user-exhibition-card .user-card-image {
     height: 200px;
 }
 
-.card-image img {
+.user-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
 /* 이미지 placeholder */
-.image-placeholder {
+.user-image-placeholder {
     width: 100%;
     height: 100%;
     display: flex;
@@ -500,21 +500,21 @@ main {
 }
 
 /* 카드 콘텐츠 영역 */
-.card-content {
+.user-card-content {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
 /* 카드 미리보기 (축제/행사용) */
-.card-preview {
+.user-card-preview {
     margin: 0.5rem 0;
     color: #666;
     font-size: 0.9rem;
     line-height: 1.5;
 }
 
-.card-preview p {
+.user-card-preview p {
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -524,7 +524,7 @@ main {
 }
 
 /* 카드 메타 정보 */
-.card-meta {
+.user-card-meta {
     margin-top: auto;
     padding-top: 15px;
     font-size: 14px;
@@ -532,9 +532,20 @@ main {
 }
 
 /* 카드 타입별 레이아웃 */
-.festival-card,
-.exhibition-card,
-.welfare-card {
+.user-festival-card,
+.user-exhibition-card,
+.user-welfare-card {
     display: flex;
     flex-direction: column;
+}
+
+/* 클릭 가능한 카드 */
+.user-clickable-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.user-clickable-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

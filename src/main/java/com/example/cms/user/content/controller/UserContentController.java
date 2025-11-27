@@ -1,9 +1,9 @@
 package com.example.cms.user.content.controller;
 
-import com.example.cms.admin.content.model.ContentType;
+import com.example.cms.admin.content.model.AdminContentType;
 import com.example.cms.admin.content.service.AdminContentTypeService;
-import com.example.cms.user.content.model.Content;
-import com.example.cms.user.content.model.ContentSearchParam;
+import com.example.cms.user.content.model.UserContent;
+import com.example.cms.user.content.model.UserContentSearchParam;
 import com.example.cms.user.content.service.UserContentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -30,9 +30,9 @@ public class UserContentController {
      * 콘텐츠 목록 페이지
      */
     @GetMapping("/list")
-    public String contentList(ContentSearchParam searchParam, Model model) {
+    public String contentList(UserContentSearchParam searchParam, Model model) {
         Map<String, Object> result = userContentService.getContentList(searchParam);
-        List<ContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
+        List<AdminContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
 
         model.addAttribute("contentList", result.get("contentList"));
         model.addAttribute("currentPage", result.get("currentPage"));
@@ -51,7 +51,7 @@ public class UserContentController {
      */
     @GetMapping("/detail/{contentId}")
     public String contentDetail(@PathVariable("contentId") Long contentId, Model model) {
-        Content contentData = userContentService.getContent(contentId);
+        UserContent contentData = userContentService.getContent(contentId);
 
         if (contentData == null) {
             return "redirect:/user/content/list";

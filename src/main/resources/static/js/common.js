@@ -252,10 +252,30 @@ async function externalDataBulkUpdateIsShow(apiUrl, isShow) {
 }
 
 /**
+ * 클릭 가능한 카드 초기화
+ * data-href 속성이 있는 .clickable-card 요소를 클릭하면 해당 URL로 이동
+ */
+function initClickableCards() {
+    document.querySelectorAll('.clickable-card[data-href]').forEach(card => {
+        card.addEventListener('click', (e) => {
+            // 내부 링크나 버튼 클릭 시 카드 클릭 이벤트 무시
+            if (e.target.closest('a, button')) {
+                return;
+            }
+            const href = card.dataset.href;
+            if (href) {
+                window.location.href = href;
+            }
+        });
+    });
+}
+
+/**
  * 페이지 로드 시 초기화
  */
 document.addEventListener('DOMContentLoaded', () => {
     initAjaxForms();
+    initClickableCards();
 
     // 외부 데이터 체크박스 변경 시 버튼 상태 업데이트
     document.querySelectorAll('.external-data-item-checkbox').forEach(checkbox => {

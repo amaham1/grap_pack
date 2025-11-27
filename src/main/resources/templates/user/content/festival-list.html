@@ -1,40 +1,41 @@
-<div class="page-header">
+<div class="user-page-header">
         <h2>제주 축제/행사</h2>
         <p class="text-muted">제주도의 다양한 축제와 행사 정보를 확인하세요</p>
     </div>
 
     <!-- 검색 -->
-    <div class="search-section">
-        <form th:action="@{/user/content/festivals}" method="get" class="search-form" data-ajax="true">
+    <div class="user-search-section">
+        <form th:action="@{/user/content/festivals}" method="get" class="user-search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
-                   placeholder="축제/행사명 검색" class="form-control">
-            <button type="submit" class="btn btn-primary">검색</button>
+                   placeholder="축제/행사명 검색" class="user-form-control">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
         </form>
     </div>
 
     <!-- 축제/행사 목록 -->
-    <div class="content-grid" id="festival-list">
-        <div th:each="festival : ${festivalList}" class="content-card festival-card">
+    <div class="user-content-grid" id="festival-list">
+        <div th:each="festival : ${festivalList}" class="user-content-card user-festival-card user-clickable-card"
+             th:data-href="@{/user/content/festivals/{id}(id=${festival['id']})}">
             <!-- 썸네일 이미지 -->
-            <div class="card-image">
+            <div class="user-card-image">
                 <img th:if="${festival['thumbnailUrl'] != null}"
                      th:src="${festival['thumbnailUrl']}"
                      th:alt="${festival['title']}"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="image-placeholder" th:style="${festival['thumbnailUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                <div class="user-image-placeholder" th:style="${festival['thumbnailUrl'] == null ? 'display: flex;' : 'display: none;'}">
                     <span>이미지 없음</span>
                 </div>
             </div>
 
-            <div class="card-content">
-                <div class="card-header">
-                    <div class="badge-group">
-                        <span class="badge badge-festival">축제/행사</span>
+            <div class="user-card-content">
+                <div class="user-card-header">
+                    <div class="user-badge-group">
+                        <span class="user-badge badge-festival">축제/행사</span>
                         <!-- 마감임박 배지 (작성일로부터 7일 이내) -->
                         <span th:if="${festival['writtenDate'] != null and festival['daysUntil'] != null and festival['daysUntil'] <= 7 and festival['daysUntil'] >= 0}"
-                              class="badge badge-urgent">마감임박</span>
+                              class="user-badge user-badge-urgent">마감임박</span>
                     </div>
-                    <span class="date" th:if="${festival['writtenDate'] != null}"
+                    <span class="user-date" th:if="${festival['writtenDate'] != null}"
                           th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
                 </div>
                 <h3>
@@ -43,18 +44,18 @@
                 </h3>
 
                 <!-- 내용 미리보기 -->
-                <div class="card-preview" th:if="${festival['contentPreview'] != null and !#strings.isEmpty(festival['contentPreview'])}">
+                <div class="user-card-preview" th:if="${festival['contentPreview'] != null and !#strings.isEmpty(festival['contentPreview'])}">
                     <p th:text="${festival['contentPreview']}"></p>
                 </div>
 
-                <div class="card-meta">
+                <div class="user-card-meta">
                     <span th:if="${festival['writerName'] != null}"
                           th:text="${festival['writerName']}"></span>
                 </div>
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(festivalList)}" class="empty-message">
+        <div th:if="${#lists.isEmpty(festivalList)}" class="user-empty-message">
             <p>등록된 축제/행사가 없습니다.</p>
         </div>
     </div>

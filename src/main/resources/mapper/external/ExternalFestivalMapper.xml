@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.external.api.mapper.FestivalMapper">
+<mapper namespace="com.example.cms.external.api.mapper.ExternalFestivalMapper">
 
     <!-- Result Map -->
-    <resultMap id="festivalResultMap" type="com.example.cms.external.api.model.Festival">
+    <resultMap id="festivalResultMap" type="com.example.cms.external.api.model.ExternalFestival">
         <id property="id" column="id"/>
         <result property="originalApiId" column="original_api_id"/>
         <result property="title" column="title"/>
@@ -23,7 +23,7 @@
     </resultMap>
 
     <!-- Insert -->
-    <insert id="insert" parameterType="com.example.cms.external.api.model.Festival" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.example.cms.external.api.model.ExternalFestival" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO festivals (
             original_api_id, title, content_html, source_url, writer_name,
             written_date, files_info, api_raw_data, is_show, admin_memo, fetched_at
@@ -34,7 +34,7 @@
     </insert>
 
     <!-- Update -->
-    <update id="update" parameterType="com.example.cms.external.api.model.Festival">
+    <update id="update" parameterType="com.example.cms.external.api.model.ExternalFestival">
         UPDATE festivals
         SET title = #{title},
             content_html = #{contentHtml},
@@ -49,7 +49,7 @@
     </update>
 
     <!-- Upsert (INSERT ... ON DUPLICATE KEY UPDATE) -->
-    <insert id="upsert" parameterType="com.example.cms.external.api.model.Festival">
+    <insert id="upsert" parameterType="com.example.cms.external.api.model.ExternalFestival">
         INSERT INTO festivals (
             original_api_id, title, content_html, source_url, writer_name,
             written_date, files_info, api_raw_data, is_show, admin_memo, fetched_at

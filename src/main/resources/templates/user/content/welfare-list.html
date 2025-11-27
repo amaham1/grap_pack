@@ -1,30 +1,31 @@
-<div class="page-header">
+<div class="user-page-header">
         <h2>제주 복지서비스</h2>
         <p class="text-muted">제주도의 다양한 복지 서비스 정보를 확인하세요</p>
     </div>
 
     <!-- 검색 -->
-    <div class="search-section">
-        <form th:action="@{/user/content/welfare}" method="get" class="search-form" data-ajax="true">
+    <div class="user-search-section">
+        <form th:action="@{/user/content/welfare}" method="get" class="user-search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
-                   placeholder="서비스명 검색" class="form-control">
-            <button type="submit" class="btn btn-primary">검색</button>
+                   placeholder="서비스명 검색" class="user-form-control">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
         </form>
     </div>
 
     <!-- 복지서비스 목록 -->
-    <div class="content-grid" id="welfare-list">
-        <div th:each="welfare : ${welfareList}" class="content-card welfare-card">
+    <div class="user-content-grid" id="welfare-list">
+        <div th:each="welfare : ${welfareList}" class="user-content-card user-welfare-card user-clickable-card"
+             th:data-href="@{/user/content/welfare/{id}(id=${welfare['id']})}">
             <!-- 썸네일 영역 (placeholder) -->
-            <div class="card-image">
-                <div class="image-placeholder">
+            <div class="user-card-image">
+                <div class="user-image-placeholder">
                     <span>이미지 없음</span>
                 </div>
             </div>
 
-            <div class="card-content">
-                <div class="card-header">
-                    <span class="badge badge-welfare">복지서비스</span>
+            <div class="user-card-content">
+                <div class="user-card-header">
+                    <span class="user-badge badge-welfare">복지서비스</span>
                     <div class="location-badges">
                         <span th:if="${welfare['isAllLocation'] ?: false}" class="location-badge">전체</span>
                         <span th:if="${welfare['isJejuLocation'] ?: false}" class="location-badge">제주시</span>
@@ -50,7 +51,7 @@
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(welfareList)}" class="empty-message">
+        <div th:if="${#lists.isEmpty(welfareList)}" class="user-empty-message">
             <p>등록된 복지서비스가 없습니다.</p>
         </div>
     </div>

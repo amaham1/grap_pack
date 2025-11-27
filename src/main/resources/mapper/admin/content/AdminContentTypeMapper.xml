@@ -5,7 +5,7 @@
 <mapper namespace="com.example.cms.admin.content.mapper.AdminContentTypeMapper">
 
     <!-- 콘텐츠 종류 결과 매핑 -->
-    <resultMap id="contentTypeResultMap" type="com.example.cms.admin.content.model.ContentType">
+    <resultMap id="contentTypeResultMap" type="AdminContentType">
         <id property="contentTypeId" column="content_type_id"/>
         <result property="typeName" column="type_name"/>
         <result property="typeDesc" column="type_desc"/>
@@ -37,14 +37,14 @@
     </select>
 
     <!-- 콘텐츠 종류 등록 -->
-    <insert id="insertContentType" parameterType="com.example.cms.admin.content.model.ContentType"
+    <insert id="insertContentType" parameterType="AdminContentType"
             useGeneratedKeys="true" keyProperty="contentTypeId">
         INSERT INTO content_type (type_name, type_desc, is_active, create_dt, update_dt)
         VALUES (#{typeName}, #{typeDesc}, #{isActive}, NOW(), NOW())
     </insert>
 
     <!-- 콘텐츠 종류 수정 -->
-    <update id="updateContentType" parameterType="com.example.cms.admin.content.model.ContentType">
+    <update id="updateContentType" parameterType="AdminContentType">
         UPDATE content_type
         SET type_name = #{typeName},
             type_desc = #{typeDesc},

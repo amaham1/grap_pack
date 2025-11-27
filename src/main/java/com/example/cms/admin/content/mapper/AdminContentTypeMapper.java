@@ -1,6 +1,6 @@
 package com.example.cms.admin.content.mapper;
 
-import com.example.cms.admin.content.model.ContentType;
+import com.example.cms.admin.content.model.AdminContentType;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,27 +14,27 @@ public interface AdminContentTypeMapper {
     /**
      * 콘텐츠 종류 목록 조회 (활성화된 것만)
      */
-    List<ContentType> selectActiveContentTypeList();
+    List<AdminContentType> selectActiveContentTypeList();
 
     /**
      * 콘텐츠 종류 전체 목록 조회
      */
-    List<ContentType> selectAllContentTypeList();
+    List<AdminContentType> selectAllContentTypeList();
 
     /**
      * 콘텐츠 종류 상세 조회
      */
-    ContentType selectContentTypeById(Long contentTypeId);
+    AdminContentType selectContentTypeById(Long contentTypeId);
 
     /**
      * 콘텐츠 종류 등록
      */
-    void insertContentType(ContentType contentType);
+    void insertContentType(AdminContentType contentType);
 
     /**
      * 콘텐츠 종류 수정
      */
-    void updateContentType(ContentType contentType);
+    void updateContentType(AdminContentType contentType);
 
     /**
      * 콘텐츠 종류 삭제

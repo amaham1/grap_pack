@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GasStation {
+public class ExternalGasStation {
     /**
      * 내부 ID
      */

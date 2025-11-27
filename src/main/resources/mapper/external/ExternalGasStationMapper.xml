@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.external.api.mapper.GasStationMapper">
+<mapper namespace="com.example.cms.external.api.mapper.ExternalGasStationMapper">
 
     <!-- Result Map -->
-    <resultMap id="gasStationResultMap" type="com.example.cms.external.api.model.GasStation">
+    <resultMap id="gasStationResultMap" type="com.example.cms.external.api.model.ExternalGasStation">
         <id property="id" column="id"/>
         <result property="opinetId" column="opinet_id"/>
         <result property="stationName" column="station_name"/>
@@ -20,7 +20,7 @@
     </resultMap>
 
     <!-- Upsert -->
-    <insert id="upsert" parameterType="com.example.cms.external.api.model.GasStation">
+    <insert id="upsert" parameterType="com.example.cms.external.api.model.ExternalGasStation">
         INSERT INTO gas_stations (
             opinet_id, station_name, brand, address, latitude, longitude, phone, api_raw_data
         ) VALUES (

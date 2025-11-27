@@ -1,4 +1,4 @@
-package com.example.cms.admin.content.model;
+package com.example.cms.user.content.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,16 +7,22 @@ import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
- * 콘텐츠 종류 모델
+ * 사용자 콘텐츠 모델
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Alias("ContentType")
-public class ContentType {
+@Alias("UserContent")
+public class UserContent {
+
+    /**
+     * 콘텐츠 ID
+     */
+    private Long contentId;
 
     /**
      * 콘텐츠 종류 ID
@@ -24,19 +30,24 @@ public class ContentType {
     private Long contentTypeId;
 
     /**
-     * 종류명
+     * 콘텐츠 종류명
      */
     private String typeName;
 
     /**
-     * 종류 설명
+     * 제목
      */
-    private String typeDesc;
+    private String title;
 
     /**
-     * 활성화 여부
+     * 내용
      */
-    private Boolean isActive;
+    private String content;
+
+    /**
+     * 조회수
+     */
+    private Integer viewCount;
 
     /**
      * 생성일시
@@ -47,4 +58,9 @@ public class ContentType {
      * 수정일시
      */
     private LocalDateTime updateDt;
+
+    /**
+     * 이미지 목록
+     */
+    private List<String> imageList;
 }

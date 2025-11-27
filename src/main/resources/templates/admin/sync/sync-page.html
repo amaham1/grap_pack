@@ -4,7 +4,7 @@
 </div>
 
 <!-- 동기화 안내 -->
-<div class="alert alert-info mb-4">
+<div class="admin-alert alert-info mb-4">
     <h4>자동 동기화 스케줄</h4>
     <p class="mb-0">매일 02:05, 08:05, 14:05, 20:05에 자동으로 전체 데이터가 동기화됩니다.</p>
 </div>
@@ -23,7 +23,7 @@
                 <form th:action="@{/admin/sync/festivals}" method="post" class="mt-3"
                       data-ajax="true"
                       data-success-message="축제/행사 데이터 동기화가 완료되었습니다.">
-                    <button type="submit" class="btn btn-primary btn-block w-100">
+                    <button type="submit" class="admin-btn admin-btn-primary btn-block w-100">
                         <i class="bi bi-arrow-clockwise"></i> 동기화
                     </button>
                 </form>
@@ -43,7 +43,7 @@
                 <form th:action="@{/admin/sync/exhibitions}" method="post" class="mt-3"
                       data-ajax="true"
                       data-success-message="공연/전시 데이터 동기화가 완료되었습니다.">
-                    <button type="submit" class="btn btn-primary btn-block w-100">
+                    <button type="submit" class="admin-btn admin-btn-primary btn-block w-100">
                         <i class="bi bi-arrow-clockwise"></i> 동기화
                     </button>
                 </form>
@@ -63,7 +63,7 @@
                 <form th:action="@{/admin/sync/welfare-services}" method="post" class="mt-3"
                       data-ajax="true"
                       data-success-message="복지서비스 데이터 동기화가 완료되었습니다.">
-                    <button type="submit" class="btn btn-primary btn-block w-100">
+                    <button type="submit" class="admin-btn admin-btn-primary btn-block w-100">
                         <i class="bi bi-arrow-clockwise"></i> 동기화
                     </button>
                 </form>
@@ -83,7 +83,7 @@
                 <form th:action="@{/admin/sync/gas-prices}" method="post" class="mt-3"
                       data-ajax="true"
                       data-success-message="주유소 가격 데이터 동기화가 완료되었습니다.">
-                    <button type="submit" class="btn btn-primary btn-block w-100">
+                    <button type="submit" class="admin-btn admin-btn-primary btn-block w-100">
                         <i class="bi bi-arrow-clockwise"></i> 동기화
                     </button>
                 </form>
@@ -104,7 +104,7 @@
                       data-disable-all-buttons="true"
                       data-confirm="전체 데이터 동기화를 시작하시겠습니까? 시간이 다소 소요될 수 있습니다."
                       data-success-message="전체 데이터 동기화가 완료되었습니다.">
-                    <button type="submit" class="btn btn-warning btn-lg">
+                    <button type="submit" class="admin-btn admin-btn-warning btn-lg">
                         <i class="bi bi-arrow-repeat"></i> 전체 동기화 실행
                     </button>
                 </form>

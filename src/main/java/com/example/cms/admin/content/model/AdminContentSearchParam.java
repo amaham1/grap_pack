@@ -1,4 +1,4 @@
-package com.example.cms.user.content.model;
+package com.example.cms.admin.content.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import org.apache.ibatis.type.Alias;
 
 /**
- * 사용자 콘텐츠 검색 파라미터
+ * 콘텐츠 검색 파라미터
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Alias("UserContentSearchParam")
-public class ContentSearchParam {
+@Alias("AdminContentSearchParam")
+public class AdminContentSearchParam {
 
     /**
      * 검색 키워드
@@ -25,6 +25,11 @@ public class ContentSearchParam {
      * 콘텐츠 종류 ID
      */
     private Long contentTypeId;
+
+    /**
+     * 공개 여부
+     */
+    private Boolean isPublished;
 
     /**
      * 페이지 번호 (1부터 시작)

@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 축제/행사 정보 Entity
- * 외부 API: https://www.jeju.go.kr/api/jejutoseoul/festival/
+ * 복지 서비스 정보 Entity
+ * 외부 API: http://www.jeju.go.kr/rest/JejuWelfareServiceInfo/getJejuWelfareServiceInfoList
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Festival {
+public class ExternalWelfareService {
     /**
      * 내부 ID
      */
@@ -27,34 +27,39 @@ public class Festival {
     private String originalApiId;
 
     /**
-     * 축제/행사명
+     * 복지 서비스명
      */
-    private String title;
+    private String serviceName;
 
     /**
-     * HTML 형식 내용
+     * 전체 지역 해당 여부
      */
-    private String contentHtml;
+    private Boolean isAllLocation;
 
     /**
-     * 원본 페이지 URL
+     * 제주시 해당 여부
      */
-    private String sourceUrl;
+    private Boolean isJejuLocation;
 
     /**
-     * 작성자명
+     * 서귀포시 해당 여부
      */
-    private String writerName;
+    private Boolean isSeogwipoLocation;
 
     /**
-     * 작성일
+     * 지원 대상 정보 (HTML)
      */
-    private LocalDateTime writtenDate;
+    private String supportTargetHtml;
 
     /**
-     * 첨부 파일 정보 (JSON 문자열)
+     * 지원 내용 정보 (HTML)
      */
-    private String filesInfo;
+    private String supportContentHtml;
+
+    /**
+     * 신청 방법 정보 (HTML)
+     */
+    private String applicationInfoHtml;
 
     /**
      * API 원본 데이터 (JSON 문자열)

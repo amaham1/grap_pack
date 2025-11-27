@@ -1,8 +1,8 @@
-<article class="content-detail">
+<article class="user-content-detail">
         <!-- 헤더 -->
-        <div class="content-header">
-            <div class="meta">
-                <span class="badge badge-gas" th:if="${gasStation['brand'] != null}"
+        <div class="user-content-header">
+            <div class="user-meta">
+                <span class="user-badge badge-gas" th:if="${gasStation['brand'] != null}"
                       th:text="${gasStation['brand']}"></span>
             </div>
             <h1 th:text="${gasStation['stationName']}"></h1>
@@ -99,8 +99,8 @@
         </div>
 
         <!-- 하단 버튼 -->
-        <div class="content-footer">
-            <a th:href="@{/user/content/gas-stations}" class="btn btn-secondary">목록으로</a>
+        <div class="user-content-footer">
+            <a th:href="@{/user/content/gas-stations}" class="user-btn user-btn-secondary">목록으로</a>
         </div>
     </article>
 

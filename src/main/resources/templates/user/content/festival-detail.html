@@ -1,9 +1,9 @@
-<article class="content-detail">
+<article class="user-content-detail">
         <!-- 헤더 -->
-        <div class="content-header">
-            <div class="meta">
-                <span class="badge badge-festival">축제/행사</span>
-                <span class="date" th:if="${festival['writtenDate'] != null}"
+        <div class="user-content-header">
+            <div class="user-meta">
+                <span class="user-badge badge-festival">축제/행사</span>
+                <span class="user-date" th:if="${festival['writtenDate'] != null}"
                       th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
             </div>
             <h1 th:text="${festival['title']}"></h1>
@@ -18,9 +18,9 @@
         </div>
 
         <!-- 이미지 갤러리 -->
-        <div class="image-gallery">
-            <div th:if="${festival['imageUrls'] != null and !festival['imageUrls'].isEmpty()}" class="gallery-grid">
-                <div th:each="imageUrl : ${festival['imageUrls']}" class="gallery-item">
+        <div class="user-image-gallery">
+            <div th:if="${festival['imageUrls'] != null and !festival['imageUrls'].isEmpty()}" class="user-gallery-grid">
+                <div th:each="imageUrl : ${festival['imageUrls']}" class="user-gallery-item">
                     <img th:src="${imageUrl}" th:alt="${festival['title']}" loading="lazy">
                 </div>
             </div>
@@ -30,21 +30,21 @@
         </div>
 
         <!-- 본문 (HTML 내용) -->
-        <div class="content-body">
+        <div class="user-content-body">
             <div th:if="${festival['contentHtml'] != null}"
                  th:utext="${festival['contentHtml']}"></div>
         </div>
 
         <!-- 원본 페이지 링크 -->
         <div th:if="${festival['sourceUrl'] != null}" class="source-link">
-            <a th:href="${festival['sourceUrl']}" target="_blank" class="btn btn-outline">
+            <a th:href="${festival['sourceUrl']}" target="_blank" class="user-btn btn-outline">
                 원본 페이지 보러가기
             </a>
         </div>
 
         <!-- 하단 버튼 -->
-        <div class="content-footer">
-            <a th:href="@{/user/content/festivals}" class="btn btn-secondary">목록으로</a>
+        <div class="user-content-footer">
+            <a th:href="@{/user/content/festivals}" class="user-btn user-btn-secondary">목록으로</a>
         </div>
     </article>
 
@@ -65,27 +65,27 @@
             font-size: 0.85rem;
         }
 
-        .gallery-grid {
+        .user-gallery-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1rem;
         }
 
-        .gallery-item {
+        .user-gallery-item {
             overflow: hidden;
             border-radius: 8px;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
         }
 
-        .gallery-item img {
+        .user-gallery-item img {
             width: 100%;
             height: auto;
             display: block;
             transition: transform 0.3s ease;
         }
 
-        .gallery-item:hover img {
+        .user-gallery-item:hover img {
             transform: scale(1.05);
         }
 
@@ -101,7 +101,7 @@
 
         /* 반응형 처리 */
         @media (max-width: 768px) {
-            .gallery-grid {
+            .user-gallery-grid {
                 grid-template-columns: 1fr;
             }
         }

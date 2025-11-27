@@ -7,33 +7,33 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-box">
+    <div class="admin-login-container">
+        <div class="admin-login-box">
             <h1>CMS 관리자</h1>
 
             <!-- 에러 메시지 -->
-            <div th:if="${error}" class="alert alert-error">
+            <div th:if="${error}" class="admin-alert admin-alert-error">
                 <p th:text="${error}"></p>
             </div>
 
             <!-- 로그아웃 메시지 -->
-            <div th:if="${message}" class="alert alert-info">
+            <div th:if="${message}" class="admin-alert admin-alert-info">
                 <p th:text="${message}"></p>
             </div>
 
             <!-- 로그인 폼 -->
             <form th:action="@{/auth/login}" method="post">
-                <div class="form-group">
+                <div class="admin-form-group">
                     <label for="username">아이디</label>
                     <input type="text" id="username" name="username" required autofocus>
                 </div>
 
-                <div class="form-group">
+                <div class="admin-form-group">
                     <label for="password">비밀번호</label>
                     <input type="password" id="password" name="password" required>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">로그인</button>
+                <button type="submit" class="admin-btn admin-btn-primary admin-btn-block">로그인</button>
             </form>
         </div>
     </div>

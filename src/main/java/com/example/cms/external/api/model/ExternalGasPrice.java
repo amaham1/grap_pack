@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GasPrice {
+public class ExternalGasPrice {
     /**
      * 내부 ID
      */

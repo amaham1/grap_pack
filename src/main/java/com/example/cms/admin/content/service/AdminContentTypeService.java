@@ -1,7 +1,7 @@
 package com.example.cms.admin.content.service;
 
 import com.example.cms.admin.content.mapper.AdminContentTypeMapper;
-import com.example.cms.admin.content.model.ContentType;
+import com.example.cms.admin.content.model.AdminContentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,21 +21,21 @@ public class AdminContentTypeService {
     /**
      * 활성화된 콘텐츠 종류 목록 조회
      */
-    public List<ContentType> getActiveContentTypeList() {
+    public List<AdminContentType> getActiveContentTypeList() {
         return adminContentTypeMapper.selectActiveContentTypeList();
     }
 
     /**
      * 전체 콘텐츠 종류 목록 조회
      */
-    public List<ContentType> getAllContentTypeList() {
+    public List<AdminContentType> getAllContentTypeList() {
         return adminContentTypeMapper.selectAllContentTypeList();
     }
 
     /**
      * 콘텐츠 종류 상세 조회
      */
-    public ContentType getContentType(Long contentTypeId) {
+    public AdminContentType getContentType(Long contentTypeId) {
         return adminContentTypeMapper.selectContentTypeById(contentTypeId);
     }
 
@@ -43,7 +43,7 @@ public class AdminContentTypeService {
      * 콘텐츠 종류 등록
      */
     @Transactional
-    public void createContentType(ContentType contentType) {
+    public void createContentType(AdminContentType contentType) {
         if (contentType.getIsActive() == null) {
             contentType.setIsActive(true);
         }
@@ -54,7 +54,7 @@ public class AdminContentTypeService {
      * 콘텐츠 종류 수정
      */
     @Transactional
-    public void updateContentType(ContentType contentType) {
+    public void updateContentType(AdminContentType contentType) {
         adminContentTypeMapper.updateContentType(contentType);
     }
 

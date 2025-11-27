@@ -5,7 +5,7 @@
 <mapper namespace="com.example.cms.admin.image.mapper.AdminImageMapper">
 
     <!-- 이미지 결과 매핑 -->
-    <resultMap id="imageResultMap" type="com.example.cms.admin.image.model.Image">
+    <resultMap id="imageResultMap" type="AdminImage">
         <id property="imageId" column="image_id"/>
         <result property="contentId" column="content_id"/>
         <result property="originalName" column="original_name"/>
@@ -34,7 +34,7 @@
     </select>
 
     <!-- 이미지 등록 -->
-    <insert id="insertImage" parameterType="com.example.cms.admin.image.model.Image"
+    <insert id="insertImage" parameterType="AdminImage"
             useGeneratedKeys="true" keyProperty="imageId">
         INSERT INTO image (content_id, original_name, saved_name, file_path,
                           file_size, display_order, create_dt)

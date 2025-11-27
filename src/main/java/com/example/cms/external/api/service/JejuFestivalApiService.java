@@ -1,8 +1,8 @@
 package com.example.cms.external.api.service;
 
 import com.example.cms.admin.sync.service.SyncManager;
-import com.example.cms.external.api.mapper.FestivalMapper;
-import com.example.cms.external.api.model.Festival;
+import com.example.cms.external.api.mapper.ExternalFestivalMapper;
+import com.example.cms.external.api.model.ExternalFestival;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class JejuFestivalApiService {
     private static final String JEJU_FESTIVAL_API_URL = "https://www.jeju.go.kr/api/jejutoseoul/festival/";
 
     private final RestTemplate restTemplate;
-    private final FestivalMapper festivalMapper;
+    private final ExternalFestivalMapper festivalMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -59,8 +59,8 @@ public class JejuFestivalApiService {
      * API 응답 데이터를 Entity로 변환합니다.
      */
     @SuppressWarnings("unchecked")
-    public List<Festival> transformApiDataToEntity(Map<String, Object> apiResponse) {
-        List<Festival> festivals = new ArrayList<>();
+    public List<ExternalFestival> transformApiDataToEntity(Map<String, Object> apiResponse) {
+        List<ExternalFestival> festivals = new ArrayList<>();
         LocalDateTime fetchedAt = LocalDateTime.now();
 
         try {
@@ -73,7 +73,7 @@ public class JejuFestivalApiService {
 
             for (Map<String, Object> item : items) {
                 try {
-                    Festival festival = Festival.builder()
+                    ExternalFestival festival = ExternalFestival.builder()
                             .originalApiId(getString(item, "seq"))
                             .title(getString(item, "title"))
                             .contentHtml(getString(item, "contents"))
@@ -105,10 +105,10 @@ public class JejuFestivalApiService {
      * 축제/행사 데이터를 DB에 저장합니다 (upsert).
      */
     @Transactional
-    public int saveFestivals(List<Festival> festivals) {
+    public int saveFestivals(List<ExternalFestival> festivals) {
         int count = 0;
 
-        for (Festival festival : festivals) {
+        for (ExternalFestival festival : festivals) {
             try {
                 festivalMapper.upsert(festival);
                 count++;
@@ -151,7 +151,7 @@ public class JejuFestivalApiService {
             }
 
             // 2. Entity로 변환
-            List<Festival> festivals = transformApiDataToEntity(apiResponse);
+            List<ExternalFestival> festivals = transformApiDataToEntity(apiResponse);
 
             // 중단 체크
             if (syncManager != null && sessionId != null) {

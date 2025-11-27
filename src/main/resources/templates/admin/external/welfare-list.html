@@ -1,29 +1,29 @@
-<div class="page-header">
+<div class="admin-page-header">
         <h2>복지서비스 관리</h2>
     </div>
 
-    <form th:action="@{/admin/external/welfare}" method="get" class="search-form" data-ajax="true">
-        <div class="search-row">
+    <form th:action="@{/admin/external/welfare}" method="get" class="admin-search-form" data-ajax="true">
+        <div class="admin-search-row">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="서비스명 검색" class="form-control">
-            <button type="submit" class="btn btn-primary">검색</button>
+            <button type="submit" class="admin-btn admin-btn-primary">검색</button>
         </div>
     </form>
 
     <!-- 외부 데이터 일괄 작업 버튼 -->
     <div style="margin-bottom: 10px;">
-        <button type="button" class="btn btn-success btn-sm external-data-bulk-btn"
+        <button type="button" class="admin-btn admin-btn-success admin-btn-sm external-data-bulk-btn"
                 onclick="externalDataBulkUpdateIsShow('/admin/external/welfare/bulk-update-show', true)">
             선택 항목 노출
         </button>
-        <button type="button" class="btn btn-secondary btn-sm external-data-bulk-btn"
+        <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm external-data-bulk-btn"
                 onclick="externalDataBulkUpdateIsShow('/admin/external/welfare/bulk-update-show', false)">
             선택 항목 비노출
         </button>
     </div>
 
-    <div class="table-container">
-        <table class="table">
+    <div class="admin-table-container">
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="externalDataMasterCheckbox" onchange="externalDataToggleAll(this, '.external-data-item-checkbox')"></th>
@@ -44,9 +44,9 @@
                            th:text="${welfare['serviceName'] ?: '-'}"></a>
                     </td>
                     <td>
-                        <span th:if="${welfare['isAllLocation'] ?: false}" class="badge badge-info">전체</span>
-                        <span th:if="${welfare['isJejuLocation'] ?: false}" class="badge badge-info">제주</span>
-                        <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="badge badge-info">서귀포</span>
+                        <span th:if="${welfare['isAllLocation'] ?: false}" class="admin-badge badge-info">전체</span>
+                        <span th:if="${welfare['isJejuLocation'] ?: false}" class="admin-badge badge-info">제주</span>
+                        <span th:if="${welfare['isSeogwipoLocation'] ?: false}" class="admin-badge badge-info">서귀포</span>
                     </td>
                     <td>
                         <form th:action="@{/admin/external/welfare/{id}/toggle-show(id=${welfare['id']})}"
@@ -54,7 +54,7 @@
                               data-ajax="true">
                             <input type="hidden" name="isShow" th:value="${!(welfare['isShow'] ?: false)}">
                             <button type="submit"
-                                    th:class="|btn btn-sm ${(welfare['isShow'] ?: false) ? 'btn-success' : 'btn-secondary'}|"
+                                    th:class="|admin-btn admin-btn-sm ${(welfare['isShow'] ?: false) ? 'admin-btn-success' : 'admin-btn-secondary'}|"
                                     th:text="${(welfare['isShow'] ?: false) ? '노출' : '비노출'}">
                             </button>
                         </form>
@@ -62,18 +62,18 @@
                     <td th:text="${welfare['fetchedAt'] != null ? #temporals.format(welfare['fetchedAt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
                         <a th:href="@{/admin/external/welfare/{id}(id=${welfare['id']})}"
-                           class="btn btn-sm btn-secondary">상세</a>
+                           class="admin-btn admin-btn-sm admin-btn-secondary">상세</a>
                         <form th:action="@{/admin/external/welfare/{id}/delete(id=${welfare['id']})}"
                               method="post" style="display: inline;"
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"
                               data-success-message="삭제되었습니다.">
-                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                            <button type="submit" class="admin-btn admin-btn-sm admin-btn-danger">삭제</button>
                         </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(welfareList)}">
-                    <td colspan="7" class="text-center">등록된 복지서비스가 없습니다.</td>
+                    <td colspan="7" class="admin-text-center">등록된 복지서비스가 없습니다.</td>
                 </tr>
             </tbody>
         </table>

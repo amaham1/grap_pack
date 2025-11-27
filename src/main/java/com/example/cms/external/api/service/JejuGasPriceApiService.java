@@ -1,10 +1,10 @@
 package com.example.cms.external.api.service;
 
 import com.example.cms.admin.sync.service.SyncManager;
-import com.example.cms.external.api.mapper.GasPriceMapper;
-import com.example.cms.external.api.mapper.GasStationMapper;
-import com.example.cms.external.api.model.GasPrice;
-import com.example.cms.external.api.model.GasStation;
+import com.example.cms.external.api.mapper.ExternalGasPriceMapper;
+import com.example.cms.external.api.mapper.ExternalGasStationMapper;
+import com.example.cms.external.api.model.ExternalGasPrice;
+import com.example.cms.external.api.model.ExternalGasStation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +34,8 @@ public class JejuGasPriceApiService {
     private static final String API_CODE = "860665";
 
     private final RestTemplate restTemplate;
-    private final GasStationMapper gasStationMapper;
-    private final GasPriceMapper gasPriceMapper;
+    private final ExternalGasStationMapper gasStationMapper;
+    private final ExternalGasPriceMapper gasPriceMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -74,8 +74,8 @@ public class JejuGasPriceApiService {
      * API 응답 데이터를 GasStation Entity로 변환합니다.
      */
     @SuppressWarnings("unchecked")
-    public List<GasStation> transformApiDataToStationEntity(Map<String, Object> apiResponse) {
-        List<GasStation> stations = new ArrayList<>();
+    public List<ExternalGasStation> transformApiDataToStationEntity(Map<String, Object> apiResponse) {
+        List<ExternalGasStation> stations = new ArrayList<>();
 
         try {
             List<Map<String, Object>> info = (List<Map<String, Object>>) apiResponse.get("info");
@@ -99,7 +99,7 @@ public class JejuGasPriceApiService {
                         continue;
                     }
 
-                    GasStation station = GasStation.builder()
+                    ExternalGasStation station = ExternalGasStation.builder()
                             .opinetId(opinetId.trim())
                             .stationName(stationName.trim())
                             .brand(getString(item, "brand"))
@@ -129,8 +129,8 @@ public class JejuGasPriceApiService {
      * API 응답 데이터를 GasPrice Entity로 변환합니다.
      */
     @SuppressWarnings("unchecked")
-    public List<GasPrice> transformApiDataToPriceEntity(Map<String, Object> apiResponse) {
-        List<GasPrice> prices = new ArrayList<>();
+    public List<ExternalGasPrice> transformApiDataToPriceEntity(Map<String, Object> apiResponse) {
+        List<ExternalGasPrice> prices = new ArrayList<>();
         LocalDateTime fetchedAt = LocalDateTime.now();
         LocalDate today = LocalDate.now();
 
@@ -152,7 +152,7 @@ public class JejuGasPriceApiService {
                     String priceDateStr = getString(item, "price_date");
                     LocalDate priceDate = parsePriceDate(priceDateStr, today);
 
-                    GasPrice price = GasPrice.builder()
+                    ExternalGasPrice price = ExternalGasPrice.builder()
                             .opinetId(opinetId.trim())
                             .gasolinePrice(parseInteger(getString(item, "gasoline")))
                             .premiumGasolinePrice(parseInteger(getString(item, "premium_gasoline")))
@@ -182,10 +182,10 @@ public class JejuGasPriceApiService {
      * 주유소 기본 정보를 DB에 저장합니다 (upsert).
      */
     @Transactional
-    public int saveGasStations(List<GasStation> stations) {
+    public int saveGasStations(List<ExternalGasStation> stations) {
         int count = 0;
 
-        for (GasStation station : stations) {
+        for (ExternalGasStation station : stations) {
             try {
                 gasStationMapper.upsert(station);
                 count++;
@@ -203,11 +203,11 @@ public class JejuGasPriceApiService {
      * FK 제약조건을 고려하여 존재하는 주유소만 저장합니다.
      */
     @Transactional
-    public int saveGasPrices(List<GasPrice> prices) {
+    public int saveGasPrices(List<ExternalGasPrice> prices) {
         int count = 0;
         int skipped = 0;
 
-        for (GasPrice price : prices) {
+        for (ExternalGasPrice price : prices) {
             try {
                 // FK 검증: 주유소가 존재하는지 확인
                 if (!gasStationMapper.existsByOpinetId(price.getOpinetId())) {
@@ -257,7 +257,7 @@ public class JejuGasPriceApiService {
             }
 
             // 2-1. 주유소 기본 정보 변환 및 저장
-            List<GasStation> stations = transformApiDataToStationEntity(apiResponse);
+            List<ExternalGasStation> stations = transformApiDataToStationEntity(apiResponse);
             int stationCount = saveGasStations(stations);
 
             // 중단 체크
@@ -266,7 +266,7 @@ public class JejuGasPriceApiService {
             }
 
             // 2-2. 주유소 가격 정보 변환 및 저장
-            List<GasPrice> prices = transformApiDataToPriceEntity(apiResponse);
+            List<ExternalGasPrice> prices = transformApiDataToPriceEntity(apiResponse);
             int priceCount = saveGasPrices(prices);
 
             log.info("=== 주유소 데이터 동기화 완료: 주유소 {} 건, 가격 {} 건 ===", stationCount, priceCount);

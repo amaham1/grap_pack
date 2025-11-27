@@ -1,6 +1,6 @@
 package com.example.cms.admin.image.mapper;
 
-import com.example.cms.admin.image.model.Image;
+import com.example.cms.admin.image.model.AdminImage;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,17 +14,17 @@ public interface AdminImageMapper {
     /**
      * 콘텐츠별 이미지 목록 조회
      */
-    List<Image> selectImageListByContentId(Long contentId);
+    List<AdminImage> selectImageListByContentId(Long contentId);
 
     /**
      * 이미지 상세 조회
      */
-    Image selectImageById(Long imageId);
+    AdminImage selectImageById(Long imageId);
 
     /**
      * 이미지 등록
      */
-    void insertImage(Image image);
+    void insertImage(AdminImage image);
 
     /**
      * 이미지 삭제

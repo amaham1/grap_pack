@@ -13,20 +13,20 @@
     <div th:replace="~{common/fragments/header :: admin-header}"></div>
 
     <!-- 메시지 알림 -->
-    <div th:if="${message}" class="alert alert-success">
-        <div class="container">
+    <div th:if="${message}" class="admin-alert admin-alert-success">
+        <div class="admin-container">
             <p th:text="${message}"></p>
         </div>
     </div>
 
-    <div th:if="${error}" class="alert alert-error">
-        <div class="container">
+    <div th:if="${error}" class="admin-alert admin-alert-error">
+        <div class="admin-container">
             <p th:text="${error}"></p>
         </div>
     </div>
 
     <!-- 메인 컨텐츠 -->
-    <main class="container">
+    <main class="admin-container">
         <div th:replace="${content}"></div>
     </main>
 

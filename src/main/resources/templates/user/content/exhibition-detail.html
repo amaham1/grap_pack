@@ -1,8 +1,8 @@
-<article class="content-detail">
+<article class="user-content-detail">
         <!-- 헤더 -->
-        <div class="content-header">
-            <div class="meta">
-                <span class="badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
+        <div class="user-content-header">
+            <div class="user-meta">
+                <span class="user-badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
             </div>
             <h1 th:text="${exhibition['title']}"></h1>
         </div>
@@ -43,8 +43,8 @@
         </div>
 
         <!-- 하단 버튼 -->
-        <div class="content-footer">
-            <a th:href="@{/user/content/exhibitions}" class="btn btn-secondary">목록으로</a>
+        <div class="user-content-footer">
+            <a th:href="@{/user/content/exhibitions}" class="user-btn user-btn-secondary">목록으로</a>
         </div>
     </article>
 

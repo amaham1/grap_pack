@@ -1,6 +1,6 @@
 <!-- 관리자 헤더 -->
 <header th:fragment="admin-header" class="admin-header">
-    <div class="container">
+    <div class="admin-container">
         <h1><a th:href="@{/admin/content/list}">CMS 관리자</a></h1>
         <nav>
             <ul>
@@ -13,7 +13,7 @@
                 <li><a th:href="@{/admin/external/gas-stations}">주유소 관리</a></li>
                 <li>
                     <form th:action="@{/auth/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="btn-link">로그아웃</button>
+                        <button type="submit" class="admin-btn-link">로그아웃</button>
                     </form>
                 </li>
             </ul>
@@ -23,7 +23,7 @@
 
 <!-- 사용자 헤더 -->
 <header th:fragment="user-header" class="user-header">
-    <div class="container">
+    <div class="user-container">
         <h1><a th:href="@{/user/content/list}">Grap</a></h1>
         <nav>
             <ul>

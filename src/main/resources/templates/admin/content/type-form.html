@@ -1,28 +1,28 @@
-<div class="page-header">
+<div class="admin-page-header">
         <h2 th:text="${contentType != null ? '콘텐츠 종류 수정' : '콘텐츠 종류 등록'}"></h2>
-        <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">목록으로</a>
+        <a th:href="@{/admin/content-type/list}" class="admin-btn admin-btn-secondary">목록으로</a>
     </div>
 
     <form th:action="${contentType != null ? '/admin/content-type/update' : '/admin/content-type/create'}"
-          method="post" class="form"
+          method="post" class="admin-form"
           data-ajax="true"
           data-success-message="저장되었습니다.">
 
         <input type="hidden" name="contentTypeId" th:value="${contentType?.contentTypeId}">
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label for="typeName">종류명 *</label>
             <input type="text" id="typeName" name="typeName"
                    th:value="${contentType?.typeName}" required>
         </div>
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label for="typeDesc">설명</label>
             <textarea id="typeDesc" name="typeDesc" rows="3"
                       th:text="${contentType?.typeDesc}"></textarea>
         </div>
 
-        <div class="form-group">
+        <div class="admin-form-group">
             <label>
                 <input type="hidden" name="_isActive" value="on">
                 <input type="checkbox" name="isActive" value="true"
@@ -31,8 +31,8 @@
             </label>
         </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">저장</button>
-            <a th:href="@{/admin/content-type/list}" class="btn btn-secondary">취소</a>
+        <div class="admin-form-actions">
+            <button type="submit" class="admin-btn admin-btn-primary">저장</button>
+            <a th:href="@{/admin/content-type/list}" class="admin-btn admin-btn-secondary">취소</a>
         </div>
     </form>

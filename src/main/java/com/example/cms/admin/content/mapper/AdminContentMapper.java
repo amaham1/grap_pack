@@ -1,7 +1,7 @@
 package com.example.cms.admin.content.mapper;
 
-import com.example.cms.admin.content.model.Content;
-import com.example.cms.admin.content.model.ContentSearchParam;
+import com.example.cms.admin.content.model.AdminContent;
+import com.example.cms.admin.content.model.AdminContentSearchParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,27 +16,27 @@ public interface AdminContentMapper {
     /**
      * 콘텐츠 목록 조회
      */
-    List<Content> selectContentList(ContentSearchParam searchParam);
+    List<AdminContent> selectContentList(AdminContentSearchParam searchParam);
 
     /**
      * 콘텐츠 전체 개수 조회
      */
-    int selectContentCount(ContentSearchParam searchParam);
+    int selectContentCount(AdminContentSearchParam searchParam);
 
     /**
      * 콘텐츠 상세 조회
      */
-    Content selectContentById(Long contentId);
+    AdminContent selectContentById(Long contentId);
 
     /**
      * 콘텐츠 등록
      */
-    void insertContent(Content content);
+    void insertContent(AdminContent content);
 
     /**
      * 콘텐츠 수정
      */
-    void updateContent(Content content);
+    void updateContent(AdminContent content);
 
     /**
      * 콘텐츠 삭제

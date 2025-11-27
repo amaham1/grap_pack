@@ -1,11 +1,11 @@
-<div class="page-header">
+<div class="admin-page-header">
         <h2>콘텐츠 관리</h2>
-        <a th:href="@{/admin/content/form}" class="btn btn-primary">새 콘텐츠 등록</a>
+        <a th:href="@{/admin/content/form}" class="admin-btn admin-btn-primary">새 콘텐츠 등록</a>
     </div>
 
     <!-- 검색 폼 -->
-    <form th:action="@{/admin/content/list}" method="get" class="search-form" data-ajax="true">
-        <div class="search-row">
+    <form th:action="@{/admin/content/list}" method="get" class="admin-search-form" data-ajax="true">
+        <div class="admin-search-row">
             <select name="contentTypeId" class="form-control">
                 <option value="">전체 종류</option>
                 <option th:each="type : ${contentTypeList}"
@@ -24,13 +24,13 @@
             <input type="text" name="keyword" th:value="${searchParam.keyword ?: ''}"
                    placeholder="제목 또는 내용 검색" class="form-control">
 
-            <button type="submit" class="btn btn-primary">검색</button>
+            <button type="submit" class="admin-btn admin-btn-primary">검색</button>
         </div>
     </form>
 
     <!-- 콘텐츠 목록 -->
-    <div class="table-container">
-        <table class="table">
+    <div class="admin-table-container">
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -49,21 +49,21 @@
                     <td th:text="${content['typeName'] ?: '-'}"></td>
                     <td th:text="${content['title'] ?: '-'}"></td>
                     <td>
-                        <span th:if="${content['isPublished'] ?: false}" class="badge badge-success">공개</span>
-                        <span th:unless="${content['isPublished'] ?: false}" class="badge badge-secondary">비공개</span>
+                        <span th:if="${content['isPublished'] ?: false}" class="admin-badge admin-badge-success">공개</span>
+                        <span th:unless="${content['isPublished'] ?: false}" class="admin-badge admin-badge-secondary">비공개</span>
                     </td>
                     <td th:text="${content['viewCount'] ?: 0}"></td>
                     <td th:text="${content['createName'] ?: '-'}"></td>
                     <td th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
                         <a th:href="@{/admin/content/form(contentId=${content['contentId']})}"
-                           class="btn btn-sm btn-secondary">수정</a>
+                           class="admin-btn admin-btn-sm admin-btn-secondary">수정</a>
                         <form th:action="@{/admin/content/publish/{id}(id=${content['contentId']})}"
                               method="post" style="display: inline;"
                               data-ajax="true">
                             <input type="hidden" name="isPublished" th:value="${!(content['isPublished'] ?: false)}">
                             <button type="submit"
-                                    th:class="|btn btn-sm ${(content['isPublished'] ?: false) ? 'btn-warning' : 'btn-success'}|"
+                                    th:class="|admin-btn admin-btn-sm ${(content['isPublished'] ?: false) ? 'admin-btn-warning' : 'admin-btn-success'}|"
                                     th:text="${(content['isPublished'] ?: false) ? '비공개' : '공개'}">
                             </button>
                         </form>
@@ -72,35 +72,35 @@
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"
                               data-success-message="삭제되었습니다.">
-                            <button type="submit" class="btn btn-sm btn-danger">삭제</button>
+                            <button type="submit" class="admin-btn admin-btn-sm admin-btn-danger">삭제</button>
                         </form>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(contentList)}">
-                    <td colspan="8" class="text-center">등록된 콘텐츠가 없습니다.</td>
+                    <td colspan="8" class="admin-text-center">등록된 콘텐츠가 없습니다.</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
     <!-- 페이징 -->
-    <div th:if="${totalPages > 0}" class="pagination">
+    <div th:if="${totalPages > 0}" class="admin-pagination">
         <a th:if="${currentPage > 1}"
            th:href="@{/admin/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
-           class="btn btn-sm">이전</a>
+           class="admin-btn admin-btn-sm">이전</a>
 
         <span th:each="i : ${#numbers.sequence(1, totalPages)}">
             <a th:href="@{/admin/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
                th:text="${i}"
-               th:class="|btn btn-sm ${i == currentPage ? 'active' : ''}|"></a>
+               th:class="|admin-btn admin-btn-sm ${i == currentPage ? 'active' : ''}|"></a>
         </span>
 
         <a th:if="${currentPage < totalPages}"
            th:href="@{/admin/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
-           class="btn btn-sm">다음</a>
+           class="admin-btn admin-btn-sm">다음</a>
     </div>
 
-    <div class="pagination-info">
+    <div class="admin-pagination-info">
         전체 <span th:text="${totalCount}"></span>개 (
         <span th:text="${currentPage}"></span> /
         <span th:text="${totalPages}"></span> 페이지)

@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.external.api.mapper.WelfareServiceMapper">
+<mapper namespace="com.example.cms.external.api.mapper.ExternalWelfareServiceMapper">
 
     <!-- Result Map -->
-    <resultMap id="welfareServiceResultMap" type="com.example.cms.external.api.model.WelfareService">
+    <resultMap id="welfareServiceResultMap" type="com.example.cms.external.api.model.ExternalWelfareService">
         <id property="id" column="id"/>
         <result property="originalApiId" column="original_api_id"/>
         <result property="serviceName" column="service_name"/>
@@ -24,7 +24,7 @@
     </resultMap>
 
     <!-- Upsert -->
-    <insert id="upsert" parameterType="com.example.cms.external.api.model.WelfareService">
+    <insert id="upsert" parameterType="com.example.cms.external.api.model.ExternalWelfareService">
         INSERT INTO welfare_services (
             original_api_id, service_name, is_all_location, is_jeju_location, is_seogwipo_location,
             support_target_html, support_content_html, application_info_html,

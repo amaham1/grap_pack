@@ -1,8 +1,8 @@
 package com.example.cms.admin.content.controller;
 
-import com.example.cms.admin.content.model.Content;
-import com.example.cms.admin.content.model.ContentSearchParam;
-import com.example.cms.admin.content.model.ContentType;
+import com.example.cms.admin.content.model.AdminContent;
+import com.example.cms.admin.content.model.AdminContentSearchParam;
+import com.example.cms.admin.content.model.AdminContentType;
 import com.example.cms.admin.content.service.AdminContentService;
 import com.example.cms.admin.content.service.AdminContentTypeService;
 import com.example.cms.auth.model.Admin;
@@ -34,7 +34,7 @@ public class AdminContentController {
      */
     @GetMapping("/content-type/list")
     public String contentTypeList(Model model) {
-        List<ContentType> contentTypeList = adminContentTypeService.getAllContentTypeList();
+        List<AdminContentType> contentTypeList = adminContentTypeService.getAllContentTypeList();
         model.addAttribute("contentTypeList", contentTypeList);
         model.addAttribute("title", "콘텐츠 종류 관리");
         model.addAttribute("content", "admin/content/type-list");
@@ -50,7 +50,7 @@ public class AdminContentController {
             Model model) {
 
         if (contentTypeId != null) {
-            ContentType contentType = adminContentTypeService.getContentType(contentTypeId);
+            AdminContentType contentType = adminContentTypeService.getContentType(contentTypeId);
             model.addAttribute("contentType", contentType);
             model.addAttribute("title", "콘텐츠 종류 수정");
         } else {
@@ -65,7 +65,7 @@ public class AdminContentController {
      * 콘텐츠 종류 등록
      */
     @PostMapping("/content-type/create")
-    public String createContentType(ContentType contentType, RedirectAttributes redirectAttributes) {
+    public String createContentType(AdminContentType contentType, RedirectAttributes redirectAttributes) {
         adminContentTypeService.createContentType(contentType);
         redirectAttributes.addFlashAttribute("message", "콘텐츠 종류가 등록되었습니다.");
         return "redirect:/admin/content-type/list";
@@ -75,7 +75,7 @@ public class AdminContentController {
      * 콘텐츠 종류 수정
      */
     @PostMapping("/content-type/update")
-    public String updateContentType(ContentType contentType, RedirectAttributes redirectAttributes) {
+    public String updateContentType(AdminContentType contentType, RedirectAttributes redirectAttributes) {
         adminContentTypeService.updateContentType(contentType);
         redirectAttributes.addFlashAttribute("message", "콘텐츠 종류가 수정되었습니다.");
         return "redirect:/admin/content-type/list";
@@ -98,9 +98,9 @@ public class AdminContentController {
      * 콘텐츠 목록 페이지
      */
     @GetMapping("/content/list")
-    public String contentList(ContentSearchParam searchParam, Model model) {
+    public String contentList(AdminContentSearchParam searchParam, Model model) {
         Map<String, Object> result = adminContentService.getContentList(searchParam);
-        List<ContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
+        List<AdminContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
 
         model.addAttribute("contentList", result.get("contentList"));
         model.addAttribute("currentPage", result.get("currentPage"));
@@ -123,11 +123,11 @@ public class AdminContentController {
             @RequestParam(value = "contentId", required = false) Long contentId,
             Model model) {
 
-        List<ContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
+        List<AdminContentType> contentTypeList = adminContentTypeService.getActiveContentTypeList();
         model.addAttribute("contentTypeList", contentTypeList);
 
         if (contentId != null) {
-            Content contentData = adminContentService.getContent(contentId);
+            AdminContent contentData = adminContentService.getContent(contentId);
             model.addAttribute("contentData", contentData);
             model.addAttribute("title", "콘텐츠 수정");
         } else {
@@ -143,7 +143,7 @@ public class AdminContentController {
      */
     @PostMapping("/content/create")
     public String createContent(
-            Content content,
+            AdminContent content,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
@@ -161,7 +161,7 @@ public class AdminContentController {
      */
     @PostMapping("/content/update")
     public String updateContent(
-            Content content,
+            AdminContent content,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 

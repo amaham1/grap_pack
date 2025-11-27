@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     /**
-     * 루트 페이지 - 사용자 콘텐츠 목록으로 리다이렉트
+     * 루트 페이지 - 축제 목록으로 리다이렉트
      */
     @GetMapping("/")
     public String home() {
-        return "redirect:/user/content/list";
+        return "redirect:/user/content/festivals";
     }
 }

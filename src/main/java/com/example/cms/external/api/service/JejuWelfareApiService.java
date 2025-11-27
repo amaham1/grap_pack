@@ -1,8 +1,8 @@
 package com.example.cms.external.api.service;
 
 import com.example.cms.admin.sync.service.SyncManager;
-import com.example.cms.external.api.mapper.WelfareServiceMapper;
-import com.example.cms.external.api.model.WelfareService;
+import com.example.cms.external.api.mapper.ExternalWelfareServiceMapper;
+import com.example.cms.external.api.model.ExternalWelfareService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class JejuWelfareApiService {
             "http://www.jeju.go.kr/rest/JejuWelfareServiceInfo/getJejuWelfareServiceInfoList";
 
     private final RestTemplate restTemplate;
-    private final WelfareServiceMapper welfareServiceMapper;
+    private final ExternalWelfareServiceMapper welfareServiceMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -67,8 +67,8 @@ public class JejuWelfareApiService {
      * API 응답 데이터를 Entity로 변환합니다.
      */
     @SuppressWarnings("unchecked")
-    public List<WelfareService> transformApiDataToEntity(Map<String, Object> apiResponse) {
-        List<WelfareService> services = new ArrayList<>();
+    public List<ExternalWelfareService> transformApiDataToEntity(Map<String, Object> apiResponse) {
+        List<ExternalWelfareService> services = new ArrayList<>();
         LocalDateTime fetchedAt = LocalDateTime.now();
 
         try {
@@ -81,7 +81,7 @@ public class JejuWelfareApiService {
 
             for (Map<String, Object> item : list) {
                 try {
-                    WelfareService service = WelfareService.builder()
+                    ExternalWelfareService service = ExternalWelfareService.builder()
                             .originalApiId(getString(item, "seq"))
                             .serviceName(getString(item, "name"))
                             .isAllLocation(getBoolean(item, "allLoc"))
@@ -114,10 +114,10 @@ public class JejuWelfareApiService {
      * 복지서비스 데이터를 DB에 저장합니다 (upsert).
      */
     @Transactional
-    public int saveWelfareServices(List<WelfareService> services) {
+    public int saveWelfareServices(List<ExternalWelfareService> services) {
         int count = 0;
 
-        for (WelfareService service : services) {
+        for (ExternalWelfareService service : services) {
             try {
                 welfareServiceMapper.upsert(service);
                 count++;
@@ -160,7 +160,7 @@ public class JejuWelfareApiService {
             }
 
             // 2. Entity로 변환
-            List<WelfareService> services = transformApiDataToEntity(apiResponse);
+            List<ExternalWelfareService> services = transformApiDataToEntity(apiResponse);
 
             // 중단 체크
             if (syncManager != null && sessionId != null) {

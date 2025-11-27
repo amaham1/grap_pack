@@ -1,38 +1,39 @@
-<div class="page-header">
+<div class="user-page-header">
         <h2>제주 공연/전시</h2>
         <p class="text-muted">제주도의 다양한 공연과 전시회 정보를 확인하세요</p>
     </div>
 
     <!-- 검색 -->
-    <div class="search-section">
-        <form th:action="@{/user/content/exhibitions}" method="get" class="search-form" data-ajax="true">
+    <div class="user-search-section">
+        <form th:action="@{/user/content/exhibitions}" method="get" class="user-search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
-                   placeholder="공연/전시명, 장소, 주최 검색" class="form-control">
-            <button type="submit" class="btn btn-primary">검색</button>
+                   placeholder="공연/전시명, 장소, 주최 검색" class="user-form-control">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
         </form>
     </div>
 
     <!-- 공연/전시 목록 -->
-    <div class="content-grid" id="exhibition-list">
-        <div th:each="exhibition : ${exhibitionList}" class="content-card exhibition-card">
+    <div class="user-content-grid" id="exhibition-list">
+        <div th:each="exhibition : ${exhibitionList}" class="user-content-card user-exhibition-card user-clickable-card"
+             th:data-href="@{/user/content/exhibitions/{id}(id=${exhibition['id']})}">
             <!-- 커버 이미지 -->
-            <div class="card-image">
+            <div class="user-card-image">
                 <img th:if="${exhibition['coverImageUrl'] != null}"
                      th:src="${exhibition['coverImageUrl']}"
                      alt="공연/전시 이미지"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div class="image-placeholder" th:style="${exhibition['coverImageUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                <div class="user-image-placeholder" th:style="${exhibition['coverImageUrl'] == null ? 'display: flex;' : 'display: none;'}">
                     <span>이미지 없음</span>
                 </div>
             </div>
 
-            <div class="card-content">
-                <div class="card-header">
-                    <div class="badge-group">
-                        <span class="badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
+            <div class="user-card-content">
+                <div class="user-card-header">
+                    <div class="user-badge-group">
+                        <span class="user-badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
                         <!-- 마감임박 배지 (종료일까지 7일 이내) -->
                         <span th:if="${exhibition['endDate'] != null and exhibition['daysUntilEnd'] != null and exhibition['daysUntilEnd'] <= 7 and exhibition['daysUntilEnd'] >= 0}"
-                              class="badge badge-urgent">마감임박</span>
+                              class="user-badge user-badge-urgent">마감임박</span>
                     </div>
                 </div>
                 <h3>
@@ -46,7 +47,7 @@
                     <span class="price-value" th:text="${exhibition['payInfo']}"></span>
                 </div>
 
-                <div class="card-meta">
+                <div class="user-card-meta">
                     <div th:if="${exhibition['startDate'] != null and exhibition['endDate'] != null}">
                         <i class="icon-calendar"></i>
                         <span th:text="${#temporals.format(exhibition['startDate'], 'yyyy.MM.dd')}"></span>
@@ -61,7 +62,7 @@
             </div>
         </div>
 
-        <div th:if="${#lists.isEmpty(exhibitionList)}" class="empty-message">
+        <div th:if="${#lists.isEmpty(exhibitionList)}" class="user-empty-message">
             <p>등록된 공연/전시가 없습니다.</p>
         </div>
     </div>

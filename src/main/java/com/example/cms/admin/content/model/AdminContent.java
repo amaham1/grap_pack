@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Alias("AdminContent")
-public class Content {
+public class AdminContent {
 
     /**
      * 콘텐츠 ID

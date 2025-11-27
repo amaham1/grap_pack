@@ -1,8 +1,8 @@
 package com.example.cms.external.api.service;
 
 import com.example.cms.admin.sync.service.SyncManager;
-import com.example.cms.external.api.mapper.ExhibitionMapper;
-import com.example.cms.external.api.model.Exhibition;
+import com.example.cms.external.api.mapper.ExternalExhibitionMapper;
+import com.example.cms.external.api.model.ExternalExhibition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class JejuExhibitionApiService {
             "http://www.jeju.go.kr/rest/JejuExhibitionService/getJejucultureExhibitionList";
 
     private final RestTemplate restTemplate;
-    private final ExhibitionMapper exhibitionMapper;
+    private final ExternalExhibitionMapper exhibitionMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -101,13 +101,13 @@ public class JejuExhibitionApiService {
     /**
      * API 응답 데이터를 Entity로 변환합니다.
      */
-    public List<Exhibition> transformApiDataToEntity(List<Map<String, Object>> items) {
-        List<Exhibition> exhibitions = new ArrayList<>();
+    public List<ExternalExhibition> transformApiDataToEntity(List<Map<String, Object>> items) {
+        List<ExternalExhibition> exhibitions = new ArrayList<>();
         LocalDateTime fetchedAt = LocalDateTime.now();
 
         for (Map<String, Object> item : items) {
             try {
-                Exhibition exhibition = Exhibition.builder()
+                ExternalExhibition exhibition = ExternalExhibition.builder()
                         .originalApiId(getString(item, "seq"))
                         .title(getString(item, "title"))
                         .categoryName(getString(item, "categoryName"))
@@ -140,10 +140,10 @@ public class JejuExhibitionApiService {
      * 공연/전시 데이터를 DB에 저장합니다 (upsert).
      */
     @Transactional
-    public int saveExhibitions(List<Exhibition> exhibitions) {
+    public int saveExhibitions(List<ExternalExhibition> exhibitions) {
         int count = 0;
 
-        for (Exhibition exhibition : exhibitions) {
+        for (ExternalExhibition exhibition : exhibitions) {
             try {
                 exhibitionMapper.upsert(exhibition);
                 count++;
@@ -186,7 +186,7 @@ public class JejuExhibitionApiService {
             }
 
             // 2. Entity로 변환
-            List<Exhibition> exhibitions = transformApiDataToEntity(items);
+            List<ExternalExhibition> exhibitions = transformApiDataToEntity(items);
 
             // 중단 체크
             if (syncManager != null && sessionId != null) {

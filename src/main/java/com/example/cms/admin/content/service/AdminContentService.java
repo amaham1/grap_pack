@@ -1,8 +1,8 @@
 package com.example.cms.admin.content.service;
 
 import com.example.cms.admin.content.mapper.AdminContentMapper;
-import com.example.cms.admin.content.model.Content;
-import com.example.cms.admin.content.model.ContentSearchParam;
+import com.example.cms.admin.content.model.AdminContent;
+import com.example.cms.admin.content.model.AdminContentSearchParam;
 import com.example.cms.admin.image.service.AdminImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class AdminContentService {
     /**
      * 콘텐츠 목록 조회 (페이징)
      */
-    public Map<String, Object> getContentList(ContentSearchParam searchParam) {
+    public Map<String, Object> getContentList(AdminContentSearchParam searchParam) {
         // 기본값 설정
         if (searchParam.getPage() == null || searchParam.getPage() < 1) {
             searchParam.setPage(1);
@@ -36,7 +36,7 @@ public class AdminContentService {
             searchParam.setSize(10);
         }
 
-        List<Content> contentList = adminContentMapper.selectContentList(searchParam);
+        List<AdminContent> contentList = adminContentMapper.selectContentList(searchParam);
         int totalCount = adminContentMapper.selectContentCount(searchParam);
 
         // 페이징 정보 계산
@@ -55,7 +55,7 @@ public class AdminContentService {
     /**
      * 콘텐츠 상세 조회
      */
-    public Content getContent(Long contentId) {
+    public AdminContent getContent(Long contentId) {
         return adminContentMapper.selectContentById(contentId);
     }
 
@@ -63,7 +63,7 @@ public class AdminContentService {
      * 콘텐츠 등록
      */
     @Transactional
-    public void createContent(Content content) {
+    public void createContent(AdminContent content) {
         if (content.getIsPublished() == null) {
             content.setIsPublished(false);
         }
@@ -74,7 +74,7 @@ public class AdminContentService {
      * 콘텐츠 수정
      */
     @Transactional
-    public void updateContent(Content content) {
+    public void updateContent(AdminContent content) {
         adminContentMapper.updateContent(content);
     }
 

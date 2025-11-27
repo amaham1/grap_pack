@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Exhibition {
+public class ExternalExhibition {
     /**
      * 내부 ID
      */

@@ -1,32 +1,32 @@
-<article class="content-detail">
+<article class="user-content-detail">
         <!-- 콘텐츠 헤더 -->
-        <div class="content-header">
-            <div class="meta">
-                <span class="badge" th:text="${contentData['typeName'] ?: '일반'}"></span>
-                <span class="date" th:text="${contentData['createDt'] != null ? #temporals.format(contentData['createDt'], 'yyyy.MM.dd HH:mm') : ''}"></span>
-                <span class="view-count" th:text="${contentData['viewCount'] ?: 0}"></span>
+        <div class="user-content-header">
+            <div class="user-meta">
+                <span class="user-badge" th:text="${contentData['typeName'] ?: '일반'}"></span>
+                <span class="user-date" th:text="${contentData['createDt'] != null ? #temporals.format(contentData['createDt'], 'yyyy.MM.dd HH:mm') : ''}"></span>
+                <span class="user-view-count" th:text="${contentData['viewCount'] ?: 0}"></span>
             </div>
             <h1 th:text="${contentData['title'] ?: '제목 없음'}"></h1>
         </div>
 
         <!-- 콘텐츠 본문 -->
-        <div class="content-body">
+        <div class="user-content-body">
             <div th:utext="${contentData['content'] != null ? #strings.replace(#strings.replace(contentData['content'], '\n', '<br>'), '\r', '') : ''}"></div>
         </div>
 
         <!-- 이미지 갤러리 -->
         <div th:if="${contentData['imageList'] != null and !#lists.isEmpty(contentData['imageList'])}"
-             class="image-gallery">
+             class="user-image-gallery">
             <h3>이미지</h3>
-            <div class="gallery-grid">
-                <div th:each="imagePath : ${contentData['imageList']}" class="gallery-item">
+            <div class="user-gallery-grid">
+                <div th:each="imagePath : ${contentData['imageList']}" class="user-gallery-item">
                     <img th:src="${imagePath}" alt="콘텐츠 이미지">
                 </div>
             </div>
         </div>
 
         <!-- 하단 버튼 -->
-        <div class="content-footer">
-            <a th:href="@{/user/content/list}" class="btn btn-secondary">목록으로</a>
+        <div class="user-content-footer">
+            <a th:href="@{/user/content/list}" class="user-btn user-btn-secondary">목록으로</a>
         </div>
     </article>
