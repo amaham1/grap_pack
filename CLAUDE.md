@@ -134,7 +134,16 @@ src\main\resources\sql\schema.sql 분석
 - **파라미터 어노테이션**: `@PathVariable`, `@RequestParam`에 반드시 명시적인 이름 지정
   - 올바른 예: `@PathVariable("contentId") Long contentId`
   - 잘못된 예: `@PathVariable Long contentId` (컴파일 시 파라미터 이름 정보 손실 가능)
-- **네이밍**: 네이밍은 중복되지 않고 명확성있게 작성바람
+- **네이밍 규칙**: 모든 클래스, 메서드, 변수, CSS 클래스명은 명확하고 중복되지 않게 작성
+  - **도메인 접두사 필수**: 도메인별로 고유한 접두사를 사용하여 충돌 방지
+    - Admin 도메인: `Admin` 접두사 (예: `AdminContent`, `AdminContentService`)
+    - User 도메인: `User` 접두사 (예: `UserContent`, `UserContentService`)
+    - External API: `External` 접두사 (예: `ExternalFestival`, `ExternalExhibition`)
+  - **CSS 클래스**: 페이지 타입별 접두사 사용
+    - 관리자 페이지: `admin-` 접두사 (예: `admin-container`, `admin-btn`)
+    - 사용자 페이지: `user-` 접두사 (예: `user-container`, `user-btn`)
+  - **모호한 이름 금지**: `Content`, `Image` 같은 일반적인 이름 단독 사용 금지
+  - **목적 명시**: 클래스/메서드명에 역할과 목적이 드러나도록 작성
 
 ## Common Patterns
 
