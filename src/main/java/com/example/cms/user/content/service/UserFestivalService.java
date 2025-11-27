@@ -112,6 +112,58 @@ public class UserFestivalService {
      * 축제/행사 상세 조회
      */
     public Map<String, Object> getFestivalDetail(Long id) {
-        return festivalMapper.selectVisibleFestivalById(id);
+        Map<String, Object> festival = festivalMapper.selectVisibleFestivalById(id);
+
+        // DB에서 넘어온 값 출력
+        log.info("✅ [CHECK] 축제 상세 조회 (ID: {})", id);
+        log.info("✅ [CHECK] DB 조회 결과: {}", festival);
+
+        if (festival == null) {
+            return null;
+        }
+
+        // filesInfo JSON에서 이미지 파일 추출
+        String filesInfo = (String) festival.get("filesInfo");
+        if (filesInfo != null && !filesInfo.isEmpty() && !filesInfo.equals("null")) {
+            try {
+                List<Map<String, Object>> filesList = objectMapper.readValue(
+                    filesInfo,
+                    new TypeReference<List<Map<String, Object>>>() {}
+                );
+
+                // 이미지 파일만 필터링
+                List<String> imageUrls = new java.util.ArrayList<>();
+                for (Map<String, Object> file : filesList) {
+                    String url = (String) file.get("url");
+                    if (url != null && isImageFile(url)) {
+                        imageUrls.add(url);
+                    }
+                }
+
+                festival.put("imageUrls", imageUrls);
+            } catch (Exception e) {
+                log.warn("파일 정보 파싱 실패 (ID: {}): {}", id, e.getMessage());
+            }
+        }
+
+        return festival;
+    }
+
+    /**
+     * URL이 이미지 파일인지 확인
+     */
+    private boolean isImageFile(String url) {
+        if (url == null || url.isEmpty()) {
+            return false;
+        }
+
+        String lowerUrl = url.toLowerCase();
+        return lowerUrl.endsWith(".jpg")
+            || lowerUrl.endsWith(".jpeg")
+            || lowerUrl.endsWith(".png")
+            || lowerUrl.endsWith(".gif")
+            || lowerUrl.endsWith(".webp")
+            || lowerUrl.endsWith(".bmp")
+            || lowerUrl.endsWith(".svg");
     }
 }

@@ -11,6 +11,21 @@
                 <span th:if="${festival['writerName'] != null}">
                     작성자: <span th:text="${festival['writerName']}"></span>
                 </span>
+                <span th:if="${festival['fetchedAt'] != null}" class="fetched-date">
+                    · 데이터 수집일: <span th:text="${#temporals.format(festival['fetchedAt'], 'yyyy.MM.dd HH:mm')}"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- 이미지 갤러리 -->
+        <div class="image-gallery">
+            <div th:if="${festival['imageUrls'] != null and !festival['imageUrls'].isEmpty()}" class="gallery-grid">
+                <div th:each="imageUrl : ${festival['imageUrls']}" class="gallery-item">
+                    <img th:src="${imageUrl}" th:alt="${festival['title']}" loading="lazy">
+                </div>
+            </div>
+            <div th:if="${festival['imageUrls'] == null or festival['imageUrls'].isEmpty()}" class="no-image">
+                <span>이미지 없음</span>
             </div>
         </div>
 
@@ -23,14 +38,8 @@
         <!-- 원본 페이지 링크 -->
         <div th:if="${festival['sourceUrl'] != null}" class="source-link">
             <a th:href="${festival['sourceUrl']}" target="_blank" class="btn btn-outline">
-                원본 페이지 보기
+                원본 페이지 보러가기
             </a>
-        </div>
-
-        <!-- 첨부 파일 정보 (JSON 데이터가 있는 경우) -->
-        <div th:if="${festival['filesInfo'] != null}" class="files-section">
-            <h3>첨부 파일</h3>
-            <p class="text-muted">파일 정보는 원본 페이지에서 확인하세요.</p>
         </div>
 
         <!-- 하단 버튼 -->
@@ -44,14 +53,56 @@
             background-color: #ff6b6b;
             color: white;
         }
+
+        .meta-info {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .fetched-date {
+            color: #999;
+            font-size: 0.85rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .gallery-item {
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .no-image {
+            color: #999;
+            font-size: 0.9rem;
+        }
+
         .source-link {
             margin: 2rem 0;
             text-align: center;
         }
-        .files-section {
-            margin-top: 2rem;
-            padding: 1rem;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+
+        /* 반응형 처리 */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
