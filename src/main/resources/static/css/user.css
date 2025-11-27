@@ -1,4 +1,4 @@
-/* 사용자 페이지 CSS */
+/* 사용자 페이지 CSS - 깔끔한 미니멀 디자인 */
 
 * {
     margin: 0;
@@ -23,24 +23,24 @@ body {
 /* 헤더 */
 .user-header {
     background: #ffffff;
-    padding: 30px 0;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 25px 0;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .user-header h1 {
     margin: 0;
     font-size: 24px;
-    font-weight: 600;
+    font-weight: 700;
     display: inline-block;
 }
 
 .user-header h1 a {
-    color: #000000;
+    color: #333333;
     text-decoration: none;
 }
 
 .user-header h1 a:hover {
-    color: #555555;
+    color: #ff6b6b;
 }
 
 .user-header nav {
@@ -61,14 +61,15 @@ body {
 .user-header nav a {
     color: #666666;
     text-decoration: none;
-    padding: 5px 0;
-    font-weight: 400;
+    padding: 8px 0;
+    font-weight: 500;
+    font-size: 15px;
 }
 
 .user-header nav a:hover,
 .user-header nav a.active {
-    color: #000000;
-    border-bottom: 2px solid #000000;
+    color: #333333;
+    border-bottom: 2px solid #333333;
 }
 
 .user-header .user-container {
@@ -77,31 +78,32 @@ body {
 
 /* 메인 컨텐츠 */
 .user-main {
-    padding: 60px 0;
+    padding: 50px 0;
     min-height: calc(100vh - 200px);
 }
 
 /* 페이지 헤더 */
 .user-page-header {
-    margin-top: 50px;
-    margin-bottom: 50px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .user-page-header h2 {
-    font-size: 32px;
-    font-weight: 600;
-    color: #000000;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333333;
     margin: 0;
 }
 
 /* 검색 섹션 */
 .user-search-section {
-    background: #fafafa;
-    padding: 25px;
-    margin-bottom: 50px;
-    border: 1px solid #e0e0e0;
+    background: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
 }
 
 .user-search-form {
@@ -112,78 +114,83 @@ body {
 
 .user-form-control {
     flex: 1;
-    padding: 12px 15px;
-    border: 1px solid #d0d0d0;
-    font-size: 15px;
+    padding: 12px 16px;
+    border: 1px solid #dddddd;
+    font-size: 14px;
     background-color: #ffffff;
+    border-radius: 4px;
 }
 
 .user-form-control:focus {
     outline: none;
-    border-color: #000000;
+    border-color: #333333;
 }
 
 /* 콘텐츠 그리드 */
 .user-content-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 30px;
-    margin-bottom: 50px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
 }
 
 .user-content-card {
     background: #ffffff;
-    padding: 25px;
-    border: 1px solid #e0e0e0;
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
 }
 
 .user-content-card:hover {
-    border-color: #000000;
+    border-color: #cccccc;
 }
 
 .user-content-card .user-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
 }
 
 .user-content-card h3 {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 600;
-    margin: 0 0 20px 0;
-    line-height: 1.4;
+    margin: 0 0 15px 0;
+    line-height: 1.5;
+    color: #333333;
 }
 
 .user-content-card h3 a {
-    color: #000000;
+    color: #333333;
     text-decoration: none;
 }
 
 .user-content-card h3 a:hover {
-    text-decoration: underline;
+    color: #ff6b6b;
 }
 
 .user-content-card .user-card-footer {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #f0f0f0;
-    color: #666666;
-    font-size: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f5f5f5;
+    color: #999999;
+    font-size: 13px;
 }
 
 /* 배지 */
 .user-badge {
     display: inline-block;
-    padding: 4px 12px;
-    font-size: 12px;
-    font-weight: 500;
-    background: #000000;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #333333;
     color: #ffffff;
+    border-radius: 2px;
 }
 
 .user-date {
@@ -209,44 +216,45 @@ body {
 }
 
 .user-empty-message p {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 /* 콘텐츠 상세 */
 .user-content-detail {
     background: #ffffff;
-    padding: 40px 50px;
-    border: 1px solid #e0e0e0;
+    padding: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
 }
 
 .user-content-header {
-    margin-bottom: 40px;
-    padding-bottom: 25px;
-    border-bottom: 1px solid #e0e0e0;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eeeeee;
 }
 
 .user-content-header .user-meta {
     display: flex;
     gap: 15px;
-    margin-bottom: 20px;
-    font-size: 14px;
+    margin-bottom: 15px;
+    font-size: 13px;
     color: #999999;
     align-items: center;
 }
 
 .user-content-header h1 {
-    font-size: 32px;
-    font-weight: 600;
-    color: #000000;
+    font-size: 28px;
+    font-weight: 700;
+    color: #333333;
     margin: 0;
     line-height: 1.4;
 }
 
 .user-content-body {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.8;
-    color: #333333;
-    margin-bottom: 40px;
+    color: #444444;
+    margin-bottom: 30px;
 }
 
 .user-content-body p {
@@ -255,30 +263,31 @@ body {
 
 /* 이미지 갤러리 */
 .user-image-gallery {
-    margin: 40px 0;
-    padding: 40px 0;
+    margin: 30px 0;
+    padding: 30px 0;
 }
 
 .user-image-gallery h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 25px;
-    color: #000000;
+    margin-bottom: 20px;
+    color: #333333;
 }
 
 .user-gallery-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
 }
 
 .user-gallery-item {
     overflow: hidden;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
 }
 
 .user-gallery-item:hover {
-    border-color: #000000;
+    border-color: #cccccc;
 }
 
 .user-gallery-item img {
@@ -288,107 +297,134 @@ body {
 }
 
 .user-content-footer {
-    margin-top: 40px;
-    padding-top: 25px;
-    border-top: 1px solid #e0e0e0;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
     display: flex;
     justify-content: center;
 }
 
 /* 버튼 */
-.user-btn {
+.user-btn, .btn {
     display: inline-block;
-    padding: 12px 24px;
+    padding: 10px 20px;
     font-size: 14px;
     font-weight: 500;
-    border: 1px solid #000000;
+    border: 1px solid #dddddd;
     cursor: pointer;
     text-decoration: none;
     text-align: center;
     background: #ffffff;
-    color: #000000;
+    color: #333333;
+    border-radius: 4px;
+    transition: all 0.2s ease;
 }
 
-.user-btn-primary {
-    background: #000000;
+.user-btn:hover, .btn:hover {
+    border-color: #333333;
+    background: #333333;
     color: #ffffff;
 }
 
-.user-btn-primary:hover {
+.user-btn-primary {
     background: #333333;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.user-btn-primary:hover {
+    background: #555555;
+    border-color: #555555;
 }
 
 .user-btn-secondary {
     background: #ffffff;
-    color: #000000;
+    color: #333333;
+    border-color: #dddddd;
 }
 
 .user-btn-secondary:hover {
-    background: #000000;
-    color: #ffffff;
+    border-color: #333333;
 }
 
-.user-btn-sm {
+.user-btn-sm, .btn-sm {
     padding: 8px 16px;
     font-size: 13px;
 }
 
 /* 페이징 */
-.user-pagination {
+.user-pagination, .pagination {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin: 50px 0 30px;
+    gap: 6px;
+    margin: 40px 0 20px;
     flex-wrap: wrap;
 }
 
-.user-pagination .user-btn {
-    min-width: 40px;
-    padding: 10px 15px;
+.user-pagination .user-btn,
+.user-pagination .btn,
+.pagination .user-btn,
+.pagination .btn {
+    min-width: 36px;
+    padding: 8px 14px;
     background: #ffffff;
-    color: #000000;
-    border: 1px solid #d0d0d0;
-}
-
-.user-pagination .user-btn:hover {
-    background: #000000;
-    color: #ffffff;
-    border-color: #000000;
-}
-
-.user-pagination .user-btn.active {
-    background: #000000;
-    color: #ffffff;
-    border-color: #000000;
-}
-
-.user-pagination-info {
-    text-align: center;
     color: #666666;
-    font-size: 14px;
-    margin-bottom: 30px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.user-pagination .user-btn:hover,
+.user-pagination .btn:hover,
+.pagination .user-btn:hover,
+.pagination .btn:hover {
+    border-color: #333333;
+    color: #333333;
+    background: #ffffff;
+}
+
+.user-pagination .user-btn.active,
+.user-pagination .btn.active,
+.pagination .user-btn.active,
+.pagination .btn.active {
+    background: #333333;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.user-pagination-info, .pagination-info {
+    text-align: center;
+    color: #999999;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.pagination-ellipsis {
+    display: inline-block;
+    padding: 8px 6px;
+    color: #999999;
 }
 
 /* 푸터 */
 .user-footer {
-    background: #000000;
-    color: #ffffff;
-    padding: 40px 0;
+    background: #f9f9f9;
+    color: #666666;
+    padding: 30px 0;
     text-align: center;
-    margin-top: 80px;
-    border-top: 1px solid #000000;
+    margin-top: 60px;
+    border-top: 1px solid #eeeeee;
 }
 
 .user-footer p {
     margin: 0;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 /* 반응형 */
 @media (max-width: 768px) {
     .user-content-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 16px;
     }
 
     .user-search-form {
@@ -400,43 +436,37 @@ body {
     }
 
     .user-content-detail {
-        padding: 30px 25px;
+        padding: 25px 20px;
     }
 
     .user-content-header h1 {
-        font-size: 24px;
-    }
-
-    .user-content-body {
-        font-size: 15px;
+        font-size: 22px;
     }
 
     .user-page-header h2 {
-        font-size: 24px;
+        font-size: 22px;
     }
 
     .user-header {
-        padding: 20px 0;
+        padding: 15px 0;
     }
 
     .user-header h1 {
         font-size: 20px;
         display: block;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
     }
 
     .user-header nav {
         float: none;
-        margin-top: 0;
     }
 
     .user-header nav li {
         margin-left: 0;
-        margin-right: 15px;
+        margin-right: 20px;
     }
 
     .user-header nav a {
-        padding: 5px 0;
         font-size: 14px;
     }
 }
@@ -447,37 +477,31 @@ body {
 
 /* 마감임박 배지 */
 .user-badge-urgent {
-    background-color: #ff3838;
+    background: #ff6b6b;
     color: white;
-    animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
 }
 
 /* 배지 그룹 */
 .user-badge-group {
     display: flex;
-    gap: 0.5rem;
+    gap: 6px;
     align-items: center;
 }
 
 /* 카드 이미지 영역 */
 .user-card-image {
     width: 100%;
-    height: 180px;
+    height: 160px;
     overflow: hidden;
-    border-radius: 8px 8px 0 0;
-    background-color: #f0f0f0;
+    border-radius: 4px;
+    background: #f5f5f5;
     position: relative;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 /* 공연/전시는 높이가 다름 */
 .user-exhibition-card .user-card-image {
-    height: 200px;
+    height: 180px;
 }
 
 .user-card-image img {
@@ -493,10 +517,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 30px;
-    color: #8b95a5;
-    font-size: 0.9rem;
-    font-weight: 500;
+    color: #cccccc;
+    font-size: 13px;
 }
 
 /* 카드 콘텐츠 영역 */
@@ -508,9 +530,9 @@ body {
 
 /* 카드 미리보기 (축제/행사용) */
 .user-card-preview {
-    margin: 0.5rem 0;
-    color: #666;
-    font-size: 0.9rem;
+    margin: 8px 0;
+    color: #666666;
+    font-size: 14px;
     line-height: 1.5;
 }
 
@@ -526,8 +548,8 @@ body {
 /* 카드 메타 정보 */
 .user-card-meta {
     margin-top: auto;
-    padding-top: 15px;
-    font-size: 14px;
+    padding-top: 12px;
+    font-size: 13px;
     color: #999999;
 }
 
@@ -542,10 +564,9 @@ body {
 /* 클릭 가능한 카드 */
 .user-clickable-card {
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease;
 }
 
 .user-clickable-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #cccccc;
 }

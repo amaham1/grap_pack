@@ -54,7 +54,7 @@ public class UserContentController {
         UserContent contentData = userContentService.getContent(contentId);
 
         if (contentData == null) {
-            return "redirect:/user/content/list";
+            return "redirect:/user/content/festivals";
         }
 
         model.addAttribute("contentData", contentData);
