@@ -14,6 +14,8 @@
             start_date AS startDate,
             end_date AS endDate,
             location_name AS locationName,
+            source_type AS sourceType,
+            writer_name AS writerName,
             is_show AS isShow,
             admin_memo AS adminMemo,
             is_confirmed AS isConfirmed,
@@ -32,7 +34,7 @@
                      OR organizer_info LIKE CONCAT('%', #{keyword}, '%'))
             </if>
         </where>
-        ORDER BY start_date DESC, created_at DESC
+        ORDER BY created_at DESC
         LIMIT #{offset}, #{size}
     </select>
 
@@ -67,6 +69,8 @@
             status_info AS statusInfo,
             division_name AS divisionName,
             api_raw_data AS apiRawData,
+            source_type AS sourceType,
+            writer_name AS writerName,
             is_show AS isShow,
             admin_memo AS adminMemo,
             is_confirmed AS isConfirmed,

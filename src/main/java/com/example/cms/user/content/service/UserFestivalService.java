@@ -2,13 +2,17 @@ package com.example.cms.user.content.service;
 
 import com.example.cms.common.util.PaginationUtil;
 import com.example.cms.user.content.mapper.UserFestivalMapper;
+import com.example.cms.user.content.model.UserFestivalRequest;
+import com.example.cms.user.image.service.UserImageService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -25,6 +29,7 @@ import java.util.Map;
 public class UserFestivalService {
 
     private final UserFestivalMapper festivalMapper;
+    private final UserImageService imageService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
@@ -165,5 +170,38 @@ public class UserFestivalService {
             || lowerUrl.endsWith(".webp")
             || lowerUrl.endsWith(".bmp")
             || lowerUrl.endsWith(".svg");
+    }
+
+    /**
+     * 축제/행사 등록 요청 (사용자)
+     * @param request 등록 요청 데이터
+     * @param images 이미지 파일 목록
+     * @param thumbnailIndex 썸네일로 설정할 이미지 인덱스 (null이면 썸네일 없음)
+     * @return 생성된 축제/행사 ID
+     */
+    @Transactional
+    public Long createFestivalRequest(UserFestivalRequest request, List<MultipartFile> images, Integer thumbnailIndex) throws IOException {
+        log.info("✅ [CHECK] 축제/행사 등록 요청 시작: title={}", request.getTitle());
+
+        // 1. 축제/행사 데이터 저장
+        festivalMapper.insertFestivalRequest(request);
+        Long festivalId = festivalMapper.selectLastInsertId();
+        log.info("✅ [CHECK] 축제/행사 데이터 저장 완료: festivalId={}", festivalId);
+
+        // 2. 이미지 업로드 처리
+        if (images != null && !images.isEmpty()) {
+            List<MultipartFile> validImages = images.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .toList();
+
+            if (!validImages.isEmpty()) {
+                log.info("✅ [CHECK] 이미지 업로드 시작: 총 {}개", validImages.size());
+                imageService.uploadFestivalImages(festivalId, validImages, thumbnailIndex);
+                log.info("✅ [CHECK] 이미지 업로드 완료");
+            }
+        }
+
+        log.info("✅ [CHECK] 축제/행사 등록 요청 완료: festivalId={}", festivalId);
+        return festivalId;
     }
 }

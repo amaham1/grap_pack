@@ -1,0 +1,360 @@
+<div class="user-page-header">
+    <h2>복지서비스 등록 요청</h2>
+    <p class="text-muted">새로운 복지서비스 정보를 등록 요청합니다. 관리자 승인 후 게시됩니다.</p>
+</div>
+
+<!-- 알림 메시지 -->
+<div th:if="${errorMessage}" class="user-alert user-alert-error">
+    <span th:text="${errorMessage}"></span>
+</div>
+
+<div class="user-request-form-container">
+    <form th:action="@{/user/content/welfare/request}" method="post" enctype="multipart/form-data" id="welfareRequestForm">
+
+        <!-- 서비스명 -->
+        <div class="user-form-group">
+            <label for="serviceName" class="user-form-label">서비스명 <span class="required">*</span></label>
+            <input type="text" id="serviceName" name="serviceName" class="user-form-control" required
+                   placeholder="복지서비스명을 입력하세요" maxlength="200">
+        </div>
+
+        <!-- 지역 해당 여부 -->
+        <div class="user-form-group">
+            <label class="user-form-label">해당 지역</label>
+            <div class="user-checkbox-group">
+                <label class="user-checkbox-label">
+                    <input type="checkbox" name="isAllLocation" value="true">
+                    <span>전체</span>
+                </label>
+                <label class="user-checkbox-label">
+                    <input type="checkbox" name="isJejuLocation" value="true">
+                    <span>제주시</span>
+                </label>
+                <label class="user-checkbox-label">
+                    <input type="checkbox" name="isSeogwipoLocation" value="true">
+                    <span>서귀포시</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 지원 대상 -->
+        <div class="user-form-group">
+            <label for="supportTargetHtml" class="user-form-label">지원 대상 <span class="required">*</span></label>
+            <textarea id="supportTargetHtml" name="supportTargetHtml" class="user-form-control user-textarea" required
+                      placeholder="지원 대상을 입력하세요" rows="5"></textarea>
+        </div>
+
+        <!-- 지원 내용 -->
+        <div class="user-form-group">
+            <label for="supportContentHtml" class="user-form-label">지원 내용 <span class="required">*</span></label>
+            <textarea id="supportContentHtml" name="supportContentHtml" class="user-form-control user-textarea" required
+                      placeholder="지원 내용을 입력하세요" rows="8"></textarea>
+        </div>
+
+        <!-- 신청 방법 -->
+        <div class="user-form-group">
+            <label for="applicationInfoHtml" class="user-form-label">신청 방법</label>
+            <textarea id="applicationInfoHtml" name="applicationInfoHtml" class="user-form-control user-textarea"
+                      placeholder="신청 방법을 입력하세요 (선택사항)" rows="5"></textarea>
+        </div>
+
+        <!-- 이미지 업로드 -->
+        <div class="user-form-group">
+            <label class="user-form-label">이미지 업로드 (최대 10개)</label>
+            <div class="user-image-upload-section">
+                <div class="user-image-upload-area" id="imageUploadArea">
+                    <input type="file" id="imageInput" name="images" multiple accept="image/*" style="display: none;">
+                    <div class="user-upload-placeholder" onclick="document.getElementById('imageInput').click()">
+                        <span class="upload-icon">+</span>
+                        <span>클릭하여 이미지 추가</span>
+                        <span class="upload-hint">JPG, PNG, GIF (최대 10개)</span>
+                    </div>
+                </div>
+
+                <!-- 이미지 미리보기 -->
+                <div class="user-image-preview-container" id="imagePreviewContainer"></div>
+
+                <p class="user-form-hint">이미지를 클릭하면 대표 이미지(썸네일)로 설정됩니다.</p>
+            </div>
+        </div>
+
+        <!-- 썸네일 인덱스 (hidden) -->
+        <input type="hidden" id="thumbnailIndex" name="thumbnailIndex" value="">
+
+        <!-- 버튼 그룹 -->
+        <div class="user-form-actions">
+            <a th:href="@{/user/content/welfare}" class="user-btn user-btn-secondary">취소</a>
+            <button type="submit" class="user-btn user-btn-primary">등록 요청</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function() {
+        const imageInput = document.getElementById('imageInput');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const thumbnailIndexInput = document.getElementById('thumbnailIndex');
+        const MAX_IMAGES = 10;
+
+        let selectedFiles = [];
+        let thumbnailIdx = null;
+
+        imageInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+
+            // 최대 개수 체크
+            if (selectedFiles.length + files.length > MAX_IMAGES) {
+                alert('이미지는 최대 ' + MAX_IMAGES + '개까지 업로드할 수 있습니다.');
+                return;
+            }
+
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    selectedFiles.push(file);
+                }
+            });
+
+            updatePreview();
+            updateFileInput();
+        });
+
+        function updatePreview() {
+            previewContainer.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewItem = document.createElement('div');
+                    previewItem.className = 'user-image-preview-item';
+                    if (thumbnailIdx === index) {
+                        previewItem.classList.add('is-thumbnail');
+                    }
+
+                    previewItem.innerHTML = `
+                        <img src="${e.target.result}" alt="미리보기">
+                        <div class="preview-overlay">
+                            <span class="thumbnail-badge" style="${thumbnailIdx === index ? '' : 'display:none'}">대표</span>
+                        </div>
+                        <button type="button" class="preview-remove-btn" data-index="${index}">&times;</button>
+                    `;
+
+                    // 클릭 시 썸네일 설정
+                    previewItem.addEventListener('click', function(e) {
+                        if (!e.target.classList.contains('preview-remove-btn')) {
+                            setThumbnail(index);
+                        }
+                    });
+
+                    // 삭제 버튼
+                    previewItem.querySelector('.preview-remove-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        removeImage(index);
+                    });
+
+                    previewContainer.appendChild(previewItem);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function setThumbnail(index) {
+            if (thumbnailIdx === index) {
+                // 이미 썸네일이면 해제
+                thumbnailIdx = null;
+                thumbnailIndexInput.value = '';
+            } else {
+                thumbnailIdx = index;
+                thumbnailIndexInput.value = index;
+            }
+            updatePreview();
+        }
+
+        function removeImage(index) {
+            selectedFiles.splice(index, 1);
+
+            // 썸네일 인덱스 조정
+            if (thumbnailIdx === index) {
+                thumbnailIdx = null;
+                thumbnailIndexInput.value = '';
+            } else if (thumbnailIdx !== null && thumbnailIdx > index) {
+                thumbnailIdx--;
+                thumbnailIndexInput.value = thumbnailIdx;
+            }
+
+            updatePreview();
+            updateFileInput();
+        }
+
+        function updateFileInput() {
+            // DataTransfer를 사용하여 파일 입력 업데이트
+            const dt = new DataTransfer();
+            selectedFiles.forEach(file => dt.items.add(file));
+            imageInput.files = dt.files;
+        }
+    })();
+</script>
+
+<style>
+    .required {
+        color: #dc3545;
+    }
+
+    .user-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .user-checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-top: 8px;
+    }
+
+    .user-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+    }
+
+    .user-checkbox-label input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .user-image-upload-area {
+        border: 2px dashed #ddd;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 15px;
+        cursor: pointer;
+        transition: border-color 0.2s;
+    }
+
+    .user-image-upload-area:hover {
+        border-color: #007bff;
+    }
+
+    .user-upload-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        color: #666;
+    }
+
+    .upload-icon {
+        font-size: 36px;
+        color: #007bff;
+    }
+
+    .upload-hint {
+        font-size: 12px;
+        color: #999;
+    }
+
+    .user-image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .user-image-preview-item {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        border: 3px solid transparent;
+        transition: border-color 0.2s;
+    }
+
+    .user-image-preview-item:hover {
+        border-color: #007bff;
+    }
+
+    .user-image-preview-item.is-thumbnail {
+        border-color: #28a745;
+    }
+
+    .user-image-preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .preview-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 5px;
+    }
+
+    .thumbnail-badge {
+        background-color: #28a745;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+    }
+
+    .preview-remove-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: rgba(220, 53, 69, 0.9);
+        color: white;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 16px;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .preview-remove-btn:hover {
+        background: #dc3545;
+    }
+
+    .user-form-hint {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .user-form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    .user-alert {
+        padding: 12px 16px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .user-alert-error {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+</style>

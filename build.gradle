@@ -46,6 +46,9 @@ dependencies {
     implementation 'commons-io:commons-io:2.15.1'
     implementation 'commons-fileupload:commons-fileupload:1.5'
 
+    // 이미지 압축
+    implementation 'net.coobird:thumbnailator:0.4.20'
+
     // 개발 도구
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 

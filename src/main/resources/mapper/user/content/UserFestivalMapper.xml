@@ -59,4 +59,38 @@
           AND is_show = TRUE
     </select>
 
+    <!-- 사용자 축제/행사 등록 요청 -->
+    <insert id="insertFestivalRequest" parameterType="com.example.cms.user.content.model.UserFestivalRequest">
+        INSERT INTO festivals (
+            original_api_id,
+            title,
+            content_html,
+            source_url,
+            writer_name,
+            written_date,
+            is_show,
+            is_confirmed,
+            confirm_status,
+            fetched_at,
+            created_at
+        ) VALUES (
+            CONCAT('USER_', UUID()),
+            #{title},
+            #{contentHtml},
+            #{sourceUrl},
+            #{writerName},
+            NOW(),
+            FALSE,
+            FALSE,
+            'PENDING',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 마지막 INSERT ID 조회 -->
+    <select id="selectLastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
 </mapper>

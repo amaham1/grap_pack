@@ -3,9 +3,29 @@
         <p class="text-muted">제주도의 다양한 공연과 전시회 정보를 확인하세요</p>
     </div>
 
+    <!-- 탭 메뉴 -->
+    <div class="user-tab-container">
+        <a th:href="@{/user/content/exhibitions(tab='ongoing', keyword=${keyword})}"
+           th:classappend="${tab == 'ongoing' or tab == null} ? 'active' : ''"
+           class="user-tab-item">
+            진행 중인 공연
+        </a>
+        <a th:href="@{/user/content/exhibitions(tab='upcoming', keyword=${keyword})}"
+           th:classappend="${tab == 'upcoming'} ? 'active' : ''"
+           class="user-tab-item">
+            다가올 공연
+        </a>
+        <a th:href="@{/user/content/exhibitions(tab='ended', keyword=${keyword})}"
+           th:classappend="${tab == 'ended'} ? 'active' : ''"
+           class="user-tab-item">
+            끝난 공연
+        </a>
+    </div>
+
     <!-- 검색 -->
     <div class="user-search-section">
         <form th:action="@{/user/content/exhibitions}" method="get" class="user-search-form" data-ajax="true">
+            <input type="hidden" name="tab" th:value="${tab}">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="공연/전시명, 장소, 주최 검색" class="user-form-control">
             <button type="submit" class="user-btn user-btn-primary">검색</button>
@@ -74,10 +94,52 @@
         currentPage=${currentPage},
         totalPages=${totalPages},
         totalCount=${totalCount},
-        keyword=${keyword}
+        keyword=${keyword},
+        tab=${tab}
     )}"></div>
 
+    <!-- 등록 요청 버튼 -->
+    <div class="user-request-button-wrapper">
+        <a th:href="@{/user/content/exhibitions/request}" class="user-btn user-btn-request">
+            등록 요청
+        </a>
+    </div>
+
+    <!-- 성공 메시지 alert -->
+    <script th:if="${successMessage}" th:inline="javascript">
+        (function() {
+            const msg = /*[[${successMessage}]]*/ '';
+            alert(msg);
+        })();
+    </script>
+
     <style>
+        /* 탭 스타일 */
+        .user-tab-container {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .user-tab-item {
+            padding: 0.75rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+        .user-tab-item:hover {
+            color: #495057;
+            background-color: #f8f9fa;
+        }
+        .user-tab-item.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            font-weight: 600;
+        }
+
         /* 공연/전시 전용 스타일 */
         .badge-exhibition {
             background-color: #a29bfe;
@@ -100,5 +162,17 @@
         .price-value {
             font-size: 0.9rem;
             font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .user-tab-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .user-tab-item {
+                padding: 0.6rem 1rem;
+                white-space: nowrap;
+                font-size: 0.9rem;
+            }
         }
     </style>

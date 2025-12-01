@@ -1,5 +1,6 @@
 package com.example.cms.user.content.mapper;
 
+import com.example.cms.user.content.model.UserWelfareRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,15 @@ public interface UserWelfareMapper {
      * 복지서비스 상세 조회 (노출 설정된 것만)
      */
     Map<String, Object> selectVisibleWelfareById(@Param("id") Long id);
+
+    /**
+     * 사용자 복지서비스 등록 요청
+     * @param request 등록 요청 데이터
+     */
+    void insertWelfareRequest(UserWelfareRequest request);
+
+    /**
+     * 마지막 INSERT ID 조회
+     */
+    Long selectLastInsertId();
 }

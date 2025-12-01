@@ -1,5 +1,6 @@
 package com.example.cms.user.content.mapper;
 
+import com.example.cms.user.content.model.UserFestivalRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,16 @@ public interface UserFestivalMapper {
      * 축제/행사 상세 조회 (노출 설정된 것만)
      */
     Map<String, Object> selectVisibleFestivalById(@Param("id") Long id);
+
+    /**
+     * 사용자 축제/행사 등록 요청
+     * @param request 등록 요청 데이터
+     * @return 생성된 ID
+     */
+    void insertFestivalRequest(UserFestivalRequest request);
+
+    /**
+     * 마지막 INSERT ID 조회
+     */
+    Long selectLastInsertId();
 }

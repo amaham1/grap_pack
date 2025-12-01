@@ -67,8 +67,24 @@
         currentPage=${currentPage},
         totalPages=${totalPages},
         totalCount=${totalCount},
-        keyword=${keyword}
+        keyword=${keyword},
+        tab=${null}
     )}"></div>
+
+    <!-- 등록 요청 버튼 -->
+    <div class="user-request-button-wrapper">
+        <a th:href="@{/user/content/festivals/request}" class="user-btn user-btn-request">
+            등록 요청
+        </a>
+    </div>
+
+    <!-- 성공 메시지 alert -->
+    <script th:if="${successMessage}" th:inline="javascript">
+        (function() {
+            const msg = /*[[${successMessage}]]*/ '';
+            alert(msg);
+        })();
+    </script>
 
     <style>
         /* 축제/행사 전용 스타일 */

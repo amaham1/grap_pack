@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<!-- 사용자 페이지네이션 (간단한 버전) -->
-<div th:fragment="user-pagination(baseUrl, pageInfo, currentPage, totalPages, totalCount, keyword)">
+<!-- 사용자 페이지네이션 (간단한 버전, tab 파라미터 지원) -->
+<div th:fragment="user-pagination(baseUrl, pageInfo, currentPage, totalPages, totalCount, keyword, tab)">
 
     <!-- 페이지 버튼 -->
     <div th:if="${totalPages > 0}" class="pagination">
 
         <!-- 이전 버튼 -->
         <a th:if="${pageInfo.hasPrevious}"
-           th:href="@{${baseUrl}(page=${currentPage - 1}, keyword=${keyword})}"
+           th:href="@{${baseUrl}(page=${currentPage - 1}, keyword=${keyword}, tab=${tab})}"
            class="btn btn-sm">이전</a>
 
         <!-- 페이지 번호 -->
@@ -19,14 +19,14 @@
 
             <!-- 페이지 번호 버튼 -->
             <a th:if="${!page.isEllipsis}"
-               th:href="@{${baseUrl}(page=${page.number}, keyword=${keyword})}"
+               th:href="@{${baseUrl}(page=${page.number}, keyword=${keyword}, tab=${tab})}"
                th:text="${page.number}"
                th:class="|btn btn-sm ${page.isActive ? 'active' : ''}|"></a>
         </span>
 
         <!-- 다음 버튼 -->
         <a th:if="${pageInfo.hasNext}"
-           th:href="@{${baseUrl}(page=${currentPage + 1}, keyword=${keyword})}"
+           th:href="@{${baseUrl}(page=${currentPage + 1}, keyword=${keyword}, tab=${tab})}"
            class="btn btn-sm">다음</a>
     </div>
 

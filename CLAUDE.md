@@ -176,3 +176,14 @@ User-facing 페이지에서 HTMX를 사용하여 부분 페이지 업데이트 �
 - **HTMX 속성**: HTMX 속성에 Thymeleaf URL 표현식을 사용할 때는 `th:` 접두사 필요
   - 올바른 예: `th:hx-get="@{/url}"`
   - 잘못된 예: `hx-get="@{/url}"`
+
+### JavaScript 코딩 규칙
+- **ES6+ 문법 사용**: 현대적인 JavaScript 문법 사용 필수
+  - `var` 사용 금지, `const` 또는 `let` 사용
+  - 화살표 함수 사용 권장: `() => {}`
+  - 템플릿 리터럴 사용: `` `${variable}` ``
+- **변수 선언**:
+  - 재할당이 없는 변수: `const` 사용
+  - 재할당이 필요한 변수: `let` 사용
+  - 잘못된 예: `var msg = 'hello';`
+  - 올바른 예: `const msg = 'hello';`

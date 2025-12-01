@@ -2,10 +2,15 @@ package com.example.cms.user.content.service;
 
 import com.example.cms.common.util.PaginationUtil;
 import com.example.cms.user.content.mapper.UserWelfareMapper;
+import com.example.cms.user.content.model.UserWelfareRequest;
+import com.example.cms.user.image.service.UserImageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +18,14 @@ import java.util.Map;
 /**
  * 사용자 복지서비스 서비스
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserWelfareService {
 
     private final UserWelfareMapper welfareMapper;
+    private final UserImageService imageService;
 
     /**
      * 노출 설정된 복지서비스 목록 조회 (페이징)
@@ -97,5 +104,38 @@ public class UserWelfareService {
      */
     public Map<String, Object> getWelfareDetail(Long id) {
         return welfareMapper.selectVisibleWelfareById(id);
+    }
+
+    /**
+     * 복지서비스 등록 요청 (사용자)
+     * @param request 등록 요청 데이터
+     * @param images 이미지 파일 목록
+     * @param thumbnailIndex 썸네일로 설정할 이미지 인덱스 (null이면 썸네일 없음)
+     * @return 생성된 복지서비스 ID
+     */
+    @Transactional
+    public Long createWelfareRequest(UserWelfareRequest request, List<MultipartFile> images, Integer thumbnailIndex) throws IOException {
+        log.info("✅ [CHECK] 복지서비스 등록 요청 시작: serviceName={}", request.getServiceName());
+
+        // 1. 복지서비스 데이터 저장
+        welfareMapper.insertWelfareRequest(request);
+        Long welfareServiceId = welfareMapper.selectLastInsertId();
+        log.info("✅ [CHECK] 복지서비스 데이터 저장 완료: welfareServiceId={}", welfareServiceId);
+
+        // 2. 이미지 업로드 처리
+        if (images != null && !images.isEmpty()) {
+            List<MultipartFile> validImages = images.stream()
+                .filter(file -> file != null && !file.isEmpty())
+                .toList();
+
+            if (!validImages.isEmpty()) {
+                log.info("✅ [CHECK] 이미지 업로드 시작: 총 {}개", validImages.size());
+                imageService.uploadWelfareServiceImages(welfareServiceId, validImages, thumbnailIndex);
+                log.info("✅ [CHECK] 이미지 업로드 완료");
+            }
+        }
+
+        log.info("✅ [CHECK] 복지서비스 등록 요청 완료: welfareServiceId={}", welfareServiceId);
+        return welfareServiceId;
     }
 }

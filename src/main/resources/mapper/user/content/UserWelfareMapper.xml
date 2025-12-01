@@ -63,4 +63,42 @@
           AND is_show = TRUE
     </select>
 
+    <!-- 사용자 복지서비스 등록 요청 -->
+    <insert id="insertWelfareRequest" parameterType="com.example.cms.user.content.model.UserWelfareRequest">
+        INSERT INTO welfare_services (
+            original_api_id,
+            service_name,
+            is_all_location,
+            is_jeju_location,
+            is_seogwipo_location,
+            support_target_html,
+            support_content_html,
+            application_info_html,
+            is_show,
+            is_confirmed,
+            confirm_status,
+            fetched_at,
+            created_at
+        ) VALUES (
+            CONCAT('USER_', UUID()),
+            #{serviceName},
+            #{isAllLocation},
+            #{isJejuLocation},
+            #{isSeogwipoLocation},
+            #{supportTargetHtml},
+            #{supportContentHtml},
+            #{applicationInfoHtml},
+            FALSE,
+            FALSE,
+            'PENDING',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 마지막 INSERT ID 조회 -->
+    <select id="selectLastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
 </mapper>

@@ -4,7 +4,7 @@
 
 <mapper namespace="com.example.cms.user.content.mapper.UserExhibitionMapper">
 
-    <!-- 노출 설정된 공연/전시 목록 조회 -->
+    <!-- 노출 설정된 공연/전시 목록 조회 (탭별 필터링) -->
     <select id="selectVisibleExhibitionList" resultType="map">
         SELECT
             id,
@@ -31,11 +31,41 @@
                  OR location_name LIKE CONCAT('%', #{keyword}, '%')
                  OR organizer_info LIKE CONCAT('%', #{keyword}, '%'))
         </if>
-        ORDER BY start_date DESC, created_at DESC
+        <!-- 탭별 필터링 -->
+        <choose>
+            <!-- 진행 중인 공연: 시작일 <= 오늘 <= 종료일 -->
+            <when test="tab == 'ongoing'">
+                AND start_date &lt;= NOW()
+                AND end_date &gt;= NOW()
+            </when>
+            <!-- 다가올 공연: 시작일 > 오늘 -->
+            <when test="tab == 'upcoming'">
+                AND start_date &gt; NOW()
+            </when>
+            <!-- 끝난 공연: 종료일 < 오늘 -->
+            <when test="tab == 'ended'">
+                AND end_date &lt; NOW()
+            </when>
+        </choose>
+        <!-- 탭별 정렬 -->
+        <choose>
+            <when test="tab == 'ongoing'">
+                ORDER BY end_date ASC, start_date ASC
+            </when>
+            <when test="tab == 'upcoming'">
+                ORDER BY start_date ASC
+            </when>
+            <when test="tab == 'ended'">
+                ORDER BY end_date DESC
+            </when>
+            <otherwise>
+                ORDER BY start_date DESC, created_at DESC
+            </otherwise>
+        </choose>
         LIMIT #{offset}, #{size}
     </select>
 
-    <!-- 노출 설정된 공연/전시 전체 개수 조회 -->
+    <!-- 노출 설정된 공연/전시 전체 개수 조회 (탭별 필터링) -->
     <select id="selectVisibleExhibitionCount" resultType="int">
         SELECT COUNT(*)
         FROM exhibitions
@@ -45,6 +75,19 @@
                  OR location_name LIKE CONCAT('%', #{keyword}, '%')
                  OR organizer_info LIKE CONCAT('%', #{keyword}, '%'))
         </if>
+        <!-- 탭별 필터링 -->
+        <choose>
+            <when test="tab == 'ongoing'">
+                AND start_date &lt;= NOW()
+                AND end_date &gt;= NOW()
+            </when>
+            <when test="tab == 'upcoming'">
+                AND start_date &gt; NOW()
+            </when>
+            <when test="tab == 'ended'">
+                AND end_date &lt; NOW()
+            </when>
+        </choose>
     </select>
 
     <!-- 공연/전시 상세 조회 (노출 설정된 것만) -->
@@ -71,6 +114,52 @@
         FROM exhibitions
         WHERE id = #{id}
           AND is_show = TRUE
+    </select>
+
+    <!-- 사용자 공연/전시 등록 요청 -->
+    <insert id="insertExhibitionRequest" parameterType="com.example.cms.user.content.model.UserExhibitionRequest">
+        INSERT INTO exhibitions (
+            original_api_id,
+            title,
+            category_name,
+            start_date,
+            end_date,
+            time_info,
+            location_name,
+            organizer_info,
+            tel_number,
+            pay_info,
+            source_type,
+            writer_name,
+            is_show,
+            is_confirmed,
+            confirm_status,
+            fetched_at,
+            created_at
+        ) VALUES (
+            CONCAT('USER_', UUID()),
+            #{title},
+            #{categoryName},
+            #{startDate},
+            #{endDate},
+            #{timeInfo},
+            #{locationName},
+            #{organizerInfo},
+            #{telNumber},
+            #{payInfo},
+            'USER',
+            #{writerName},
+            FALSE,
+            FALSE,
+            'PENDING',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 마지막 INSERT ID 조회 -->
+    <select id="selectLastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
     </select>
 
 </mapper>

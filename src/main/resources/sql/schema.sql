@@ -194,6 +194,10 @@ CREATE TABLE IF NOT EXISTS exhibitions (
     -- 원본 API 데이터 보관
     api_raw_data JSON COMMENT 'API 원본 데이터 (JSON)',
 
+    -- 등록 정보
+    source_type VARCHAR(20) DEFAULT 'API' COMMENT '등록 유형 (API: 외부API, USER: 사용자요청)',
+    writer_name VARCHAR(100) COMMENT '작성자명 (사용자 등록 요청 시)',
+
     -- 관리 정보
     is_show BOOLEAN DEFAULT FALSE COMMENT '노출 여부',
     admin_memo TEXT COMMENT '관리자 메모',
@@ -217,9 +221,10 @@ CREATE TABLE IF NOT EXISTS exhibitions (
     INDEX idx_category_name (category_name),
     INDEX idx_start_date (start_date),
     INDEX idx_end_date (end_date),
-    INDEX idx_fetched_at (fetched_at)
+    INDEX idx_fetched_at (fetched_at),
+    INDEX idx_source_type (source_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-COMMENT='제주도 공연/전시 정보 (외부 API)';
+COMMENT='제주도 공연/전시 정보';
 
 -- 5-3. 복지 서비스 테이블
 CREATE TABLE IF NOT EXISTS welfare_services (
@@ -332,3 +337,67 @@ CREATE TABLE IF NOT EXISTS gas_prices (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='제주도 주유소 가격 정보 (외부 API)';
+
+-- ============================================
+-- 6. 사용자 등록 요청 이미지 테이블
+-- ============================================
+
+-- 6-1. 축제/행사 이미지 테이블
+CREATE TABLE IF NOT EXISTS festivals_image (
+    image_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이미지 ID',
+    festival_id BIGINT NOT NULL COMMENT '축제/행사 ID (festivals.id FK)',
+    original_name VARCHAR(255) NOT NULL COMMENT '원본 파일명',
+    saved_name VARCHAR(255) NOT NULL COMMENT '저장된 파일명',
+    file_path VARCHAR(500) NOT NULL COMMENT '파일 경로',
+    file_size BIGINT NOT NULL COMMENT '파일 크기 (bytes)',
+    is_thumbnail BOOLEAN NOT NULL DEFAULT FALSE COMMENT '썸네일 여부',
+    display_order INT NOT NULL DEFAULT 0 COMMENT '표시 순서',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+
+    INDEX idx_festival_id (festival_id),
+    INDEX idx_thumbnail (festival_id, is_thumbnail),
+
+    CONSTRAINT fk_festivals_image FOREIGN KEY (festival_id)
+        REFERENCES festivals(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='축제/행사 이미지';
+
+-- 6-2. 공연/전시 이미지 테이블
+CREATE TABLE IF NOT EXISTS exhibitions_image (
+    image_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이미지 ID',
+    exhibition_id BIGINT NOT NULL COMMENT '공연/전시 ID (exhibitions.id FK)',
+    original_name VARCHAR(255) NOT NULL COMMENT '원본 파일명',
+    saved_name VARCHAR(255) NOT NULL COMMENT '저장된 파일명',
+    file_path VARCHAR(500) NOT NULL COMMENT '파일 경로',
+    file_size BIGINT NOT NULL COMMENT '파일 크기 (bytes)',
+    is_thumbnail BOOLEAN NOT NULL DEFAULT FALSE COMMENT '썸네일 여부',
+    display_order INT NOT NULL DEFAULT 0 COMMENT '표시 순서',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+
+    INDEX idx_exhibition_id (exhibition_id),
+    INDEX idx_thumbnail (exhibition_id, is_thumbnail),
+
+    CONSTRAINT fk_exhibitions_image FOREIGN KEY (exhibition_id)
+        REFERENCES exhibitions(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='공연/전시 이미지';
+
+-- 6-3. 복지서비스 이미지 테이블
+CREATE TABLE IF NOT EXISTS welfare_services_image (
+    image_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이미지 ID',
+    welfare_service_id BIGINT NOT NULL COMMENT '복지서비스 ID (welfare_services.id FK)',
+    original_name VARCHAR(255) NOT NULL COMMENT '원본 파일명',
+    saved_name VARCHAR(255) NOT NULL COMMENT '저장된 파일명',
+    file_path VARCHAR(500) NOT NULL COMMENT '파일 경로',
+    file_size BIGINT NOT NULL COMMENT '파일 크기 (bytes)',
+    is_thumbnail BOOLEAN NOT NULL DEFAULT FALSE COMMENT '썸네일 여부',
+    display_order INT NOT NULL DEFAULT 0 COMMENT '표시 순서',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+
+    INDEX idx_welfare_service_id (welfare_service_id),
+    INDEX idx_thumbnail (welfare_service_id, is_thumbnail),
+
+    CONSTRAINT fk_welfare_services_image FOREIGN KEY (welfare_service_id)
+        REFERENCES welfare_services(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='복지서비스 이미지';
