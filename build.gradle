@@ -61,3 +61,8 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// DevTools 핫 리로드를 위한 bootRun 설정
+bootRun {
+    sourceResources sourceSets.main
+}
