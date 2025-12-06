@@ -37,8 +37,8 @@ public class CmsAdminFestivalController {
 
         model.addAllAttributes(result);
         model.addAttribute("title", "축제/행사 관리");
-        model.addAttribute("content", "admin/external/festival-list");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/festival-list");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**
@@ -54,8 +54,8 @@ public class CmsAdminFestivalController {
 
         model.addAttribute("festival", festival);
         model.addAttribute("title", "축제/행사 상세");
-        model.addAttribute("content", "admin/external/festival-detail");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/festival-detail");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**

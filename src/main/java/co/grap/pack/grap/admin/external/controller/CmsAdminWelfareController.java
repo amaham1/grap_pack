@@ -37,8 +37,8 @@ public class CmsAdminWelfareController {
 
         model.addAllAttributes(result);
         model.addAttribute("title", "복지서비스 관리");
-        model.addAttribute("content", "admin/external/welfare-list");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/welfare-list");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**
@@ -54,8 +54,8 @@ public class CmsAdminWelfareController {
 
         model.addAttribute("welfare", welfare);
         model.addAttribute("title", "복지서비스 상세");
-        model.addAttribute("content", "admin/external/welfare-detail");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/welfare-detail");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**

@@ -37,8 +37,8 @@ public class CmsAdminExhibitionController {
 
         model.addAllAttributes(result);
         model.addAttribute("title", "공연/전시 관리");
-        model.addAttribute("content", "admin/external/exhibition-list");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/exhibition-list");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**
@@ -54,8 +54,8 @@ public class CmsAdminExhibitionController {
 
         model.addAttribute("exhibition", exhibition);
         model.addAttribute("title", "공연/전시 상세");
-        model.addAttribute("content", "admin/external/exhibition-detail");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/exhibition-detail");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**

@@ -37,8 +37,8 @@ public class CmsAdminExternalApiSyncController {
     @GetMapping
     public String syncPage(Model model) {
         model.addAttribute("title", "외부 API 동기화");
-        model.addAttribute("content", "admin/sync/sync-page");
-        return "admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/sync/sync-page");
+        return "grap/admin/layout/admin-layout";
     }
 
     /**

@@ -41,9 +41,9 @@ public class CmsUserContentController {
         model.addAttribute("size", result.get("size"));
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
-        model.addAttribute("content", "user/content/content-list");
+        model.addAttribute("content", "grap/user/content/content-list");
 
-        return "user/layout/user-layout";
+        return "grap/user/layout/user-layout";
     }
 
     /**
@@ -58,7 +58,7 @@ public class CmsUserContentController {
         }
 
         model.addAttribute("contentData", contentData);
-        model.addAttribute("content", "user/content/detail");
-        return "user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/detail");
+        return "grap/user/layout/user-layout";
     }
 }

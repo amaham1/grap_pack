@@ -41,8 +41,8 @@ public class CmsUserWelfareController {
         Map<String, Object> result = welfareService.getWelfareList(keyword, page, size);
 
         model.addAllAttributes(result);
-        model.addAttribute("content", "user/content/welfare-list");
-        return "user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/welfare-list");
+        return "grap/user/layout/user-layout";
     }
 
     /**
@@ -57,8 +57,8 @@ public class CmsUserWelfareController {
         }
 
         model.addAttribute("welfare", welfare);
-        model.addAttribute("content", "user/content/welfare-detail");
-        return "user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/welfare-detail");
+        return "grap/user/layout/user-layout";
     }
 
     /**
@@ -66,8 +66,8 @@ public class CmsUserWelfareController {
      */
     @GetMapping("/request")
     public String welfareRequestForm(Model model) {
-        model.addAttribute("content", "user/content/welfare-request");
-        return "user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/welfare-request");
+        return "grap/user/layout/user-layout";
     }
 
     /**
