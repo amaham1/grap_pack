@@ -5,7 +5,7 @@
 
     <!-- 검색 -->
     <div class="user-search-section">
-        <form th:action="@{/user/content/welfare}" method="get" class="user-search-form" data-ajax="true">
+        <form th:action="@{/grap/user/content/welfare}" method="get" class="user-search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="서비스명 검색" class="user-form-control">
             <button type="submit" class="user-btn user-btn-primary">검색</button>
@@ -15,7 +15,7 @@
     <!-- 복지서비스 목록 -->
     <div class="user-content-grid" id="welfare-list">
         <div th:each="welfare : ${welfareList}" class="user-content-card user-welfare-card user-clickable-card"
-             th:data-href="@{/user/content/welfare/{id}(id=${welfare['id']})}">
+             th:data-href="@{/grap/user/content/welfare/{id}(id=${welfare['id']})}">
             <!-- 썸네일 영역 (placeholder) -->
             <div class="user-card-image">
                 <div class="user-image-placeholder">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <h3>
-                    <a th:href="@{/user/content/welfare/{id}(id=${welfare['id']})}"
+                    <a th:href="@{/grap/user/content/welfare/{id}(id=${welfare['id']})}"
                        th:text="${welfare['serviceName']}"></a>
                 </h3>
 
@@ -58,7 +58,7 @@
 
     <!-- 페이징 (공통 fragment 사용) -->
     <div th:replace="~{common/fragments/pagination :: user-pagination(
-        baseUrl='/user/content/welfare',
+        baseUrl='/grap/user/content/welfare',
         pageInfo=${pageInfo},
         currentPage=${currentPage},
         totalPages=${totalPages},
@@ -69,7 +69,7 @@
 
     <!-- 등록 요청 버튼 -->
     <div class="user-request-button-wrapper">
-        <a th:href="@{/user/content/welfare/request}" class="user-btn user-btn-request">
+        <a th:href="@{/grap/user/content/welfare/request}" class="user-btn user-btn-request">
             등록 요청
         </a>
     </div>

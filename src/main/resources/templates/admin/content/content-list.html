@@ -1,10 +1,10 @@
 <div class="admin-page-header">
         <h2>콘텐츠 관리</h2>
-        <a th:href="@{/admin/content/form}" class="admin-btn admin-btn-primary">새 콘텐츠 등록</a>
+        <a th:href="@{/grap/admin/content/form}" class="admin-btn admin-btn-primary">새 콘텐츠 등록</a>
     </div>
 
     <!-- 검색 폼 -->
-    <form th:action="@{/admin/content/list}" method="get" class="admin-search-form" data-ajax="true">
+    <form th:action="@{/grap/admin/content/list}" method="get" class="admin-search-form" data-ajax="true">
         <div class="admin-search-row">
             <select name="contentTypeId" class="form-control">
                 <option value="">전체 종류</option>
@@ -56,9 +56,9 @@
                     <td th:text="${content['createName'] ?: '-'}"></td>
                     <td th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/content/form(contentId=${content['contentId']})}"
+                        <a th:href="@{/grap/admin/content/form(contentId=${content['contentId']})}"
                            class="admin-btn admin-btn-sm admin-btn-secondary">수정</a>
-                        <form th:action="@{/admin/content/publish/{id}(id=${content['contentId']})}"
+                        <form th:action="@{/grap/admin/content/publish/{id}(id=${content['contentId']})}"
                               method="post" style="display: inline;"
                               data-ajax="true">
                             <input type="hidden" name="isPublished" th:value="${!(content['isPublished'] ?: false)}">
@@ -67,7 +67,7 @@
                                     th:text="${(content['isPublished'] ?: false) ? '비공개' : '공개'}">
                             </button>
                         </form>
-                        <form th:action="@{/admin/content/delete/{id}(id=${content['contentId']})}"
+                        <form th:action="@{/grap/admin/content/delete/{id}(id=${content['contentId']})}"
                               method="post" style="display: inline;"
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"
@@ -86,17 +86,17 @@
     <!-- 페이징 -->
     <div th:if="${totalPages > 0}" class="admin-pagination">
         <a th:if="${currentPage > 1}"
-           th:href="@{/admin/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
+           th:href="@{/grap/admin/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
            class="admin-btn admin-btn-sm">이전</a>
 
         <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-            <a th:href="@{/admin/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
+            <a th:href="@{/grap/admin/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
                th:text="${i}"
                th:class="|admin-btn admin-btn-sm ${i == currentPage ? 'active' : ''}|"></a>
         </span>
 
         <a th:if="${currentPage < totalPages}"
-           th:href="@{/admin/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
+           th:href="@{/grap/admin/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''}, isPublished=${searchParam.isPublished ?: ''})}"
            class="admin-btn admin-btn-sm">다음</a>
     </div>
 

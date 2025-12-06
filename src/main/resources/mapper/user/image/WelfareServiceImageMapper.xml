@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.user.image.mapper.WelfareServiceImageMapper">
+<mapper namespace="co.grap.pack.user.image.mapper.WelfareServiceImageMapper">
 
     <!-- 결과 매핑 -->
-    <resultMap id="welfareServiceImageResultMap" type="com.example.cms.user.image.model.WelfareServiceImage">
+    <resultMap id="welfareServiceImageResultMap" type="co.grap.pack.user.image.model.WelfareServiceImage">
         <id property="imageId" column="image_id"/>
         <result property="welfareServiceId" column="welfare_service_id"/>
         <result property="originalName" column="original_name"/>
@@ -17,7 +17,7 @@
     </resultMap>
 
     <!-- 이미지 등록 -->
-    <insert id="insertImage" parameterType="com.example.cms.user.image.model.WelfareServiceImage" useGeneratedKeys="true" keyProperty="imageId">
+    <insert id="insertImage" parameterType="co.grap.pack.user.image.model.WelfareServiceImage" useGeneratedKeys="true" keyProperty="imageId">
         INSERT INTO welfare_services_image (
             welfare_service_id, original_name, saved_name, file_path,
             file_size, is_thumbnail, display_order, created_at

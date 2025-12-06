@@ -4,7 +4,11 @@
       "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test }\")",
       "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat compileJava 2>&1 }\")",
       "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 }\")",
-      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat --refresh-dependencies build -x test 2>&1 }\")"
+      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat --refresh-dependencies build -x test 2>&1 }\")",
+      "Bash(powershell.exe:*)",
+      "Bash(powershell -Command \"$files = Get-ChildItem -Recurse -Filter ''*.html''; foreach ($file in $files) { $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8; $content = $content -replace ''@\\{/admin/'', ''@{/grap/admin/'' -replace ''@\\{/user/'', ''@{/grap/user/'' -replace ''@\\{/auth/'', ''@{/grap/auth/''; Set-Content -Path $file.FullName -Value $content -Encoding UTF8 -NoNewline }\")",
+      "Bash(find:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

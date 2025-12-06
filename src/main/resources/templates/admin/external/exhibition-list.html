@@ -3,7 +3,7 @@
     </div>
 
     <!-- 검색 -->
-    <form th:action="@{/admin/external/exhibitions}" method="get" class="admin-search-form" data-ajax="true">
+    <form th:action="@{/grap/admin/external/exhibitions}" method="get" class="admin-search-form" data-ajax="true">
         <div class="admin-search-row">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="제목, 장소, 주최 검색" class="form-control">
@@ -14,11 +14,11 @@
     <!-- 외부 데이터 일괄 작업 버튼 -->
     <div style="margin-bottom: 10px;">
         <button type="button" class="admin-btn admin-btn-success admin-btn-sm external-data-bulk-btn"
-                onclick="externalDataBulkUpdateIsShow('/admin/external/exhibitions/bulk-update-show', true)">
+                onclick="externalDataBulkUpdateIsShow('/grap/admin/external/exhibitions/bulk-update-show', true)">
             선택 항목 노출
         </button>
         <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm external-data-bulk-btn"
-                onclick="externalDataBulkUpdateIsShow('/admin/external/exhibitions/bulk-update-show', false)">
+                onclick="externalDataBulkUpdateIsShow('/grap/admin/external/exhibitions/bulk-update-show', false)">
             선택 항목 비노출
         </button>
     </div>
@@ -44,7 +44,7 @@
                     <td><input type="checkbox" class="external-data-item-checkbox" th:value="${exhibition['id']}"></td>
                     <td th:text="${exhibition['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
+                        <a th:href="@{/grap/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
                            th:text="${exhibition['title'] ?: '-'}"></a>
                     </td>
                     <td th:text="${exhibition['categoryName'] ?: '-'}"></td>
@@ -52,7 +52,7 @@
                     <td th:text="${exhibition['endDate'] != null ? #temporals.format(exhibition['endDate'], 'yyyy-MM-dd') : '-'}"></td>
                     <td th:text="${exhibition['locationName'] ?: '-'}"></td>
                     <td>
-                        <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
+                        <form th:action="@{/grap/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
                               method="post" style="display: inline;"
                               data-ajax="true">
                             <input type="hidden" name="isShow" th:value="${!(exhibition['isShow'] ?: false)}">
@@ -63,9 +63,9 @@
                         </form>
                     </td>
                     <td>
-                        <a th:href="@{/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
+                        <a th:href="@{/grap/admin/external/exhibitions/{id}(id=${exhibition['id']})}"
                            class="admin-btn admin-btn-sm admin-btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
+                        <form th:action="@{/grap/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
                               method="post" style="display: inline;"
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"

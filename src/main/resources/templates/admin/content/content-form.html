@@ -1,9 +1,9 @@
 <div class="admin-page-header">
         <h2 th:text="${contentData != null ? '콘텐츠 수정' : '콘텐츠 등록'}"></h2>
-        <a th:href="@{/admin/content/list}" class="admin-btn admin-btn-secondary">목록으로</a>
+        <a th:href="@{/grap/admin/content/list}" class="admin-btn admin-btn-secondary">목록으로</a>
     </div>
 
-    <form th:action="${contentData != null ? '/admin/content/update' : '/admin/content/create'}"
+    <form th:action="${contentData != null ? '/grap/admin/content/update' : '/grap/admin/content/create'}"
           method="post" class="admin-form"
           data-ajax="true"
           data-success-message="저장되었습니다.">
@@ -45,7 +45,7 @@
 
         <div class="admin-form-actions">
             <button type="submit" class="admin-btn admin-btn-primary">저장</button>
-            <a th:href="@{/admin/content/list}" class="admin-btn admin-btn-secondary">취소</a>
+            <a th:href="@{/grap/admin/content/list}" class="admin-btn admin-btn-secondary">취소</a>
         </div>
     </form>
 
@@ -54,7 +54,7 @@
         <h3>이미지 관리 (최대 10개)</h3>
 
         <!-- 이미지 업로드 폼 -->
-        <form th:action="@{/admin/image/upload}" method="post" enctype="multipart/form-data" class="admin-form"
+        <form th:action="@{/grap/admin/image/upload}" method="post" enctype="multipart/form-data" class="admin-form"
               data-ajax="true"
               data-success-message="이미지가 업로드되었습니다.">
             <input type="hidden" name="contentId" th:value="${contentData.contentId}">

@@ -5,17 +5,17 @@
 
     <!-- 탭 메뉴 -->
     <div class="user-tab-container">
-        <a th:href="@{/user/content/exhibitions(tab='ongoing', keyword=${keyword})}"
+        <a th:href="@{/grap/user/content/exhibitions(tab='ongoing', keyword=${keyword})}"
            th:classappend="${tab == 'ongoing' or tab == null} ? 'active' : ''"
            class="user-tab-item">
             진행 중인 공연
         </a>
-        <a th:href="@{/user/content/exhibitions(tab='upcoming', keyword=${keyword})}"
+        <a th:href="@{/grap/user/content/exhibitions(tab='upcoming', keyword=${keyword})}"
            th:classappend="${tab == 'upcoming'} ? 'active' : ''"
            class="user-tab-item">
             다가올 공연
         </a>
-        <a th:href="@{/user/content/exhibitions(tab='ended', keyword=${keyword})}"
+        <a th:href="@{/grap/user/content/exhibitions(tab='ended', keyword=${keyword})}"
            th:classappend="${tab == 'ended'} ? 'active' : ''"
            class="user-tab-item">
             끝난 공연
@@ -24,7 +24,7 @@
 
     <!-- 검색 -->
     <div class="user-search-section">
-        <form th:action="@{/user/content/exhibitions}" method="get" class="user-search-form" data-ajax="true">
+        <form th:action="@{/grap/user/content/exhibitions}" method="get" class="user-search-form" data-ajax="true">
             <input type="hidden" name="tab" th:value="${tab}">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="공연/전시명, 장소, 주최 검색" class="user-form-control">
@@ -35,7 +35,7 @@
     <!-- 공연/전시 목록 -->
     <div class="user-content-grid" id="exhibition-list">
         <div th:each="exhibition : ${exhibitionList}" class="user-content-card user-exhibition-card user-clickable-card"
-             th:data-href="@{/user/content/exhibitions/{id}(id=${exhibition['id']})}">
+             th:data-href="@{/grap/user/content/exhibitions/{id}(id=${exhibition['id']})}">
             <!-- 커버 이미지 -->
             <div class="user-card-image">
                 <img th:if="${exhibition['coverImageUrl'] != null}"
@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <h3>
-                    <a th:href="@{/user/content/exhibitions/{id}(id=${exhibition['id']})}"
+                    <a th:href="@{/grap/user/content/exhibitions/{id}(id=${exhibition['id']})}"
                        th:text="${exhibition['title']}"></a>
                 </h3>
 
@@ -89,7 +89,7 @@
 
     <!-- 페이징 (공통 fragment 사용) -->
     <div th:replace="~{common/fragments/pagination :: user-pagination(
-        baseUrl='/user/content/exhibitions',
+        baseUrl='/grap/user/content/exhibitions',
         pageInfo=${pageInfo},
         currentPage=${currentPage},
         totalPages=${totalPages},
@@ -100,7 +100,7 @@
 
     <!-- 등록 요청 버튼 -->
     <div class="user-request-button-wrapper">
-        <a th:href="@{/user/content/exhibitions/request}" class="user-btn user-btn-request">
+        <a th:href="@{/grap/user/content/exhibitions/request}" class="user-btn user-btn-request">
             등록 요청
         </a>
     </div>

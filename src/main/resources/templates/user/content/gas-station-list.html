@@ -5,7 +5,7 @@
 
     <!-- 검색 -->
     <div class="user-search-section">
-        <form th:action="@{/user/content/gas-stations}" method="get" class="user-search-form" data-ajax="true">
+        <form th:action="@{/grap/user/content/gas-stations}" method="get" class="user-search-form" data-ajax="true">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="주유소명, 브랜드, 주소 검색" class="user-form-control">
             <button type="submit" class="user-btn user-btn-primary">검색</button>
@@ -15,10 +15,10 @@
     <!-- 주유소 목록 -->
     <div class="gas-station-list" id="gas-station-list">
         <div th:each="station : ${gasStationList}" class="gas-station-card clickable-card"
-             th:data-href="@{/user/content/gas-stations/{id}(id=${station['id']})}">
+             th:data-href="@{/grap/user/content/gas-stations/{id}(id=${station['id']})}">
             <div class="station-header">
                 <h3>
-                    <a th:href="@{/user/content/gas-stations/{id}(id=${station['id']})}"
+                    <a th:href="@{/grap/user/content/gas-stations/{id}(id=${station['id']})}"
                        th:text="${station['stationName']}"></a>
                 </h3>
                 <span class="user-badge badge-gas" th:if="${station['brand'] != null}"
@@ -68,7 +68,7 @@
 
     <!-- 페이징 (공통 fragment 사용) -->
     <div th:replace="~{common/fragments/pagination :: user-pagination(
-        baseUrl='/user/content/gas-stations',
+        baseUrl='/grap/user/content/gas-stations',
         pageInfo=${pageInfo},
         currentPage=${currentPage},
         totalPages=${totalPages},

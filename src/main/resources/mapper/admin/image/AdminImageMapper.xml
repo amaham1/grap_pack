@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.admin.image.mapper.AdminImageMapper">
+<mapper namespace="co.grap.pack.admin.image.mapper.AdminImageMapper">
 
     <!-- 이미지 결과 매핑 -->
     <resultMap id="imageResultMap" type="AdminImage">

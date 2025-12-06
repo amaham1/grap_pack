@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.user.content.mapper.UserContentMapper">
+<mapper namespace="co.grap.pack.user.content.mapper.UserContentMapper">
 
     <!-- 콘텐츠 결과 매핑 -->
     <resultMap id="contentResultMap" type="UserContent">

@@ -4,7 +4,7 @@
 
         <!-- 검색 및 필터 -->
         <div class="user-search-section">
-            <form th:action="@{/user/content/list}" method="get" class="user-search-form" data-ajax="true">
+            <form th:action="@{/grap/user/content/list}" method="get" class="user-search-form" data-ajax="true">
                 <select name="contentTypeId" class="user-form-control" onchange="this.form.submit()">
                     <option value="">전체 카테고리</option>
                     <option th:each="type : ${contentTypeList}"
@@ -24,13 +24,13 @@
         <!-- 콘텐츠 목록 -->
         <div class="user-content-grid" id="content-list">
             <div th:each="content : ${contentList}" class="user-content-card user-clickable-card"
-                 th:data-href="@{/user/content/detail/{id}(id=${content['contentId']})}">
+                 th:data-href="@{/grap/user/content/detail/{id}(id=${content['contentId']})}">
                 <div class="user-card-header">
                     <span class="user-badge" th:text="${content['typeName'] ?: '일반'}"></span>
                     <span class="user-date" th:text="${content['createDt'] != null ? #temporals.format(content['createDt'], 'yyyy.MM.dd') : ''}"></span>
                 </div>
                 <h3>
-                    <a th:href="@{/user/content/detail/{id}(id=${content['contentId']})}"
+                    <a th:href="@{/grap/user/content/detail/{id}(id=${content['contentId']})}"
                        th:text="${content['title'] ?: '제목 없음'}"></a>
                 </h3>
                 <div class="user-card-footer">
@@ -46,15 +46,15 @@
         <!-- 페이징 (HTMX 적용) -->
         <div th:if="${totalPages > 0}" class="user-pagination">
             <a th:if="${currentPage > 1}"
-               th:href="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
-               th:hx-get="@{/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:href="@{/grap/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:hx-get="@{/grap/user/content/list(page=${currentPage - 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
                class="user-btn user-btn-sm">이전</a>
 
             <span th:each="i : ${#numbers.sequence(1, totalPages)}">
-                <a th:href="@{/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
-                   th:hx-get="@{/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+                <a th:href="@{/grap/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+                   th:hx-get="@{/grap/user/content/list(page=${i}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                    hx-target="#content-list"
                    hx-swap="innerHTML"
                    th:text="${i}"
@@ -63,8 +63,8 @@
             </span>
 
             <a th:if="${currentPage < totalPages}"
-               th:href="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
-               th:hx-get="@{/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:href="@{/grap/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
+               th:hx-get="@{/grap/user/content/list(page=${currentPage + 1}, keyword=${searchParam.keyword ?: ''}, contentTypeId=${searchParam.contentTypeId ?: ''})}"
                hx-target="#content-list"
                hx-swap="innerHTML"
                class="user-btn user-btn-sm">다음</a>

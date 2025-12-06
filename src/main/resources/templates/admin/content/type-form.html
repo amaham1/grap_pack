@@ -1,9 +1,9 @@
 <div class="admin-page-header">
         <h2 th:text="${contentType != null ? '콘텐츠 종류 수정' : '콘텐츠 종류 등록'}"></h2>
-        <a th:href="@{/admin/content-type/list}" class="admin-btn admin-btn-secondary">목록으로</a>
+        <a th:href="@{/grap/admin/content-type/list}" class="admin-btn admin-btn-secondary">목록으로</a>
     </div>
 
-    <form th:action="${contentType != null ? '/admin/content-type/update' : '/admin/content-type/create'}"
+    <form th:action="${contentType != null ? '/grap/admin/content-type/update' : '/grap/admin/content-type/create'}"
           method="post" class="admin-form"
           data-ajax="true"
           data-success-message="저장되었습니다.">
@@ -33,6 +33,6 @@
 
         <div class="admin-form-actions">
             <button type="submit" class="admin-btn admin-btn-primary">저장</button>
-            <a th:href="@{/admin/content-type/list}" class="admin-btn admin-btn-secondary">취소</a>
+            <a th:href="@{/grap/admin/content-type/list}" class="admin-btn admin-btn-secondary">취소</a>
         </div>
     </form>

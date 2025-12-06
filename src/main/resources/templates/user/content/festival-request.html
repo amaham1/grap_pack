@@ -9,7 +9,7 @@
 </div>
 
 <div class="user-request-form-container">
-    <form th:action="@{/user/content/festivals/request}" method="post" enctype="multipart/form-data" id="festivalRequestForm">
+    <form th:action="@{/grap/user/content/festivals/request}" method="post" enctype="multipart/form-data" id="festivalRequestForm">
 
         <!-- 제목 -->
         <div class="user-form-group">
@@ -64,7 +64,7 @@
 
         <!-- 버튼 그룹 -->
         <div class="user-form-actions">
-            <a th:href="@{/user/content/festivals}" class="user-btn user-btn-secondary">취소</a>
+            <a th:href="@{/grap/user/content/festivals}" class="user-btn user-btn-secondary">취소</a>
             <button type="submit" class="user-btn user-btn-primary">등록 요청</button>
         </div>
     </form>

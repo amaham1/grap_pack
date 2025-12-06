@@ -60,7 +60,7 @@ file:
 logging:
   level:
     root: WARN                        # 기본 로그 레벨 최소화
-    com.example.cms: INFO             # 프로젝트 로그만 INFO
+    co.grap.pack: INFO                # 프로젝트 로그만 INFO
     org.springframework: ERROR        # Spring Framework는 에러만
     org.springframework.security: ERROR  # Spring Security는 에러만
     org.mybatis: ERROR                # MyBatis는 에러만

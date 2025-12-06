@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.admin.content.mapper.AdminContentTypeMapper">
+<mapper namespace="co.grap.pack.admin.content.mapper.AdminContentTypeMapper">
 
     <!-- 콘텐츠 종류 결과 매핑 -->
     <resultMap id="contentTypeResultMap" type="AdminContentType">

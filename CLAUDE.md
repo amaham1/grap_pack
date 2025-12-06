@@ -6,7 +6,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Spring Boot 3.2.0 기반의 Content Management System (CMS). MyBatis를 ORM으로 사용하고, Thymeleaf + HTMX로 동적 UI를 구성합니다.
 
+**Package**: `co.grap.pack`
 **Tech Stack**: Spring Boot 3.2.0, Spring Security, MyBatis, MariaDB/MySQL, Thymeleaf, HTMX, Gradle, Java 17
+
+### 멀티 서비스 구조
+
+이 프로젝트는 하나의 애플리케이션에서 여러 서비스를 운영할 수 있는 구조입니다:
+- **Grap CMS** (`/grap`): 현재 구현된 콘텐츠 관리 서비스
+- **QR 관리** (`/qr-manage`): 향후 추가될 QR 관리 서비스 (별도 인증 체계)
+
+### URL 구조
+```
+http://localhost:8080/grap/              → Grap CMS 메인
+http://localhost:8080/grap/auth/login    → Grap 관리자 로그인
+http://localhost:8080/grap/admin/...     → Grap 관리자 기능
+http://localhost:8080/grap/user/...      → Grap 사용자 기능
+```
 
 ## Development Commands
 
@@ -60,7 +75,7 @@ log.error("❌ [ERROR] 파일 업로드 실패: {}", e.getMessage());
 logging:
   level:
     root: WARN                    # 기본 로그 레벨 최소화
-    com.grap: INFO                # 프로젝트 로그만 INFO
+    co.grap.pack: INFO            # 프로젝트 로그만 INFO
     org.springframework: ERROR    # Spring Framework는 에러만
     org.mybatis: ERROR            # MyBatis는 에러만
 ```
@@ -101,10 +116,10 @@ MyBatis XML 매퍼는 `src/main/resources/mapper/` 디렉토리에 도메인별�
 ### Spring Security Configuration
 
 SecurityConfig.java에서 다음을 정의합니다:
-- `/admin/**` 경로는 인증 필요
-- `/auth/**`, `/user/**`, 정적 리소스는 모두 허용
-- Form 기반 로그인: `/auth/login`에서 처리
-- 로그인 성공 시 `/admin/content/list`로 리다이렉트
+- `/grap/admin/**` 경로는 인증 필요
+- `/grap/auth/**`, `/grap/user/**`, 정적 리소스는 모두 허용
+- Form 기반 로그인: `/grap/auth/login`에서 처리
+- 로그인 성공 시 `/grap/admin/content/list`로 리다이렉트
 - Session 관리: 동시 세션 1개로 제한
 
 ### Authentication Flow

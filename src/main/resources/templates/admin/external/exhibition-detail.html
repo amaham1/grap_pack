@@ -1,6 +1,6 @@
 <div class="admin-page-header">
         <h2>공연/전시 상세</h2>
-        <a th:href="@{/admin/external/exhibitions}" class="admin-btn admin-btn-secondary">목록으로</a>
+        <a th:href="@{/grap/admin/external/exhibitions}" class="admin-btn admin-btn-secondary">목록으로</a>
     </div>
 
     <div class="detail-container">
@@ -54,7 +54,7 @@
 
         <div class="memo-section">
             <h3>관리자 메모</h3>
-            <form th:action="@{/admin/external/exhibitions/{id}/memo(id=${exhibition['id']})}"
+            <form th:action="@{/grap/admin/external/exhibitions/{id}/memo(id=${exhibition['id']})}"
                   method="post" class="admin-form"
                   data-ajax="true"
                   data-success-message="메모가 저장되었습니다.">
@@ -66,7 +66,7 @@
 
         <div class="confirm-section">
             <h3>검수 처리</h3>
-            <form th:action="@{/admin/external/exhibitions/{id}/confirm(id=${exhibition['id']})}"
+            <form th:action="@{/grap/admin/external/exhibitions/{id}/confirm(id=${exhibition['id']})}"
                   method="post" class="admin-form"
                   data-ajax="true"
                   data-confirm="검수를 처리하시겠습니까?"
@@ -89,7 +89,7 @@
         </div>
 
         <div class="action-section">
-            <form th:action="@{/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
+            <form th:action="@{/grap/admin/external/exhibitions/{id}/toggle-show(id=${exhibition['id']})}"
                   method="post" style="display: inline;"
                   data-ajax="true">
                 <input type="hidden" name="isShow" th:value="${!(exhibition['isShow'] ?: false)}">
@@ -98,7 +98,7 @@
                         th:text="${(exhibition['isShow'] ?: false) ? '비노출로 변경' : '노출로 변경'}">
                 </button>
             </form>
-            <form th:action="@{/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
+            <form th:action="@{/grap/admin/external/exhibitions/{id}/delete(id=${exhibition['id']})}"
                   method="post" style="display: inline;"
                   data-ajax="true"
                   data-confirm="정말 삭제하시겠습니까?"

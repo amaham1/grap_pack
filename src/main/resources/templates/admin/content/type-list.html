@@ -1,6 +1,6 @@
 <div class="admin-page-header">
         <h2>콘텐츠 종류 관리</h2>
-        <a th:href="@{/admin/content-type/form}" class="admin-btn admin-btn-primary">새 종류 등록</a>
+        <a th:href="@{/grap/admin/content-type/form}" class="admin-btn admin-btn-primary">새 종류 등록</a>
     </div>
 
     <div class="admin-table-container">
@@ -26,9 +26,9 @@
                     </td>
                     <td th:text="${type['createDt'] != null ? #temporals.format(type['createDt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/content-type/form(contentTypeId=${type['contentTypeId']})}"
+                        <a th:href="@{/grap/admin/content-type/form(contentTypeId=${type['contentTypeId']})}"
                            class="admin-btn admin-btn-sm admin-btn-secondary">수정</a>
-                        <form th:action="@{/admin/content-type/delete/{id}(id=${type['contentTypeId']})}"
+                        <form th:action="@{/grap/admin/content-type/delete/{id}(id=${type['contentTypeId']})}"
                               method="post" style="display: inline;"
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"

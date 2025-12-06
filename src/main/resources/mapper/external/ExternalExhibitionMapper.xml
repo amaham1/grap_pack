@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.cms.external.api.mapper.ExternalExhibitionMapper">
+<mapper namespace="co.grap.pack.external.api.mapper.ExternalExhibitionMapper">
 
     <!-- Result Map -->
-    <resultMap id="exhibitionResultMap" type="com.example.cms.external.api.model.ExternalExhibition">
+    <resultMap id="exhibitionResultMap" type="co.grap.pack.external.api.model.ExternalExhibition">
         <id property="id" column="id"/>
         <result property="originalApiId" column="original_api_id"/>
         <result property="title" column="title"/>
@@ -29,7 +29,7 @@
     </resultMap>
 
     <!-- Upsert -->
-    <insert id="upsert" parameterType="com.example.cms.external.api.model.ExternalExhibition">
+    <insert id="upsert" parameterType="co.grap.pack.external.api.model.ExternalExhibition">
         INSERT INTO exhibitions (
             original_api_id, title, category_name, cover_image_url, start_date, end_date,
             time_info, location_name, organizer_info, tel_number, pay_info,

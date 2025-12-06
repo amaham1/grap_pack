@@ -3,7 +3,7 @@
     </div>
 
     <!-- 검색 -->
-    <form th:action="@{/admin/external/festivals}" method="get" class="admin-search-form" data-ajax="true">
+    <form th:action="@{/grap/admin/external/festivals}" method="get" class="admin-search-form" data-ajax="true">
         <div class="admin-search-row">
             <input type="text" name="keyword" th:value="${keyword}"
                    placeholder="제목, 작성자 검색" class="form-control">
@@ -14,11 +14,11 @@
     <!-- 외부 데이터 일괄 작업 버튼 -->
     <div style="margin-bottom: 10px;">
         <button type="button" class="admin-btn admin-btn-success admin-btn-sm external-data-bulk-btn"
-                onclick="externalDataBulkUpdateIsShow('/admin/external/festivals/bulk-update-show', true)">
+                onclick="externalDataBulkUpdateIsShow('/grap/admin/external/festivals/bulk-update-show', true)">
             선택 항목 노출
         </button>
         <button type="button" class="admin-btn admin-btn-secondary admin-btn-sm external-data-bulk-btn"
-                onclick="externalDataBulkUpdateIsShow('/admin/external/festivals/bulk-update-show', false)">
+                onclick="externalDataBulkUpdateIsShow('/grap/admin/external/festivals/bulk-update-show', false)">
             선택 항목 비노출
         </button>
     </div>
@@ -43,13 +43,13 @@
                     <td><input type="checkbox" class="external-data-item-checkbox" th:value="${festival['id']}"></td>
                     <td th:text="${festival['id']}"></td>
                     <td>
-                        <a th:href="@{/admin/external/festivals/{id}(id=${festival['id']})}"
+                        <a th:href="@{/grap/admin/external/festivals/{id}(id=${festival['id']})}"
                            th:text="${festival['title'] ?: '-'}"></a>
                     </td>
                     <td th:text="${festival['writerName'] ?: '-'}"></td>
                     <td th:text="${festival['writtenDate'] != null ? #temporals.format(festival['writtenDate'], 'yyyy-MM-dd') : '-'}"></td>
                     <td>
-                        <form th:action="@{/admin/external/festivals/{id}/toggle-show(id=${festival['id']})}"
+                        <form th:action="@{/grap/admin/external/festivals/{id}/toggle-show(id=${festival['id']})}"
                               method="post" style="display: inline;"
                               data-ajax="true">
                             <input type="hidden" name="isShow" th:value="${!(festival['isShow'] ?: false)}">
@@ -61,9 +61,9 @@
                     </td>
                     <td th:text="${festival['fetchedAt'] != null ? #temporals.format(festival['fetchedAt'], 'yyyy-MM-dd HH:mm') : '-'}"></td>
                     <td>
-                        <a th:href="@{/admin/external/festivals/{id}(id=${festival['id']})}"
+                        <a th:href="@{/grap/admin/external/festivals/{id}(id=${festival['id']})}"
                            class="admin-btn admin-btn-sm admin-btn-secondary">상세</a>
-                        <form th:action="@{/admin/external/festivals/{id}/delete(id=${festival['id']})}"
+                        <form th:action="@{/grap/admin/external/festivals/{id}/delete(id=${festival['id']})}"
                               method="post" style="display: inline;"
                               data-ajax="true"
                               data-confirm="정말 삭제하시겠습니까?"

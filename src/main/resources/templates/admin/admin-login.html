@@ -9,7 +9,7 @@
 <body>
     <div class="admin-login-container">
         <div class="admin-login-box">
-            <h1>CMS 관리자</h1>
+            <h1>Grap CMS 관리자</h1>
 
             <!-- 에러 메시지 -->
             <div th:if="${error}" class="admin-alert admin-alert-error">
@@ -22,7 +22,7 @@
             </div>
 
             <!-- 로그인 폼 -->
-            <form th:action="@{/auth/login}" method="post">
+            <form th:action="@{/grap/auth/login}" method="post">
                 <div class="admin-form-group">
                     <label for="username">아이디</label>
                     <input type="text" id="username" name="username" required autofocus>
