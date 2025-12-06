@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.user.content.mapper.CmsUserWelfareMapper">
+
+    <!-- 노출 설정된 복지서비스 목록 조회 -->
+    <select id="selectVisibleWelfareList" resultType="map">
+        SELECT
+            id,
+            original_api_id AS originalApiId,
+            service_name AS serviceName,
+            is_all_location AS isAllLocation,
+            is_jeju_location AS isJejuLocation,
+            is_seogwipo_location AS isSeogwipoLocation,
+            support_target_html AS supportTargetHtml,
+            support_content_html AS supportContentHtml,
+            application_info_html AS applicationInfoHtml,
+            fetched_at AS fetchedAt,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM welfare_services
+        WHERE is_show = TRUE
+        <if test="keyword != null and keyword != ''">
+            AND (service_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR support_target_html LIKE CONCAT('%', #{keyword}, '%')
+                 OR support_content_html LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 노출 설정된 복지서비스 전체 개수 조회 -->
+    <select id="selectVisibleWelfareCount" resultType="int">
+        SELECT COUNT(*)
+        FROM welfare_services
+        WHERE is_show = TRUE
+        <if test="keyword != null and keyword != ''">
+            AND (service_name LIKE CONCAT('%', #{keyword}, '%')
+                 OR support_target_html LIKE CONCAT('%', #{keyword}, '%')
+                 OR support_content_html LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+    <!-- 복지서비스 상세 조회 (노출 설정된 것만) -->
+    <select id="selectVisibleWelfareById" resultType="map">
+        SELECT
+            id,
+            original_api_id AS originalApiId,
+            service_name AS serviceName,
+            is_all_location AS isAllLocation,
+            is_jeju_location AS isJejuLocation,
+            is_seogwipo_location AS isSeogwipoLocation,
+            support_target_html AS supportTargetHtml,
+            support_content_html AS supportContentHtml,
+            application_info_html AS applicationInfoHtml,
+            api_raw_data AS apiRawData,
+            fetched_at AS fetchedAt,
+            created_at AS createdAt,
+            updated_at AS updatedAt
+        FROM welfare_services
+        WHERE id = #{id}
+          AND is_show = TRUE
+    </select>
+
+    <!-- 사용자 복지서비스 등록 요청 -->
+    <insert id="insertWelfareRequest" parameterType="co.grap.pack.grap.user.content.model.CmsUserWelfareRequest">
+        INSERT INTO welfare_services (
+            original_api_id,
+            service_name,
+            is_all_location,
+            is_jeju_location,
+            is_seogwipo_location,
+            support_target_html,
+            support_content_html,
+            application_info_html,
+            is_show,
+            is_confirmed,
+            confirm_status,
+            fetched_at,
+            created_at
+        ) VALUES (
+            CONCAT('USER_', UUID()),
+            #{serviceName},
+            #{isAllLocation},
+            #{isJejuLocation},
+            #{isSeogwipoLocation},
+            #{supportTargetHtml},
+            #{supportContentHtml},
+            #{applicationInfoHtml},
+            FALSE,
+            FALSE,
+            'PENDING',
+            NOW(),
+            NOW()
+        )
+    </insert>
+
+    <!-- 마지막 INSERT ID 조회 -->
+    <select id="selectLastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+</mapper>
