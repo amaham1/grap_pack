@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.auth.mapper.AuthMapper">
+
+    <!-- 관리자 결과 매핑 -->
+    <resultMap id="adminResultMap" type="co.grap.pack.grap.auth.model.Admin">
+        <id property="adminId" column="admin_id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="createDt" column="create_dt"/>
+        <result property="updateDt" column="update_dt"/>
+    </resultMap>
+
+    <!-- 사용자명으로 관리자 조회 -->
+    <select id="selectAdminByUsername" parameterType="string" resultMap="adminResultMap">
+        SELECT admin_id, username, password, name, create_dt, update_dt
+        FROM admin
+        WHERE username = #{username}
+    </select>
+
+    <!-- 관리자 등록 -->
+    <insert id="insertAdmin" parameterType="co.grap.pack.grap.auth.model.Admin"
+            useGeneratedKeys="true" keyProperty="adminId">
+        INSERT INTO admin (username, password, name, create_dt, update_dt)
+        VALUES (#{username}, #{password}, #{name}, NOW(), NOW())
+    </insert>
+
+</mapper>
