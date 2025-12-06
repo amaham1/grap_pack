@@ -31,8 +31,8 @@ public class CmsAdminGasStationController {
 
         model.addAllAttributes(result);
         model.addAttribute("title", "주유소 관리");
-        model.addAttribute("content", "grap/admin/external/gas-station-list");
-        return "grap/admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/cms-gas-station-list");
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**
@@ -48,8 +48,8 @@ public class CmsAdminGasStationController {
 
         model.addAttribute("gasStation", gasStation);
         model.addAttribute("title", "주유소 상세");
-        model.addAttribute("content", "grap/admin/external/gas-station-detail");
-        return "grap/admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/external/cms-gas-station-detail");
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**

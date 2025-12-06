@@ -1,20 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test }\")",
-      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat compileJava 2>&1 }\")",
-      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 }\")",
-      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat --refresh-dependencies build -x test 2>&1 }\")",
-      "Bash(powershell.exe:*)",
-      "Bash(powershell -Command \"$files = Get-ChildItem -Recurse -Filter ''*.html''; foreach ($file in $files) { $content = Get-Content -Path $file.FullName -Raw -Encoding UTF8; $content = $content -replace ''@\\{/admin/'', ''@{/grap/admin/'' -replace ''@\\{/user/'', ''@{/grap/user/'' -replace ''@\\{/auth/'', ''@{/grap/auth/''; Set-Content -Path $file.FullName -Value $content -Encoding UTF8 -NoNewline }\")",
-      "Bash(find:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\n패키지 리팩토링 및 멀티 서비스 URL 구조 적용\n\n- 패키지 변경: com.example.cms → co.grap.pack\n- URL 접두사 적용: 모든 경로에 /grap 접두사 추가\n- 멀티 서비스 아키텍처 준비 (/grap: CMS, /qr-manage: 향후 QR 서비스)\n- 84개 Java 파일, 21개 MyBatis XML 매퍼 네임스페이스 변경\n- Thymeleaf 템플릿 URL 표현식 모두 /grap 접두사 적용\n- SecurityConfig, paginationBaseUrl 경로 모두 업데이트\n- README.md 전체 재작성\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git push:*)",
-      "Bash(dir:*)",
-      "Bash(done)",
-      "Bash(git commit:*)",
-      "Bash(./gradlew clean build:*)"
+      "Bash({} ;)"
     ],
     "deny": [],
     "ask": []

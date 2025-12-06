@@ -41,8 +41,8 @@ public class CmsUserFestivalController {
         Map<String, Object> result = festivalService.getFestivalList(keyword, page, size);
 
         model.addAllAttributes(result);
-        model.addAttribute("content", "grap/user/content/festival-list");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-festival-list");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**
@@ -57,8 +57,8 @@ public class CmsUserFestivalController {
         }
 
         model.addAttribute("festival", festival);
-        model.addAttribute("content", "grap/user/content/festival-detail");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-festival-detail");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**
@@ -66,8 +66,8 @@ public class CmsUserFestivalController {
      */
     @GetMapping("/request")
     public String festivalRequestForm(Model model) {
-        model.addAttribute("content", "grap/user/content/festival-request");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-festival-request");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**

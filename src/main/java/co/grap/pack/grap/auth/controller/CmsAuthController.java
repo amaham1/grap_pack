@@ -32,6 +32,6 @@ public class CmsAuthController {
             model.addAttribute("message", "로그아웃 되었습니다.");
         }
 
-        return "grap/admin/admin-login";
+        return "grap/admin/cms-admin-login";
     }
 }

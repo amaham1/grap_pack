@@ -32,8 +32,8 @@ public class CmsUserGasStationController {
         Map<String, Object> result = gasStationService.getGasStationList(keyword, page, size);
 
         model.addAllAttributes(result);
-        model.addAttribute("content", "grap/user/content/gas-station-list");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-gas-station-list");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**
@@ -48,7 +48,7 @@ public class CmsUserGasStationController {
         }
 
         model.addAttribute("gasStation", gasStation);
-        model.addAttribute("content", "grap/user/content/gas-station-detail");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-gas-station-detail");
+        return "grap/user/layout/cms-user-layout";
     }
 }

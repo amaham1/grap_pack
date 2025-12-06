@@ -43,8 +43,8 @@ public class CmsUserExhibitionController {
         Map<String, Object> result = exhibitionService.getExhibitionList(keyword, tab, page, size);
 
         model.addAllAttributes(result);
-        model.addAttribute("content", "grap/user/content/exhibition-list");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-exhibition-list");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**
@@ -59,8 +59,8 @@ public class CmsUserExhibitionController {
         }
 
         model.addAttribute("exhibition", exhibition);
-        model.addAttribute("content", "grap/user/content/exhibition-detail");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-exhibition-detail");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**
@@ -68,8 +68,8 @@ public class CmsUserExhibitionController {
      */
     @GetMapping("/request")
     public String exhibitionRequestForm(Model model) {
-        model.addAttribute("content", "grap/user/content/exhibition-request");
-        return "grap/user/layout/user-layout";
+        model.addAttribute("content", "grap/user/content/cms-exhibition-request");
+        return "grap/user/layout/cms-user-layout";
     }
 
     /**

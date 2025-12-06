@@ -37,8 +37,8 @@ public class CmsAdminContentController {
         List<CmsAdminContentType> contentTypeList = adminContentTypeService.getAllContentTypeList();
         model.addAttribute("contentTypeList", contentTypeList);
         model.addAttribute("title", "콘텐츠 종류 관리");
-        model.addAttribute("content", "grap/admin/content/type-list");
-        return "grap/admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/content/cms-type-list");
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**
@@ -57,8 +57,8 @@ public class CmsAdminContentController {
             model.addAttribute("title", "콘텐츠 종류 등록");
         }
 
-        model.addAttribute("content", "grap/admin/content/type-form");
-        return "grap/admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/content/cms-type-form");
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**
@@ -110,9 +110,9 @@ public class CmsAdminContentController {
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
         model.addAttribute("title", "콘텐츠 관리");
-        model.addAttribute("content", "grap/admin/content/content-list");
+        model.addAttribute("content", "grap/admin/content/cms-content-list");
 
-        return "grap/admin/layout/admin-layout";
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**
@@ -134,8 +134,8 @@ public class CmsAdminContentController {
             model.addAttribute("title", "콘텐츠 등록");
         }
 
-        model.addAttribute("content", "grap/admin/content/content-form");
-        return "grap/admin/layout/admin-layout";
+        model.addAttribute("content", "grap/admin/content/cms-content-form");
+        return "grap/admin/layout/cms-admin-layout";
     }
 
     /**

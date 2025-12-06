@@ -10,7 +10,7 @@
 </head>
 <body>
     <!-- 헤더 -->
-    <div th:replace="~{grap/common/fragments/header :: admin-header}"></div>
+    <div th:replace="~{grap/common/fragments/cms-header :: admin-header}"></div>
 
     <!-- 메시지 알림 -->
     <div th:if="${message}" class="admin-alert admin-alert-success">
@@ -31,7 +31,7 @@
     </main>
 
     <!-- 푸터 -->
-    <div th:replace="~{grap/common/fragments/footer :: admin-footer}"></div>
+    <div th:replace="~{grap/common/fragments/cms-footer :: admin-footer}"></div>
 
     <!-- 공통 JavaScript -->
     <script th:src="@{/js/common.js}"></script>
