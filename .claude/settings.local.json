@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash({} ;)"
+      "Bash({} ;)",
+      "Bash(find src/main/resources/templates -name \"*.html\" -exec sed -i )",
+      "Bash(find:*)",
+      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 }\")",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

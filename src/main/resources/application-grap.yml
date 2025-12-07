@@ -1,0 +1,38 @@
+# Grap CMS 서비스 전용 설정
+spring:
+  application:
+    name: grap-cms
+
+  # 데이터소스 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:/mapper/grap/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# PageHelper 설정
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# 스케줄러 설정
+spring.task.scheduling:
+  pool:
+    size: 5
+  thread-name-prefix: grap-scheduler-
+
+# 외부 API 동기화 스케줄러 설정
+external-api:
+  scheduler:
+    enabled: true
+    cron: "0 5 2,8,14,20 * * *"

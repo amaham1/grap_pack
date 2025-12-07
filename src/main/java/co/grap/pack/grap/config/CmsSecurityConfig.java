@@ -1,4 +1,4 @@
-package co.grap.pack.common.config;
+package co.grap.pack.grap.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,11 +9,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Spring Security 설정
+ * Grap CMS 서비스 Spring Security 설정
  */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class CmsSecurityConfig {
 
     /**
      * 비밀번호 인코더 빈 등록
@@ -35,7 +35,7 @@ public class SecurityConfig {
             )
             // 인가 설정
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/grap/auth/**", "/grap/user/**", "/css/**", "/js/**", "/images/**", "/uploads/**").permitAll()
+                .requestMatchers("/grap/auth/**", "/grap/user/**", "/grap/css/**", "/grap/js/**", "/common/**", "/images/**", "/uploads/**").permitAll()
                 .requestMatchers("/grap/admin/**").authenticated()
                 .anyRequest().permitAll()
             )

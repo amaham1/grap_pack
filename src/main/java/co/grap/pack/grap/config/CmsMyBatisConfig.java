@@ -1,4 +1,4 @@
-package co.grap.pack.common.config;
+package co.grap.pack.grap.config;
 
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -10,11 +10,11 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import javax.sql.DataSource;
 
 /**
- * MyBatis 설정
+ * Grap CMS 서비스 MyBatis 설정
  */
 @org.springframework.context.annotation.Configuration
-@MapperScan(basePackages = "co.grap.pack.**.mapper")
-public class MyBatisConfig {
+@MapperScan(basePackages = "co.grap.pack.grap.**.mapper")
+public class CmsMyBatisConfig {
 
     /**
      * SqlSessionFactory 빈 등록
@@ -24,18 +24,16 @@ public class MyBatisConfig {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
 
-        // Mapper XML 위치 설정
+        // Mapper XML 위치 설정 - grap 서비스 전용
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/**/*.xml"));
+        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/grap/**/*.xml"));
 
-        // Type Alias 패키지 설정 (application.yml 대신 여기서 설정)
-        sessionFactory.setTypeAliasesPackage("co.grap.pack");
+        // Type Alias 패키지 설정 - grap 서비스 전용
+        sessionFactory.setTypeAliasesPackage("co.grap.pack.grap");
 
         // MyBatis Configuration 설정
-        // SqlSessionFactory를 수동으로 등록하면 application.yml의 설정이 적용되지 않으므로
-        // 여기서 명시적으로 설정해야 함
         Configuration configuration = new Configuration();
-        configuration.setMapUnderscoreToCamelCase(true);  // snake_case를 camelCase로 자동 변환
+        configuration.setMapUnderscoreToCamelCase(true);
         configuration.setDefaultFetchSize(100);
         configuration.setDefaultStatementTimeout(30);
         sessionFactory.setConfiguration(configuration);

@@ -6,11 +6,11 @@
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     <title th:text="${title} + ' - Grap CMS 관리자'">Grap CMS 관리자</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <link rel="stylesheet" th:href="@{/grap/css/admin.css}">
 </head>
 <body>
     <!-- 헤더 -->
-    <div th:replace="~{grap/common/fragments/cms-header :: admin-header}"></div>
+    <div th:replace="~{common/fragments/cms-header :: admin-header}"></div>
 
     <!-- 메시지 알림 -->
     <div th:if="${message}" class="admin-alert admin-alert-success">
@@ -31,9 +31,9 @@
     </main>
 
     <!-- 푸터 -->
-    <div th:replace="~{grap/common/fragments/cms-footer :: admin-footer}"></div>
+    <div th:replace="~{common/fragments/cms-footer :: admin-footer}"></div>
 
     <!-- 공통 JavaScript -->
-    <script th:src="@{/js/common.js}"></script>
+    <script th:src="@{/common/js/common.js}"></script>
 </body>
 </html>

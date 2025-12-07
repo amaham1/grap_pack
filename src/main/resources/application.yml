@@ -1,18 +1,13 @@
+# 공통 설정 (모든 서비스에서 사용)
 spring:
+  profiles:
+    active: grap  # 기본 프로파일: grap
+
   devtools:
     restart:
       enabled: true
     livereload:
       enabled: true
-  application:
-    name: cms
-
-  # 데이터소스 설정
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: root
 
   # 파일 업로드 설정
   servlet:
@@ -35,22 +30,6 @@ spring:
     resources:
       static-locations: classpath:/static/
 
-# MyBatis 설정
-mybatis:
-  mapper-locations: classpath:/mapper/**/*.xml
-  # type-aliases-package는 MyBatisConfig.java에서 설정 (중복 방지)
-  configuration:
-    map-underscore-to-camel-case: true
-    default-fetch-size: 100
-    default-statement-timeout: 30
-
-# PageHelper 설정
-pagehelper:
-  helper-dialect: mysql
-  reasonable: true
-  support-methods-arguments: true
-  params: count=countSql
-
 # 파일 업로드 경로 설정
 file:
   upload-dir: ./uploads
@@ -59,25 +38,11 @@ file:
 # 로깅 설정 (토큰 효율성을 위한 최적화)
 logging:
   level:
-    root: WARN                        # 기본 로그 레벨 최소화
-    co.grap.pack: INFO                # 프로젝트 로그만 INFO
-    org.springframework: ERROR        # Spring Framework는 에러만
-    org.springframework.security: ERROR  # Spring Security는 에러만
-    org.mybatis: ERROR                # MyBatis는 에러만
-
-# 스케줄러 설정
-spring.task.scheduling:
-  pool:
-    size: 5 # 스케줄러 스레드 풀 크기
-  thread-name-prefix: scheduler-
-
-# 외부 API 동기화 스케줄러 설정
-external-api:
-  scheduler:
-    enabled: true # 스케줄러 활성화 여부
-    # 크론 표현식: "초 분 시 일 월 요일"
-    # 기본값: "0 5 2,8,14,20 * * *" (매일 2시 5분, 8시 5분, 14시 5분, 20시 5분)
-    cron: "0 5 2,8,14,20 * * *"
+    root: WARN
+    co.grap.pack: INFO
+    org.springframework: ERROR
+    org.springframework.security: ERROR
+    org.mybatis: ERROR
 
 # 서버 설정
 server:
