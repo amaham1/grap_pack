@@ -1,0 +1,43 @@
+# QR 관리 서비스 전용 설정
+spring:
+  application:
+    name: qr-manage
+
+  # 데이터소스 설정 (grap과 동일한 DB 사용, 테이블은 qr_manage_ 접두사로 구분)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:/mapper/qrmanage/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# PageHelper 설정
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# QR 코드 설정
+qr-manage:
+  qr-code:
+    # QR 이미지 크기 (픽셀)
+    size: 300
+    # QR 이미지 저장 경로
+    save-path: ./uploads/qrmanage/qrcode
+
+# 이미지 업로드 설정
+qrmanage:
+  upload:
+    path: uploads/qrmanage
+    # 압축 후 최대 너비 (픽셀)
+    max-width: 800
+    # 압축 품질 (0.0 ~ 1.0)
+    compression-quality: 0.8

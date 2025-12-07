@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/customer/layout/qr-manage-customer-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-customer-container">
+        <!-- 상점 헤더 -->
+        <div class="qr-manage-shop-header">
+            <h1 class="qr-manage-shop-name" th:text="${shop.name}">상점명</h1>
+            <p th:if="${shop.description}" class="qr-manage-shop-desc" th:text="${shop.description}">상점 설명</p>
+        </div>
+
+        <!-- 상점 정보 -->
+        <div class="qr-manage-info-section">
+            <h2 class="qr-manage-section-title">상점 정보</h2>
+
+            <div class="qr-manage-info-item" th:if="${shop.address}">
+                <span class="qr-manage-info-icon">📍</span>
+                <span th:text="${shop.address}">주소</span>
+            </div>
+
+            <div class="qr-manage-info-item" th:if="${shop.phone}">
+                <span class="qr-manage-info-icon">📞</span>
+                <a th:href="'tel:' + ${shop.phone}" th:text="${shop.phone}">연락처</a>
+            </div>
+        </div>
+
+        <!-- 영업시간 -->
+        <div class="qr-manage-info-section" th:if="${!#lists.isEmpty(businessHours)}">
+            <h2 class="qr-manage-section-title">영업시간</h2>
+
+            <div class="qr-manage-hours-list">
+                <div th:each="hours : ${businessHours}" class="qr-manage-hours-item">
+                    <span class="qr-manage-day" th:text="${hours.dayName + '요일'}">월요일</span>
+                    <span th:if="${hours.isHoliday}" class="qr-manage-closed">휴무</span>
+                    <span th:unless="${hours.isHoliday}" class="qr-manage-time">
+                        <span th:text="${#temporals.format(hours.openTime, 'HH:mm')}">09:00</span>
+                        ~
+                        <span th:text="${#temporals.format(hours.closeTime, 'HH:mm')}">22:00</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-customer-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .qr-manage-shop-header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+        .qr-manage-shop-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        .qr-manage-shop-desc {
+            color: #666;
+            margin: 0;
+            font-size: 15px;
+        }
+        .qr-manage-info-section {
+            margin-bottom: 30px;
+        }
+        .qr-manage-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            color: #333;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        .qr-manage-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .qr-manage-info-icon {
+            font-size: 18px;
+        }
+        .qr-manage-info-item a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .qr-manage-hours-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .qr-manage-hours-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .qr-manage-hours-item:last-child {
+            border-bottom: none;
+        }
+        .qr-manage-day {
+            font-weight: 500;
+        }
+        .qr-manage-closed {
+            color: #e74c3c;
+        }
+        .qr-manage-time {
+            color: #333;
+        }
+    </style>
+</th:block>
+
+</html>

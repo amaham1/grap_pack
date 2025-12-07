@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">상점관리자 관리</h1>
+        <a th:href="@{/qr-manage/super/admin/shop-admin/create}" class="qr-manage-btn qr-manage-btn-primary">
+            + 상점관리자 등록
+        </a>
+    </div>
+
+    <!-- 검색 필터 -->
+    <div class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <form th:action="@{/qr-manage/super/admin/shop-admin/list}" method="get" class="qr-manage-search-form">
+                <select name="status" class="qr-manage-form-control">
+                    <option value="">전체 상태</option>
+                    <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.description}"
+                            th:selected="${status == s}"></option>
+                </select>
+                <input type="text" name="keyword" class="qr-manage-search-input"
+                       placeholder="이름, 이메일, 아이디 검색"
+                       th:value="${keyword}">
+                <button type="submit" class="qr-manage-btn qr-manage-btn-primary">검색</button>
+                <a th:href="@{/qr-manage/super/admin/shop-admin/list}" class="qr-manage-btn qr-manage-btn-secondary">초기화</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">
+                상점관리자 목록
+                <span style="font-weight: normal; color: #999;">
+                    (총 <span th:text="${totalCount}">0</span>명)
+                </span>
+            </h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <table class="qr-manage-table" th:if="${!#lists.isEmpty(shopAdmins)}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>아이디</th>
+                        <th>이름</th>
+                        <th>이메일</th>
+                        <th>연락처</th>
+                        <th>상태</th>
+                        <th>가입일</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="admin : ${shopAdmins}">
+                        <td th:text="${admin.id}">1</td>
+                        <td th:text="${admin.username}">user1</td>
+                        <td th:text="${admin.name}">홍길동</td>
+                        <td th:text="${admin.email}">test@example.com</td>
+                        <td th:text="${admin.phone ?: '-'}">010-1234-5678</td>
+                        <td>
+                            <span class="qr-manage-badge"
+                                  th:classappend="${admin.status.name() == 'ACTIVE' ? 'qr-manage-badge-active' :
+                                                   (admin.status.name() == 'PENDING' ? 'qr-manage-badge-pending' :
+                                                   (admin.status.name() == 'SUSPENDED' ? 'qr-manage-badge-suspended' : 'qr-manage-badge-inactive'))}"
+                                  th:text="${admin.status.description}">활성</span>
+                        </td>
+                        <td th:text="${#temporals.format(admin.createdAt, 'yyyy-MM-dd')}">2024-01-01</td>
+                        <td>
+                            <a th:href="@{/qr-manage/super/admin/shop-admin/detail/{id}(id=${admin.id})}"
+                               class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-secondary">상세</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p th:if="${#lists.isEmpty(shopAdmins)}" class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                등록된 상점관리자가 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="qr-manage-pagination" th:if="${totalPages > 1}">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/qr-manage/super/admin/shop-admin/list(page=${currentPage - 1}, status=${status}, keyword=${keyword})}">&laquo;</a>
+
+        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <span th:if="${i == currentPage}" class="active" th:text="${i}">1</span>
+            <a th:unless="${i == currentPage}"
+               th:href="@{/qr-manage/super/admin/shop-admin/list(page=${i}, status=${status}, keyword=${keyword})}"
+               th:text="${i}">1</a>
+        </th:block>
+
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/qr-manage/super/admin/shop-admin/list(page=${currentPage + 1}, status=${status}, keyword=${keyword})}">&raquo;</a>
+    </div>
+
+    <style>
+        .qr-manage-form-control {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 150px;
+        }
+    </style>
+</th:block>
+</html>

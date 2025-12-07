@@ -5,7 +5,18 @@
       "Bash(find src/main/resources/templates -name \"*.html\" -exec sed -i )",
       "Bash(find:*)",
       "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 }\")",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n멀티 서비스 아키텍처를 위한 설정 분리\n\n## Config 클래스 이동\n- SecurityConfig → grap/config/CmsSecurityConfig.java\n- MyBatisConfig → grap/config/CmsMyBatisConfig.java  \n- SchedulerConfig → grap/external/api/config/CmsSchedulerConfig.java\n\n## 설정 파일 분리\n- application.yml: 공통 설정 (서버, 파일업로드, Thymeleaf, 로깅)\n- application-grap.yml: grap 서비스 전용 (데이터소스, MyBatis, 스케줄러)\n\n## 리소스 구조 개편\n- static/css/, static/js/ → static/grap/css/, static/common/js/\n- templates/grap/common/ → templates/common/\n\n## 향후 qrmanage 서비스 추가 시\n- application-qrmanage.yml 추가\n- grap/config/ 참고하여 qrmanage/config/ 생성\n- 별도 데이터소스 및 인증 체계 운영 가능\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(./gradlew.bat clean build:*)",
+      "Bash(./gradlew.bat build:*)",
+      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 | Select-Object -Last 40 }\")",
+      "Bash(powershell.exe -Command \"& { cd ''c:\\Users\\MMM\\Desktop\\development\\grap\\grap_pack''; .\\gradlew.bat clean build -x test 2>&1 | Select-Object -Last 30 }\")",
+      "Bash(powershell.exe:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(mysql:*)"
     ],
     "deny": [],
     "ask": []

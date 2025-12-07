@@ -1,37 +1,35 @@
-package co.grap.pack.grap.config;
+package co.grap.pack.qrmanage.config;
 
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import javax.sql.DataSource;
 
 /**
- * Grap CMS 서비스 MyBatis 설정
+ * QR 관리 서비스 MyBatis 설정
  */
 @org.springframework.context.annotation.Configuration
-@MapperScan(basePackages = "co.grap.pack.grap.**.mapper", sqlSessionFactoryRef = "sqlSessionFactory")
-public class CmsMyBatisConfig {
+@MapperScan(basePackages = "co.grap.pack.qrmanage.**.mapper", sqlSessionFactoryRef = "qrManageSqlSessionFactory")
+public class QrManageMyBatisConfig {
 
     /**
-     * SqlSessionFactory 빈 등록 (Primary - 기본 SqlSessionFactory)
+     * QR 관리 서비스용 SqlSessionFactory 빈 등록
      */
-    @Bean(name = "sqlSessionFactory")
-    @Primary
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+    @Bean(name = "qrManageSqlSessionFactory")
+    public SqlSessionFactory qrManageSqlSessionFactory(DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
 
-        // Mapper XML 위치 설정 - grap 서비스 전용
+        // Mapper XML 위치 설정 - qrmanage 서비스 전용
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/grap/**/*.xml"));
+        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/qrmanage/**/*.xml"));
 
-        // Type Alias 패키지 설정 - grap 서비스 전용
-        sessionFactory.setTypeAliasesPackage("co.grap.pack.grap");
+        // Type Alias 패키지 설정 - qrmanage 서비스 전용
+        sessionFactory.setTypeAliasesPackage("co.grap.pack.qrmanage");
 
         // MyBatis Configuration 설정
         Configuration configuration = new Configuration();

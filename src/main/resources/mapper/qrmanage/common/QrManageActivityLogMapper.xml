@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.common.log.mapper.QrManageActivityLogMapper">
+
+    <!-- 활동 로그 ResultMap -->
+    <resultMap id="activityLogResultMap" type="co.grap.pack.qrmanage.common.log.model.QrManageActivityLog">
+        <id property="id" column="id"/>
+        <result property="userType" column="user_type"/>
+        <result property="userId" column="user_id"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="activityType" column="activity_type"/>
+        <result property="targetType" column="target_type"/>
+        <result property="targetId" column="target_id"/>
+        <result property="description" column="description"/>
+        <result property="ipAddress" column="ip_address"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 로그 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.common.log.model.QrManageActivityLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_activity_log (user_type, user_id, user_email, activity_type, target_type, target_id, description, ip_address, created_at)
+        VALUES (#{userType}, #{userId}, #{userEmail}, #{activityType}, #{targetType}, #{targetId}, #{description}, #{ipAddress}, NOW())
+    </insert>
+
+    <!-- 전체 로그 조회 -->
+    <select id="findAll" resultMap="activityLogResultMap">
+        SELECT * FROM qr_manage_activity_log
+        <where>
+            <if test="userType != null">
+                AND user_type = #{userType}
+            </if>
+            <if test="activityType != null">
+                AND activity_type = #{activityType}
+            </if>
+        </where>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 로그 수 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*) FROM qr_manage_activity_log
+        <where>
+            <if test="userType != null">
+                AND user_type = #{userType}
+            </if>
+            <if test="activityType != null">
+                AND activity_type = #{activityType}
+            </if>
+        </where>
+    </select>
+
+    <!-- 상점관리자별 로그 조회 -->
+    <select id="findByUserId" resultMap="activityLogResultMap">
+        SELECT * FROM qr_manage_activity_log
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 오래된 로그 삭제 (90일 이상) -->
+    <delete id="deleteOldLogs">
+        DELETE FROM qr_manage_activity_log
+        WHERE created_at &lt; DATE_SUB(NOW(), INTERVAL 90 DAY)
+    </delete>
+
+</mapper>

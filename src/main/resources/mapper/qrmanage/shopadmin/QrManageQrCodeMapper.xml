@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.shopadmin.qrcode.mapper.QrManageQrCodeMapper">
+
+    <!-- QR 코드 ResultMap -->
+    <resultMap id="qrCodeResultMap" type="co.grap.pack.qrmanage.shopadmin.qrcode.model.QrManageQrCode">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="qrType" column="qr_type"/>
+        <result property="qrCode" column="qr_code"/>
+        <result property="imagePath" column="image_path"/>
+        <result property="targetUrl" column="target_url"/>
+        <result property="expiresAt" column="expires_at"/>
+        <result property="isActive" column="is_active"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="shopName" column="shop_name"/>
+        <result property="scanCount" column="scan_count"/>
+    </resultMap>
+
+    <!-- 상점의 QR 코드 목록 조회 -->
+    <select id="findByShopId" resultMap="qrCodeResultMap">
+        SELECT q.*,
+               s.name as shop_name,
+               (SELECT COUNT(*) FROM qr_manage_qr_scan_log l WHERE l.qr_code_id = q.id) as scan_count
+        FROM qr_manage_qr_code q
+        LEFT JOIN qr_manage_shop s ON q.shop_id = s.id
+        WHERE q.shop_id = #{shopId}
+        ORDER BY q.created_at DESC
+    </select>
+
+    <!-- 전체 QR 코드 목록 조회 -->
+    <select id="findAll" resultMap="qrCodeResultMap">
+        SELECT q.*,
+               s.name as shop_name,
+               (SELECT COUNT(*) FROM qr_manage_qr_scan_log l WHERE l.qr_code_id = q.id) as scan_count
+        FROM qr_manage_qr_code q
+        LEFT JOIN qr_manage_shop s ON q.shop_id = s.id
+        <where>
+            <if test="qrType != null">
+                AND q.qr_type = #{qrType}
+            </if>
+            <if test="shopId != null">
+                AND q.shop_id = #{shopId}
+            </if>
+            <if test="isActive != null">
+                AND q.is_active = #{isActive}
+            </if>
+        </where>
+        ORDER BY q.created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 전체 QR 코드 수 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_manage_qr_code q
+        <where>
+            <if test="qrType != null">
+                AND q.qr_type = #{qrType}
+            </if>
+            <if test="shopId != null">
+                AND q.shop_id = #{shopId}
+            </if>
+            <if test="isActive != null">
+                AND q.is_active = #{isActive}
+            </if>
+        </where>
+    </select>
+
+    <!-- ID로 QR 코드 조회 -->
+    <select id="findById" resultMap="qrCodeResultMap">
+        SELECT q.*,
+               s.name as shop_name,
+               (SELECT COUNT(*) FROM qr_manage_qr_scan_log l WHERE l.qr_code_id = q.id) as scan_count
+        FROM qr_manage_qr_code q
+        LEFT JOIN qr_manage_shop s ON q.shop_id = s.id
+        WHERE q.id = #{id}
+    </select>
+
+    <!-- QR 코드로 조회 -->
+    <select id="findByQrCode" resultMap="qrCodeResultMap">
+        SELECT q.*,
+               s.name as shop_name,
+               (SELECT COUNT(*) FROM qr_manage_qr_scan_log l WHERE l.qr_code_id = q.id) as scan_count
+        FROM qr_manage_qr_code q
+        LEFT JOIN qr_manage_shop s ON q.shop_id = s.id
+        WHERE q.qr_code = #{qrCode}
+    </select>
+
+    <!-- 상점의 특정 타입 QR 코드 조회 -->
+    <select id="findByShopIdAndType" resultMap="qrCodeResultMap">
+        SELECT q.*,
+               s.name as shop_name,
+               (SELECT COUNT(*) FROM qr_manage_qr_scan_log l WHERE l.qr_code_id = q.id) as scan_count
+        FROM qr_manage_qr_code q
+        LEFT JOIN qr_manage_shop s ON q.shop_id = s.id
+        WHERE q.shop_id = #{shopId} AND q.qr_type = #{qrType}
+    </select>
+
+    <!-- QR 코드 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.shopadmin.qrcode.model.QrManageQrCode" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_qr_code (shop_id, qr_type, qr_code, image_path, target_url, expires_at, is_active, created_at, updated_at)
+        VALUES (#{shopId}, #{qrType}, #{qrCode}, #{imagePath}, #{targetUrl}, #{expiresAt}, #{isActive}, NOW(), NOW())
+    </insert>
+
+    <!-- QR 코드 수정 -->
+    <update id="update" parameterType="co.grap.pack.qrmanage.shopadmin.qrcode.model.QrManageQrCode">
+        UPDATE qr_manage_qr_code
+        SET image_path = #{imagePath},
+            target_url = #{targetUrl},
+            expires_at = #{expiresAt},
+            is_active = #{isActive},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- QR 코드 삭제 -->
+    <delete id="delete">
+        DELETE FROM qr_manage_qr_code WHERE id = #{id}
+    </delete>
+
+    <!-- 활성화 여부 변경 -->
+    <update id="updateActive">
+        UPDATE qr_manage_qr_code
+        SET is_active = #{isActive}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 만료일 변경 -->
+    <update id="updateExpiresAt">
+        UPDATE qr_manage_qr_code
+        SET expires_at = #{expiresAt}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.superadmin.auth.mapper.QrManageSuperAdminMapper">
+
+    <!-- 최고관리자 ResultMap -->
+    <resultMap id="superAdminResultMap" type="co.grap.pack.qrmanage.superadmin.auth.model.QrManageSuperAdmin">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="email" column="email"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 사용자명으로 최고관리자 조회 -->
+    <select id="findByUsername" resultMap="superAdminResultMap">
+        SELECT id, username, password, name, email, created_at, updated_at
+        FROM qr_manage_super_admin
+        WHERE username = #{username}
+    </select>
+
+    <!-- ID로 최고관리자 조회 -->
+    <select id="findById" resultMap="superAdminResultMap">
+        SELECT id, username, password, name, email, created_at, updated_at
+        FROM qr_manage_super_admin
+        WHERE id = #{id}
+    </select>
+
+    <!-- 최고관리자 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.superadmin.auth.model.QrManageSuperAdmin" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_super_admin (username, password, name, email, created_at, updated_at)
+        VALUES (#{username}, #{password}, #{name}, #{email}, NOW(), NOW())
+    </insert>
+
+    <!-- 최고관리자 정보 수정 -->
+    <update id="update" parameterType="co.grap.pack.qrmanage.superadmin.auth.model.QrManageSuperAdmin">
+        UPDATE qr_manage_super_admin
+        SET name = #{name},
+            email = #{email},
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

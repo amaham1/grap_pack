@@ -28,6 +28,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+    // Thymeleaf Layout Dialect (레이아웃 상속 지원)
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.3.0'
+
     // MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:2.1.0'
@@ -48,6 +51,10 @@ dependencies {
 
     // 이미지 압축
     implementation 'net.coobird:thumbnailator:0.4.20'
+
+    // QR 코드 생성 (ZXing)
+    implementation 'com.google.zxing:core:3.5.2'
+    implementation 'com.google.zxing:javase:3.5.2'
 
     // 개발 도구
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

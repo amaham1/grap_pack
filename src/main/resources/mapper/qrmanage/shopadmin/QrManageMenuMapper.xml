@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.shopadmin.menu.mapper.QrManageMenuMapper">
+
+    <!-- 메뉴 ResultMap -->
+    <resultMap id="menuResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenu">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="primaryImageId" column="primary_image_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="isSoldOut" column="is_sold_out"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="primaryImageUrl" column="primary_image_url"/>
+    </resultMap>
+
+    <!-- 옵션 그룹 ResultMap -->
+    <resultMap id="optionGroupResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOptionGroup">
+        <id property="id" column="id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="name" column="name"/>
+        <result property="isRequired" column="is_required"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 옵션 ResultMap -->
+    <resultMap id="optionResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOption">
+        <id property="id" column="id"/>
+        <result property="optionGroupId" column="option_group_id"/>
+        <result property="name" column="name"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- ========== 메뉴 쿼리 ========== -->
+
+    <!-- 상점의 메뉴 목록 조회 -->
+    <select id="findByShopId" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.shop_id = #{shopId}
+        ORDER BY c.sort_order ASC, m.sort_order ASC
+    </select>
+
+    <!-- 카테고리별 메뉴 목록 조회 -->
+    <select id="findByCategoryId" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.category_id = #{categoryId}
+        ORDER BY m.sort_order ASC
+    </select>
+
+    <!-- 공개된 메뉴만 조회 -->
+    <select id="findVisibleByShopId" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.shop_id = #{shopId} AND m.is_visible = true AND c.is_visible = true
+        ORDER BY c.sort_order ASC, m.sort_order ASC
+    </select>
+
+    <!-- 공개된 메뉴만 카테고리별 조회 -->
+    <select id="findVisibleByCategoryId" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.category_id = #{categoryId} AND m.is_visible = true
+        ORDER BY m.sort_order ASC
+    </select>
+
+    <!-- ID로 메뉴 조회 -->
+    <select id="findById" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.id = #{id}
+    </select>
+
+    <!-- 메뉴 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenu" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_menu (shop_id, category_id, name, description, price, primary_image_id, sort_order, is_visible, is_sold_out, created_at, updated_at)
+        VALUES (#{shopId}, #{categoryId}, #{name}, #{description}, #{price}, #{primaryImageId}, #{sortOrder}, #{isVisible}, #{isSoldOut}, NOW(), NOW())
+    </insert>
+
+    <!-- 메뉴 수정 -->
+    <update id="update" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenu">
+        UPDATE qr_manage_menu
+        SET category_id = #{categoryId},
+            name = #{name},
+            description = #{description},
+            price = #{price},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 메뉴 삭제 -->
+    <delete id="delete">
+        DELETE FROM qr_manage_menu WHERE id = #{id}
+    </delete>
+
+    <!-- 정렬 순서 변경 -->
+    <update id="updateSortOrder">
+        UPDATE qr_manage_menu
+        SET sort_order = #{sortOrder}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 공개 여부 변경 -->
+    <update id="updateVisibility">
+        UPDATE qr_manage_menu
+        SET is_visible = #{isVisible}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 품절 여부 변경 -->
+    <update id="updateSoldOut">
+        UPDATE qr_manage_menu
+        SET is_sold_out = #{isSoldOut}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 대표 이미지 변경 -->
+    <update id="updatePrimaryImage">
+        UPDATE qr_manage_menu
+        SET primary_image_id = #{primaryImageId}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 다음 정렬 순서 조회 -->
+    <select id="getNextSortOrder" resultType="int">
+        SELECT COALESCE(MAX(sort_order), 0) + 1
+        FROM qr_manage_menu
+        WHERE category_id = #{categoryId}
+    </select>
+
+    <!-- 상점 ID와 메뉴 ID로 존재 확인 -->
+    <select id="existsByIdAndShopId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM qr_manage_menu
+        WHERE id = #{id} AND shop_id = #{shopId}
+    </select>
+
+    <!-- ========== 옵션 그룹 쿼리 ========== -->
+
+    <!-- 메뉴의 옵션 그룹 목록 조회 -->
+    <select id="findOptionGroupsByMenuId" resultMap="optionGroupResultMap">
+        SELECT * FROM qr_manage_menu_option_group
+        WHERE menu_id = #{menuId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <!-- 옵션 그룹 조회 -->
+    <select id="findOptionGroupById" resultMap="optionGroupResultMap">
+        SELECT * FROM qr_manage_menu_option_group WHERE id = #{id}
+    </select>
+
+    <!-- 옵션 그룹 등록 -->
+    <insert id="insertOptionGroup" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOptionGroup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_menu_option_group (menu_id, name, is_required, sort_order, created_at, updated_at)
+        VALUES (#{menuId}, #{name}, #{isRequired}, #{sortOrder}, NOW(), NOW())
+    </insert>
+
+    <!-- 옵션 그룹 수정 -->
+    <update id="updateOptionGroup" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOptionGroup">
+        UPDATE qr_manage_menu_option_group
+        SET name = #{name}, is_required = #{isRequired}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 옵션 그룹 삭제 -->
+    <delete id="deleteOptionGroup">
+        DELETE FROM qr_manage_menu_option_group WHERE id = #{id}
+    </delete>
+
+    <!-- 옵션 그룹 정렬 순서 변경 -->
+    <update id="updateOptionGroupSortOrder">
+        UPDATE qr_manage_menu_option_group
+        SET sort_order = #{sortOrder}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 다음 옵션 그룹 정렬 순서 -->
+    <select id="getNextOptionGroupSortOrder" resultType="int">
+        SELECT COALESCE(MAX(sort_order), 0) + 1
+        FROM qr_manage_menu_option_group
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <!-- ========== 옵션 쿼리 ========== -->
+
+    <!-- 옵션 그룹의 옵션 목록 조회 -->
+    <select id="findOptionsByGroupId" resultMap="optionResultMap">
+        SELECT * FROM qr_manage_menu_option
+        WHERE option_group_id = #{optionGroupId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <!-- 옵션 조회 -->
+    <select id="findOptionById" resultMap="optionResultMap">
+        SELECT * FROM qr_manage_menu_option WHERE id = #{id}
+    </select>
+
+    <!-- 옵션 등록 -->
+    <insert id="insertOption" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOption" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_menu_option (option_group_id, name, sort_order, created_at, updated_at)
+        VALUES (#{optionGroupId}, #{name}, #{sortOrder}, NOW(), NOW())
+    </insert>
+
+    <!-- 옵션 수정 -->
+    <update id="updateOption" parameterType="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOption">
+        UPDATE qr_manage_menu_option
+        SET name = #{name}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 옵션 삭제 -->
+    <delete id="deleteOption">
+        DELETE FROM qr_manage_menu_option WHERE id = #{id}
+    </delete>
+
+    <!-- 옵션 그룹의 모든 옵션 삭제 -->
+    <delete id="deleteOptionsByGroupId">
+        DELETE FROM qr_manage_menu_option WHERE option_group_id = #{optionGroupId}
+    </delete>
+
+    <!-- 옵션 정렬 순서 변경 -->
+    <update id="updateOptionSortOrder">
+        UPDATE qr_manage_menu_option
+        SET sort_order = #{sortOrder}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 다음 옵션 정렬 순서 -->
+    <select id="getNextOptionSortOrder" resultType="int">
+        SELECT COALESCE(MAX(sort_order), 0) + 1
+        FROM qr_manage_menu_option
+        WHERE option_group_id = #{optionGroupId}
+    </select>
+
+</mapper>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title th:text="${title}">QR 메뉴</title>
+    <link rel="stylesheet" th:href="@{/qrmanage/css/customer.css}">
+</head>
+<body>
+    <!-- 메인 컨텐츠 (모바일 최적화) -->
+    <main class="qr-manage-customer-main">
+        <div th:replace="${content}"></div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="qr-manage-customer-footer">
+        <p>Powered by QR 관리 시스템</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script th:src="@{/qrmanage/js/customer.js}"></script>
+</body>
+</html>

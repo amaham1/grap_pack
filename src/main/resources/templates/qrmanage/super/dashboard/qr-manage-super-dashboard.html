@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">대시보드</h1>
+    </div>
+
+    <!-- 통계 카드 -->
+    <div class="qr-manage-stats-grid">
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 상점관리자</div>
+            <div class="qr-manage-stat-value" th:text="${totalShopAdmins}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">승인 대기</div>
+            <div class="qr-manage-stat-value" th:text="${pendingShopAdmins}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 상점</div>
+            <div class="qr-manage-stat-value" th:text="${totalShops}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">검수 대기</div>
+            <div class="qr-manage-stat-value" th:text="${pendingShops}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 QR 코드</div>
+            <div class="qr-manage-stat-value" th:text="${totalQrCodes}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 스캔 수</div>
+            <div class="qr-manage-stat-value" th:text="${todayScans}">0</div>
+        </div>
+    </div>
+
+    <!-- 최근 활동 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">최근 활동</h2>
+            <a th:href="@{/qr-manage/super/admin/log}" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-secondary">
+                전체보기
+            </a>
+        </div>
+        <div class="qr-manage-card-body">
+            <p class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                아직 활동 내역이 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 승인 대기 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">승인 대기 상점관리자</h2>
+            <a th:href="@{/qr-manage/super/admin/shop-admin/list?status=PENDING}" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-secondary">
+                전체보기
+            </a>
+        </div>
+        <div class="qr-manage-card-body">
+            <p class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                승인 대기중인 상점관리자가 없습니다.
+            </p>
+        </div>
+    </div>
+</th:block>
+</html>

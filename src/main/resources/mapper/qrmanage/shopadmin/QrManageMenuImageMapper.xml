@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.shopadmin.image.mapper.QrManageMenuImageMapper">
+
+    <!-- 이미지 ResultMap -->
+    <resultMap id="imageResultMap" type="co.grap.pack.qrmanage.shopadmin.image.model.QrManageMenuImage">
+        <id property="id" column="id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="originalFileName" column="original_file_name"/>
+        <result property="storedFileName" column="stored_file_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="fileType" column="file_type"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 메뉴의 이미지 목록 조회 -->
+    <select id="findByMenuId" resultMap="imageResultMap">
+        SELECT * FROM qr_manage_menu_image
+        WHERE menu_id = #{menuId}
+        ORDER BY sort_order ASC
+    </select>
+
+    <!-- 이미지 조회 -->
+    <select id="findById" resultMap="imageResultMap">
+        SELECT * FROM qr_manage_menu_image WHERE id = #{id}
+    </select>
+
+    <!-- 이미지 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.shopadmin.image.model.QrManageMenuImage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_menu_image (menu_id, original_file_name, stored_file_name, file_path, file_size, file_type, sort_order, created_at)
+        VALUES (#{menuId}, #{originalFileName}, #{storedFileName}, #{filePath}, #{fileSize}, #{fileType}, #{sortOrder}, NOW())
+    </insert>
+
+    <!-- 이미지 삭제 -->
+    <delete id="delete">
+        DELETE FROM qr_manage_menu_image WHERE id = #{id}
+    </delete>
+
+    <!-- 메뉴의 모든 이미지 삭제 -->
+    <delete id="deleteByMenuId">
+        DELETE FROM qr_manage_menu_image WHERE menu_id = #{menuId}
+    </delete>
+
+    <!-- 정렬 순서 변경 -->
+    <update id="updateSortOrder">
+        UPDATE qr_manage_menu_image SET sort_order = #{sortOrder} WHERE id = #{id}
+    </update>
+
+    <!-- 다음 정렬 순서 조회 -->
+    <select id="getNextSortOrder" resultType="int">
+        SELECT COALESCE(MAX(sort_order), 0) + 1
+        FROM qr_manage_menu_image
+        WHERE menu_id = #{menuId}
+    </select>
+
+</mapper>

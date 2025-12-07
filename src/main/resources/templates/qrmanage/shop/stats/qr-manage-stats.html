@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">스캔 통계</h1>
+    </div>
+
+    <!-- 상점 미등록 안내 -->
+    <div th:if="${noShop}" class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body qr-manage-text-center" style="padding: 60px 20px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📝</div>
+            <h3 style="margin-bottom: 15px;">상점 정보를 먼저 등록해주세요</h3>
+            <p style="color: #666; margin-bottom: 20px;">통계를 확인하려면 상점 정보 등록이 필요합니다.</p>
+            <a th:href="@{/qr-manage/shop/admin/info}" class="qr-manage-btn qr-manage-btn-primary">상점 정보 등록</a>
+        </div>
+    </div>
+
+    <!-- 상점 상태 안내 (등록은 됐지만 검수중/반려) -->
+    <div th:if="${shop != null && shop.status?.name() != 'APPROVED'}" class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <!-- 검수 대기 -->
+            <div th:if="${shop.status?.name() == 'PENDING'}" class="qr-manage-status-box qr-manage-status-pending">
+                <span class="qr-manage-status-icon">⏳</span>
+                <div class="qr-manage-status-text">
+                    <strong>검수 대기 중</strong>
+                    <p>상점 정보가 검수 중입니다. 승인 후 통계가 집계됩니다.</p>
+                </div>
+            </div>
+            <!-- 반려 -->
+            <div th:if="${shop.status?.name() == 'REJECTED'}" class="qr-manage-status-box qr-manage-status-rejected">
+                <span class="qr-manage-status-icon">❌</span>
+                <div class="qr-manage-status-text">
+                    <strong>검수 반려</strong>
+                    <p>상점 정보가 반려되었습니다. 상점 정보를 수정 후 다시 제출해주세요.</p>
+                </div>
+                <a th:href="@{/qr-manage/shop/admin/info}" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-primary">정보 수정</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${shop != null}">
+        <!-- 요약 통계 카드 -->
+        <div class="qr-manage-stats-grid">
+            <div class="qr-manage-stat-card">
+                <div class="qr-manage-stat-value" th:text="${stats.total ?: 0}">0</div>
+                <div class="qr-manage-stat-label">전체 스캔</div>
+            </div>
+            <div class="qr-manage-stat-card">
+                <div class="qr-manage-stat-value qr-manage-stat-today" th:text="${stats.today ?: 0}">0</div>
+                <div class="qr-manage-stat-label">오늘</div>
+            </div>
+            <div class="qr-manage-stat-card">
+                <div class="qr-manage-stat-value" th:text="${stats.week ?: 0}">0</div>
+                <div class="qr-manage-stat-label">이번 주</div>
+            </div>
+            <div class="qr-manage-stat-card">
+                <div class="qr-manage-stat-value" th:text="${stats.month ?: 0}">0</div>
+                <div class="qr-manage-stat-label">이번 달</div>
+            </div>
+        </div>
+
+        <!-- QR 타입별 통계 -->
+        <div class="qr-manage-card qr-manage-mb-20">
+            <div class="qr-manage-card-header">
+                <h2 class="qr-manage-card-title">QR 타입별 스캔</h2>
+            </div>
+            <div class="qr-manage-card-body">
+                <div th:if="${!#lists.isEmpty(typeStats)}" class="qr-manage-type-stats">
+                    <div th:each="stat : ${typeStats}" class="qr-manage-type-stat-item">
+                        <span class="qr-manage-type-label" th:text="${stat.qrType == 'SHOP' ? '상점 QR' : '메뉴 QR'}">타입</span>
+                        <span class="qr-manage-type-count" th:text="${stat.count}">0</span>
+                    </div>
+                </div>
+                <p th:if="${#lists.isEmpty(typeStats)}" class="qr-manage-no-data">스캔 데이터가 없습니다.</p>
+            </div>
+        </div>
+
+        <!-- 일별 스캔 차트 -->
+        <div class="qr-manage-card">
+            <div class="qr-manage-card-header">
+                <h2 class="qr-manage-card-title">최근 30일 스캔 추이</h2>
+            </div>
+            <div class="qr-manage-card-body">
+                <div th:if="${!#lists.isEmpty(dailyStats)}" class="qr-manage-chart-container">
+                    <canvas id="dailyChart"></canvas>
+                </div>
+                <p th:if="${#lists.isEmpty(dailyStats)}" class="qr-manage-no-data">스캔 데이터가 없습니다.</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 768px) {
+            .qr-manage-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .qr-manage-stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .qr-manage-stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .qr-manage-stat-today {
+            color: #3498db;
+        }
+        .qr-manage-stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .qr-manage-type-stats {
+            display: flex;
+            gap: 30px;
+        }
+        .qr-manage-type-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .qr-manage-type-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .qr-manage-type-count {
+            font-size: 24px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .qr-manage-chart-container {
+            height: 300px;
+        }
+        .qr-manage-no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+        .qr-manage-status-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .qr-manage-status-pending {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+        }
+        .qr-manage-status-rejected {
+            background: #f8d7da;
+            border: 1px solid #dc3545;
+        }
+        .qr-manage-status-icon {
+            font-size: 32px;
+        }
+        .qr-manage-status-text strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        .qr-manage-status-text p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const dailyStats = /*[[${dailyStats}]]*/ [];
+
+        if (dailyStats.length > 0) {
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dailyStats.map(item => item.date),
+                    datasets: [{
+                        label: '스캔 횟수',
+                        data: dailyStats.map(item => item.count),
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</th:block>
+
+</html>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.superadmin.shop.mapper.QrManageSuperShopMapper">
+
+    <!-- 상점 ResultMap -->
+    <resultMap id="shopResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop">
+        <id property="id" column="id"/>
+        <result property="shopAdminId" column="shop_admin_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="shopAdminName" column="shop_admin_name"/>
+        <result property="shopAdminEmail" column="shop_admin_email"/>
+    </resultMap>
+
+    <!-- 검수 이력 ResultMap -->
+    <resultMap id="reviewHistoryResultMap" type="co.grap.pack.qrmanage.superadmin.shop.model.QrManageShopReviewHistory">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="reviewerId" column="reviewer_id"/>
+        <result property="action" column="action"/>
+        <result property="comment" column="comment"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="reviewerName" column="reviewer_name"/>
+    </resultMap>
+
+    <!-- 메모 ResultMap -->
+    <resultMap id="memoResultMap" type="co.grap.pack.qrmanage.superadmin.shop.model.QrManageShopMemo">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="adminId" column="admin_id"/>
+        <result property="content" column="content"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="adminName" column="admin_name"/>
+    </resultMap>
+
+    <!-- 상점 목록 조회 -->
+    <select id="findAll" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        <where>
+            <if test="status != null">
+                AND s.status = #{status}
+            </if>
+            <if test="isVisible != null">
+                AND s.is_visible = #{isVisible}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (s.name LIKE CONCAT('%', #{keyword}, '%') OR s.address LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        ORDER BY s.created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 상점 총 개수 -->
+    <select id="countAll" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_manage_shop s
+        <where>
+            <if test="status != null">
+                AND s.status = #{status}
+            </if>
+            <if test="isVisible != null">
+                AND s.is_visible = #{isVisible}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND (s.name LIKE CONCAT('%', #{keyword}, '%') OR s.address LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <!-- ID로 상점 조회 -->
+    <select id="findById" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- 상점 상태 변경 -->
+    <update id="updateStatus">
+        UPDATE qr_manage_shop
+        SET status = #{status}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 상점 노출 여부 변경 -->
+    <update id="updateVisibility">
+        UPDATE qr_manage_shop
+        SET is_visible = #{isVisible}, updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 상태별 상점 수 -->
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(*) FROM qr_manage_shop WHERE status = #{status}
+    </select>
+
+    <!-- 검수 이력 등록 -->
+    <insert id="insertReviewHistory" parameterType="co.grap.pack.qrmanage.superadmin.shop.model.QrManageShopReviewHistory">
+        INSERT INTO qr_manage_shop_review_history (shop_id, reviewer_id, action, comment, created_at)
+        VALUES (#{shopId}, #{reviewerId}, #{action}, #{comment}, NOW())
+    </insert>
+
+    <!-- 상점의 검수 이력 조회 -->
+    <select id="findReviewHistoryByShopId" resultMap="reviewHistoryResultMap">
+        SELECT h.*, sa.name as reviewer_name
+        FROM qr_manage_shop_review_history h
+        LEFT JOIN qr_manage_super_admin sa ON h.reviewer_id = sa.id
+        WHERE h.shop_id = #{shopId}
+        ORDER BY h.created_at DESC
+    </select>
+
+    <!-- 메모 등록 -->
+    <insert id="insertMemo" parameterType="co.grap.pack.qrmanage.superadmin.shop.model.QrManageShopMemo">
+        INSERT INTO qr_manage_shop_memo (shop_id, admin_id, content, created_at)
+        VALUES (#{shopId}, #{adminId}, #{content}, NOW())
+    </insert>
+
+    <!-- 상점의 메모 목록 조회 -->
+    <select id="findMemosByShopId" resultMap="memoResultMap">
+        SELECT m.*, sa.name as admin_name
+        FROM qr_manage_shop_memo m
+        LEFT JOIN qr_manage_super_admin sa ON m.admin_id = sa.id
+        WHERE m.shop_id = #{shopId}
+        ORDER BY m.created_at DESC
+    </select>
+
+    <!-- 메모 삭제 -->
+    <delete id="deleteMemo">
+        DELETE FROM qr_manage_shop_memo WHERE id = #{id}
+    </delete>
+
+</mapper>
