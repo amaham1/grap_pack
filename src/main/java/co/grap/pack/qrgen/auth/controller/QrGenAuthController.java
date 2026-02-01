@@ -53,7 +53,6 @@ public class QrGenAuthController {
     public String register(@RequestParam("username") String username,
                            @RequestParam("password") String password,
                            @RequestParam("passwordConfirm") String passwordConfirm,
-                           @RequestParam("email") String email,
                            @RequestParam(value = "nickname", required = false) String nickname,
                            RedirectAttributes redirectAttributes) {
         try {
@@ -75,7 +74,7 @@ public class QrGenAuthController {
             }
 
             // 회원가입
-            authService.register(username, password, email, nickname);
+            authService.register(username, password, nickname);
             redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인해주세요.");
 
             return "redirect:/qrgen/auth/login";

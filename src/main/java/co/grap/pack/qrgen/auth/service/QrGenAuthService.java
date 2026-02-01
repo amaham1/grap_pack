@@ -72,19 +72,15 @@ public class QrGenAuthService implements UserDetailsService {
      * 회원가입
      */
     @Transactional
-    public QrGenUser register(String username, String password, String email, String nickname) {
+    public QrGenUser register(String username, String password, String nickname) {
         // 중복 확인
         if (userMapper.countByUsername(username) > 0) {
             throw new IllegalArgumentException("이미 사용 중인 사용자명입니다.");
-        }
-        if (userMapper.countByEmail(email) > 0) {
-            throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         QrGenUser user = QrGenUser.builder()
             .qrGenUserUsername(username)
             .qrGenUserPassword(passwordEncoder.encode(password))
-            .qrGenUserEmail(email)
             .qrGenUserNickname(nickname)
             .qrGenUserIsActive(true)
             .build();

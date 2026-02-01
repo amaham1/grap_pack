@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS qr_gen_user (
     qr_gen_user_id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '사용자 ID',
     qr_gen_user_username VARCHAR(50) NOT NULL UNIQUE COMMENT '로그인 ID',
     qr_gen_user_password VARCHAR(255) NOT NULL COMMENT '비밀번호 (BCrypt)',
-    qr_gen_user_email VARCHAR(200) NOT NULL UNIQUE COMMENT '이메일',
+    qr_gen_user_email VARCHAR(200) COMMENT '이메일',
     qr_gen_user_nickname VARCHAR(100) COMMENT '닉네임',
     qr_gen_user_is_active BOOLEAN NOT NULL DEFAULT TRUE COMMENT '활성화 여부',
     qr_gen_user_created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',

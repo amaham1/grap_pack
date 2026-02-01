@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(cmd /c \"gradlew.bat build -x test\")",
+      "Bash(./gradlew.bat build:*)",
+      "Bash(./gradlew.bat:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nQR Generator 서비스\\(qrgen\\) 구현\n\n- 익명 사용자: QR 코드 생성 가능 \\(히스토리 저장 안됨\\)\n- 로그인 사용자: QR 코드 생성 + 히스토리 자동 저장\n- 별도 DB\\(qr_gen\\) 사용, 기존 서비스와 완전 분리\n\n주요 구현:\n- config: QrGenSecurityConfig, QrGenMyBatisConfig\n- auth: 회원가입, 로그인, UserDetailsService\n- generator: QR 생성 API, 히스토리 CRUD\n- 프론트엔드: Thymeleaf + HTMX + CSS/JS\n\nURL: /qrgen/**\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\n회원가입 시 이메일 입력 제거\n\n- 회원가입 폼에서 이메일 필드 제거\n- 컨트롤러, 서비스에서 이메일 파라미터 제거\n- DB 스키마: 이메일 컬럼 nullable로 변경 \\(컬럼 유지\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}
