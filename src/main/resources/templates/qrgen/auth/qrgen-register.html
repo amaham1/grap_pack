@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>회원가입</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-auth-container">
+        <div class="qrgen-auth-box">
+            <h2 class="qrgen-auth-title">회원가입</h2>
+
+            <div th:if="${errorMessage}" class="qrgen-alert qrgen-alert-error">
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/qrgen/auth/register}" method="post" class="qrgen-auth-form">
+                <div class="qrgen-form-group">
+                    <label for="username">아이디 <span class="qrgen-required">*</span></label>
+                    <input type="text" id="username" name="username" required
+                           placeholder="4~20자의 영문, 숫자" autocomplete="username"
+                           minlength="4" maxlength="20">
+                </div>
+
+                <div class="qrgen-form-group">
+                    <label for="email">이메일 <span class="qrgen-required">*</span></label>
+                    <input type="email" id="email" name="email" required
+                           placeholder="example@email.com" autocomplete="email">
+                </div>
+
+                <div class="qrgen-form-group">
+                    <label for="nickname">닉네임</label>
+                    <input type="text" id="nickname" name="nickname"
+                           placeholder="표시될 이름 (선택)" maxlength="100">
+                </div>
+
+                <div class="qrgen-form-group">
+                    <label for="password">비밀번호 <span class="qrgen-required">*</span></label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="6자 이상" autocomplete="new-password"
+                           minlength="6">
+                </div>
+
+                <div class="qrgen-form-group">
+                    <label for="passwordConfirm">비밀번호 확인 <span class="qrgen-required">*</span></label>
+                    <input type="password" id="passwordConfirm" name="passwordConfirm" required
+                           placeholder="비밀번호 다시 입력" autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="qrgen-btn qrgen-btn-primary qrgen-btn-full">
+                    회원가입
+                </button>
+            </form>
+
+            <div class="qrgen-auth-footer">
+                <p>이미 계정이 있으신가요? <a th:href="@{/qrgen/auth/login}">로그인</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

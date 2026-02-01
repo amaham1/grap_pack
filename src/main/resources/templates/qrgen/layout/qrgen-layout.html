@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - Grap QR">Grap QR</title>
+    <link rel="stylesheet" th:href="@{/qrgen/css/qrgen.css}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+    <header class="qrgen-header">
+        <div class="qrgen-header-container">
+            <a th:href="@{/qrgen/}" class="qrgen-logo">Grap</a>
+            <nav class="qrgen-nav">
+                <th:block th:if="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/qrgen/user/history}" class="qrgen-nav-link">내 히스토리</a>
+                    <form th:action="@{/qrgen/auth/logout}" method="post" class="qrgen-logout-form">
+                        <button type="submit" class="qrgen-nav-link qrgen-logout-btn">로그아웃</button>
+                    </form>
+                </th:block>
+                <th:block th:unless="${#authorization.expression('isAuthenticated()')}">
+                    <a th:href="@{/qrgen/auth/login}" class="qrgen-nav-link">로그인</a>
+                    <a th:href="@{/qrgen/auth/register}" class="qrgen-nav-link qrgen-btn-primary">회원가입</a>
+                </th:block>
+            </nav>
+        </div>
+    </header>
+
+    <main class="qrgen-main">
+        <div layout:fragment="content"></div>
+    </main>
+
+    <footer class="qrgen-footer">
+        <p>Grap - QR Code Generator</p>
+    </footer>
+
+    <script th:src="@{/qrgen/js/qrgen.js}"></script>
+</body>
+</html>

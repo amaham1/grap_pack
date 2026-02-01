@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>QR 상세</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-container">
+        <div class="qrgen-page-header">
+            <h1 class="qrgen-title" th:text="${history.qrGenHistoryTitle ?: 'QR 코드 상세'}">QR 코드 상세</h1>
+            <a th:href="@{/qrgen/user/history}" class="qrgen-btn qrgen-btn-secondary">목록으로</a>
+        </div>
+
+        <div class="qrgen-detail">
+            <div class="qrgen-detail-image">
+                <img th:if="${history.qrGenHistoryImagePath}"
+                     th:src="${history.qrGenHistoryImagePath}"
+                     alt="QR Code"
+                     class="qrgen-qr-image-large">
+                <div th:unless="${history.qrGenHistoryImagePath}" class="qrgen-no-image-large">
+                    이미지 없음
+                </div>
+
+                <div class="qrgen-detail-actions">
+                    <a th:if="${history.qrGenHistoryImagePath}"
+                       th:href="${history.qrGenHistoryImagePath}"
+                       download
+                       class="qrgen-btn qrgen-btn-primary">이미지 다운로드</a>
+                    <a th:href="@{/qrgen/user/history/{id}/regenerate(id=${history.qrGenHistoryId})}"
+                       class="qrgen-btn qrgen-btn-secondary">이 설정으로 재생성</a>
+                </div>
+            </div>
+
+            <div class="qrgen-detail-info">
+                <table class="qrgen-detail-table">
+                    <tr>
+                        <th>유형</th>
+                        <td>
+                            <span class="qrgen-badge" th:text="${history.qrGenHistoryContentType}">URL</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>내용</th>
+                        <td class="qrgen-content-value">
+                            <code th:text="${history.qrGenHistoryContentValue}">내용</code>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>크기</th>
+                        <td th:text="${history.qrGenHistorySize + 'px'}">300px</td>
+                    </tr>
+                    <tr>
+                        <th>에러 보정</th>
+                        <td th:text="${history.qrGenHistoryErrorCorrection}">M</td>
+                    </tr>
+                    <tr>
+                        <th>전경색</th>
+                        <td>
+                            <span class="qrgen-color-preview"
+                                  th:style="'background-color: ' + ${history.qrGenHistoryFgColor}"></span>
+                            <span th:text="${history.qrGenHistoryFgColor}">#000000</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>배경색</th>
+                        <td>
+                            <span class="qrgen-color-preview"
+                                  th:style="'background-color: ' + ${history.qrGenHistoryBgColor}"></span>
+                            <span th:text="${history.qrGenHistoryBgColor}">#FFFFFF</span>
+                        </td>
+                    </tr>
+                    <tr th:if="${history.qrGenHistoryMemo}">
+                        <th>메모</th>
+                        <td th:text="${history.qrGenHistoryMemo}">메모</td>
+                    </tr>
+                    <tr>
+                        <th>생성일시</th>
+                        <td th:text="${#temporals.format(history.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01</td>
+                    </tr>
+                </table>
+
+                <div class="qrgen-detail-danger-zone">
+                    <form th:action="@{/qrgen/user/history/{id}/delete(id=${history.qrGenHistoryId})}"
+                          method="post"
+                          onsubmit="return confirm('정말 삭제하시겠습니까? 이미지 파일도 함께 삭제됩니다.');">
+                        <button type="submit" class="qrgen-btn qrgen-btn-danger">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>내 히스토리</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-container">
+        <div class="qrgen-page-header">
+            <h1 class="qrgen-title">내 QR 생성 기록</h1>
+            <a th:href="@{/qrgen/}" class="qrgen-btn qrgen-btn-primary">새 QR 생성</a>
+        </div>
+
+        <div th:if="${successMessage}" class="qrgen-alert qrgen-alert-success">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <div th:if="${errorMessage}" class="qrgen-alert qrgen-alert-error">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <div class="qrgen-history-info">
+            총 <strong th:text="${totalCount}">0</strong>개의 기록
+        </div>
+
+        <!-- 히스토리 없을 때 -->
+        <div th:if="${#lists.isEmpty(historyList)}" class="qrgen-empty">
+            <p>아직 생성한 QR 코드가 없습니다.</p>
+            <a th:href="@{/qrgen/}" class="qrgen-btn qrgen-btn-primary">첫 QR 코드 만들기</a>
+        </div>
+
+        <!-- 히스토리 목록 -->
+        <div th:unless="${#lists.isEmpty(historyList)}" class="qrgen-history-list">
+            <div th:each="history : ${historyList}" class="qrgen-history-item">
+                <div class="qrgen-history-image">
+                    <img th:if="${history.qrGenHistoryImagePath}"
+                         th:src="${history.qrGenHistoryImagePath}"
+                         alt="QR Code">
+                    <div th:unless="${history.qrGenHistoryImagePath}" class="qrgen-history-no-image">
+                        QR
+                    </div>
+                </div>
+                <div class="qrgen-history-info-box">
+                    <div class="qrgen-history-title" th:text="${history.qrGenHistoryTitle ?: '제목 없음'}">제목</div>
+                    <div class="qrgen-history-type">
+                        <span class="qrgen-badge" th:text="${history.qrGenHistoryContentType}">URL</span>
+                    </div>
+                    <div class="qrgen-history-value" th:text="${#strings.abbreviate(history.qrGenHistoryContentValue, 50)}">내용</div>
+                    <div class="qrgen-history-date" th:text="${#temporals.format(history.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</div>
+                </div>
+                <div class="qrgen-history-actions">
+                    <a th:href="@{/qrgen/user/history/{id}(id=${history.qrGenHistoryId})}"
+                       class="qrgen-btn qrgen-btn-small">상세</a>
+                    <a th:href="@{/qrgen/user/history/{id}/regenerate(id=${history.qrGenHistoryId})}"
+                       class="qrgen-btn qrgen-btn-small qrgen-btn-secondary">재생성</a>
+                    <form th:action="@{/qrgen/user/history/{id}/delete(id=${history.qrGenHistoryId})}"
+                          method="post" class="qrgen-inline-form"
+                          onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                        <button type="submit" class="qrgen-btn qrgen-btn-small qrgen-btn-danger">삭제</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- 페이지네이션 -->
+        <div th:if="${totalPages > 1}" class="qrgen-pagination">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/qrgen/user/history(page=${currentPage - 1})}"
+               class="qrgen-page-link">이전</a>
+
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${i != currentPage}"
+                   th:href="@{/qrgen/user/history(page=${i})}"
+                   th:text="${i}"
+                   class="qrgen-page-link">1</a>
+                <span th:if="${i == currentPage}"
+                      th:text="${i}"
+                      class="qrgen-page-current">1</span>
+            </span>
+
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/qrgen/user/history(page=${currentPage + 1})}"
+               class="qrgen-page-link">다음</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

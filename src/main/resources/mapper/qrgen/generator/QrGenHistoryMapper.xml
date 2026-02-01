@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrgen.generator.mapper.QrGenHistoryMapper">
+
+    <resultMap id="qrGenHistoryResultMap" type="co.grap.pack.qrgen.generator.model.QrGenHistory">
+        <id property="qrGenHistoryId" column="qr_gen_history_id"/>
+        <result property="qrGenHistoryUserId" column="qr_gen_history_user_id"/>
+        <result property="qrGenHistoryContentType" column="qr_gen_history_content_type"/>
+        <result property="qrGenHistoryContentValue" column="qr_gen_history_content_value"/>
+        <result property="qrGenHistorySize" column="qr_gen_history_size"/>
+        <result property="qrGenHistoryErrorCorrection" column="qr_gen_history_error_correction"/>
+        <result property="qrGenHistoryFgColor" column="qr_gen_history_fg_color"/>
+        <result property="qrGenHistoryBgColor" column="qr_gen_history_bg_color"/>
+        <result property="qrGenHistoryImagePath" column="qr_gen_history_image_path"/>
+        <result property="qrGenHistoryTitle" column="qr_gen_history_title"/>
+        <result property="qrGenHistoryMemo" column="qr_gen_history_memo"/>
+        <result property="qrGenHistoryCreatedAt" column="qr_gen_history_created_at"/>
+        <result property="qrGenUserUsername" column="qr_gen_user_username"/>
+    </resultMap>
+
+    <!-- 사용자 ID로 히스토리 목록 조회 (페이징) -->
+    <select id="findByUserId" resultMap="qrGenHistoryResultMap">
+        SELECT h.*, u.qr_gen_user_username
+        FROM qr_gen_history h
+        LEFT JOIN qr_gen_user u ON h.qr_gen_history_user_id = u.qr_gen_user_id
+        WHERE h.qr_gen_history_user_id = #{userId}
+        ORDER BY h.qr_gen_history_created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <!-- 사용자 ID로 히스토리 개수 조회 -->
+    <select id="countByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_gen_history
+        WHERE qr_gen_history_user_id = #{userId}
+    </select>
+
+    <!-- ID로 히스토리 조회 -->
+    <select id="findById" resultMap="qrGenHistoryResultMap">
+        SELECT h.*, u.qr_gen_user_username
+        FROM qr_gen_history h
+        LEFT JOIN qr_gen_user u ON h.qr_gen_history_user_id = u.qr_gen_user_id
+        WHERE h.qr_gen_history_id = #{id}
+    </select>
+
+    <!-- 히스토리 저장 -->
+    <insert id="insert" parameterType="co.grap.pack.qrgen.generator.model.QrGenHistory"
+            useGeneratedKeys="true" keyProperty="qrGenHistoryId">
+        INSERT INTO qr_gen_history (
+            qr_gen_history_user_id,
+            qr_gen_history_content_type,
+            qr_gen_history_content_value,
+            qr_gen_history_size,
+            qr_gen_history_error_correction,
+            qr_gen_history_fg_color,
+            qr_gen_history_bg_color,
+            qr_gen_history_image_path,
+            qr_gen_history_title,
+            qr_gen_history_memo,
+            qr_gen_history_created_at
+        ) VALUES (
+            #{qrGenHistoryUserId},
+            #{qrGenHistoryContentType},
+            #{qrGenHistoryContentValue},
+            #{qrGenHistorySize},
+            #{qrGenHistoryErrorCorrection},
+            #{qrGenHistoryFgColor},
+            #{qrGenHistoryBgColor},
+            #{qrGenHistoryImagePath},
+            #{qrGenHistoryTitle},
+            #{qrGenHistoryMemo},
+            NOW()
+        )
+    </insert>
+
+    <!-- 히스토리 삭제 -->
+    <delete id="delete">
+        DELETE FROM qr_gen_history
+        WHERE qr_gen_history_id = #{id}
+    </delete>
+
+    <!-- 이미지 경로 업데이트 -->
+    <update id="updateImagePath">
+        UPDATE qr_gen_history
+        SET qr_gen_history_image_path = #{imagePath}
+        WHERE qr_gen_history_id = #{id}
+    </update>
+
+</mapper>

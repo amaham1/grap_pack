@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>QR 코드 생성</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-container">
+        <h1 class="qrgen-title">QR 코드 생성기</h1>
+
+        <div class="qrgen-generator">
+            <!-- 생성 폼 -->
+            <div class="qrgen-form-section">
+                <form id="qrgen-form" class="qrgen-form">
+                    <div class="qrgen-form-group">
+                        <label for="contentType">유형</label>
+                        <select id="contentType" name="contentType" required>
+                            <option th:each="type : ${contentTypes}"
+                                    th:value="${type.name()}"
+                                    th:text="${type.description}"
+                                    th:selected="${history != null && history.qrGenHistoryContentType == type.name()}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="qrgen-form-group">
+                        <label for="contentValue">내용</label>
+                        <textarea id="contentValue" name="contentValue" rows="4" required
+                                  placeholder="URL, 텍스트, 또는 데이터를 입력하세요"
+                                  th:text="${history?.qrGenHistoryContentValue}"></textarea>
+                        <small id="contentHint" class="qrgen-hint"></small>
+                    </div>
+
+                    <div class="qrgen-options">
+                        <div class="qrgen-form-group qrgen-form-group-small">
+                            <label for="size">크기 (px)</label>
+                            <input type="number" id="size" name="size"
+                                   th:value="${history?.qrGenHistorySize ?: 300}"
+                                   min="100" max="1000" step="50">
+                        </div>
+
+                        <div class="qrgen-form-group qrgen-form-group-small">
+                            <label for="errorCorrection">에러 보정</label>
+                            <select id="errorCorrection" name="errorCorrection">
+                                <option value="L" th:selected="${history?.qrGenHistoryErrorCorrection == 'L'}">L (7%)</option>
+                                <option value="M" th:selected="${history == null || history.qrGenHistoryErrorCorrection == 'M'}">M (15%)</option>
+                                <option value="Q" th:selected="${history?.qrGenHistoryErrorCorrection == 'Q'}">Q (25%)</option>
+                                <option value="H" th:selected="${history?.qrGenHistoryErrorCorrection == 'H'}">H (30%)</option>
+                            </select>
+                        </div>
+
+                        <div class="qrgen-form-group qrgen-form-group-small">
+                            <label for="foregroundColor">전경색</label>
+                            <input type="color" id="foregroundColor" name="foregroundColor"
+                                   th:value="${history?.qrGenHistoryFgColor ?: '#000000'}">
+                        </div>
+
+                        <div class="qrgen-form-group qrgen-form-group-small">
+                            <label for="backgroundColor">배경색</label>
+                            <input type="color" id="backgroundColor" name="backgroundColor"
+                                   th:value="${history?.qrGenHistoryBgColor ?: '#FFFFFF'}">
+                        </div>
+                    </div>
+
+                    <div th:if="${isAuthenticated}" class="qrgen-form-group">
+                        <label for="title">제목 (선택)</label>
+                        <input type="text" id="title" name="title"
+                               placeholder="나중에 찾기 쉽도록 제목을 입력하세요"
+                               th:value="${history?.qrGenHistoryTitle}">
+                    </div>
+
+                    <div class="qrgen-btn-group">
+                        <button type="button" id="generateBtn" class="qrgen-btn qrgen-btn-primary">
+                            QR 코드 생성
+                        </button>
+                        <button type="button" id="downloadBtn" class="qrgen-btn qrgen-btn-secondary" style="display:none;">
+                            다운로드
+                        </button>
+                    </div>
+                </form>
+
+                <div class="qrgen-notice" th:if="${isAuthenticated}">
+                    <span class="qrgen-notice-icon">&#10003;</span>
+                    QR 코드 생성 기록이 자동으로 저장됩니다.
+                </div>
+                <div class="qrgen-notice qrgen-notice-info" th:unless="${isAuthenticated}">
+                    <span class="qrgen-notice-icon">&#9432;</span>
+                    <a th:href="@{/qrgen/auth/login}">로그인</a>하면 생성 기록이 저장됩니다.
+                </div>
+            </div>
+
+            <!-- 미리보기 -->
+            <div class="qrgen-preview-section">
+                <div class="qrgen-preview-title">미리보기</div>
+                <div id="qrgen-preview" class="qrgen-preview">
+                    <div class="qrgen-preview-placeholder">
+                        QR 코드가 여기에 표시됩니다
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
