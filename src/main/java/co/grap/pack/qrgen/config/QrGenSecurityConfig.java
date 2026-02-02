@@ -59,7 +59,7 @@ public class QrGenSecurityConfig {
                 .loginProcessingUrl("/qrgen/auth/login")
                 .defaultSuccessUrl("/qrgen/user/history", true)
                 .failureUrl("/qrgen/auth/login?error=true")
-                .usernameParameter("username")
+                .usernameParameter("loginId")
                 .passwordParameter("password")
                 .permitAll()
             )
@@ -91,9 +91,9 @@ public class QrGenSecurityConfig {
         http
             .securityMatcher("/qrgen/**")
             .authenticationProvider(qrGenUserAuthProvider)
-            // CSRF 설정 - generate API는 예외
+            // CSRF 설정 - generate API와 visitor API는 예외
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download")
+                .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/visitor/**")
             )
             // 모든 요청 허용 (익명 + 로그인 모두)
             .authorizeHttpRequests(auth -> auth
@@ -105,7 +105,7 @@ public class QrGenSecurityConfig {
                 .loginProcessingUrl("/qrgen/auth/login")
                 .defaultSuccessUrl("/qrgen/", false)
                 .failureUrl("/qrgen/auth/login?error=true")
-                .usernameParameter("username")
+                .usernameParameter("loginId")
                 .passwordParameter("password")
                 .permitAll()
             )

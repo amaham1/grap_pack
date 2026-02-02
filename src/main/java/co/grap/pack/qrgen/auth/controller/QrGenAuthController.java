@@ -50,7 +50,7 @@ public class QrGenAuthController {
      * 회원가입 처리
      */
     @PostMapping("/register")
-    public String register(@RequestParam("username") String username,
+    public String register(@RequestParam("loginId") String loginId,
                            @RequestParam("password") String password,
                            @RequestParam("passwordConfirm") String passwordConfirm,
                            @RequestParam(value = "nickname", required = false) String nickname,
@@ -63,7 +63,7 @@ public class QrGenAuthController {
             }
 
             // 유효성 검사
-            if (username.length() < 4 || username.length() > 20) {
+            if (loginId.length() < 4 || loginId.length() > 20) {
                 redirectAttributes.addFlashAttribute("errorMessage", "아이디는 4~20자여야 합니다.");
                 return "redirect:/qrgen/auth/register";
             }
@@ -74,7 +74,7 @@ public class QrGenAuthController {
             }
 
             // 회원가입
-            authService.register(username, password, nickname);
+            authService.registerQrGenUser(loginId, password, nickname);
             redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인해주세요.");
 
             return "redirect:/qrgen/auth/login";

@@ -3,7 +3,7 @@ spring:
   application:
     name: qr-gen
 
-  # 데이터소스 설정 (별도 DB 사용)
+  # 데이터소스 설정 (qr_gen DB 사용)
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false

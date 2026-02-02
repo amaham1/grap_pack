@@ -118,44 +118,44 @@ public class QrGenGeneratorService {
      * 히스토리 저장
      */
     @Transactional
-    public QrGenHistory saveHistory(Long userId, QrGenRequest request, String imagePath) {
+    public QrGenHistory saveQrGenHistory(Long userId, QrGenRequest request, String imagePath) {
         log.info("✅ [CHECK] QR 생성 히스토리 저장: userId={}", userId);
 
         QrGenHistory history = QrGenHistory.fromRequest(request, userId);
         history.setQrGenHistoryImagePath(imagePath);
 
-        historyMapper.insert(history);
+        historyMapper.insertQrGenHistory(history);
         return history;
     }
 
     /**
      * 사용자 히스토리 목록 조회
      */
-    public List<QrGenHistory> getHistoryByUserId(Long userId, int page, int size) {
+    public List<QrGenHistory> findQrGenHistoryByUserId(Long userId, int page, int size) {
         int offset = (page - 1) * size;
-        return historyMapper.findByUserId(userId, size, offset);
+        return historyMapper.findQrGenHistoryByUserId(userId, size, offset);
     }
 
     /**
      * 사용자 히스토리 개수 조회
      */
-    public int countHistoryByUserId(Long userId) {
-        return historyMapper.countByUserId(userId);
+    public int countQrGenHistoryByUserId(Long userId) {
+        return historyMapper.countQrGenHistoryByUserId(userId);
     }
 
     /**
      * 히스토리 상세 조회
      */
-    public QrGenHistory getHistory(Long id) {
-        return historyMapper.findById(id);
+    public QrGenHistory findQrGenHistoryById(Long id) {
+        return historyMapper.findQrGenHistoryById(id);
     }
 
     /**
      * 히스토리 삭제
      */
     @Transactional
-    public void deleteHistory(Long id, Long userId) {
-        QrGenHistory history = historyMapper.findById(id);
+    public void deleteQrGenHistory(Long id, Long userId) {
+        QrGenHistory history = historyMapper.findQrGenHistoryById(id);
         if (history == null || !history.getQrGenHistoryUserId().equals(userId)) {
             throw new IllegalArgumentException("삭제 권한이 없습니다.");
         }
@@ -163,7 +163,7 @@ public class QrGenGeneratorService {
         // 이미지 파일 삭제
         deleteImageFile(history.getQrGenHistoryImagePath());
 
-        historyMapper.delete(id);
+        historyMapper.deleteQrGenHistory(id);
         log.info("✅ [CHECK] 히스토리 삭제 완료: id={}", id);
     }
 

@@ -56,12 +56,12 @@ public class QrGenGeneratorController {
 
             // 로그인 사용자면 히스토리 저장
             if (isAuthenticated()) {
-                QrGenUser user = getCurrentUser();
+                QrGenUser user = getCurrentQrGenUser();
                 if (user != null) {
                     // 파일 저장
                     String imagePath = generatorService.saveQrCodeToFile(qrImage, user.getQrGenUserId());
                     // 히스토리 저장
-                    generatorService.saveHistory(user.getQrGenUserId(), request, imagePath);
+                    generatorService.saveQrGenHistory(user.getQrGenUserId(), request, imagePath);
                 }
             }
 
@@ -111,10 +111,10 @@ public class QrGenGeneratorController {
     /**
      * 현재 로그인 사용자 조회
      */
-    private QrGenUser getCurrentUser() {
+    private QrGenUser getCurrentQrGenUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            return authService.findByUsername(auth.getName());
+            return authService.findQrGenUserByLoginId(auth.getName());
         }
         return null;
     }

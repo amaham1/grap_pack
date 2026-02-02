@@ -53,8 +53,8 @@ public class QrGenHistory {
     private LocalDateTime qrGenHistoryCreatedAt;
 
     // === 조회용 조인 필드 ===
-    /** 사용자명 (조회 시 조인) */
-    private String qrGenUserUsername;
+    /** 사용자 로그인 ID (조회 시 조인) */
+    private String qrGenUserLoginId;
 
     /**
      * Request로부터 History 생성

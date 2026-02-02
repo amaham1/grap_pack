@@ -11,42 +11,42 @@ import org.apache.ibatis.annotations.Param;
 public interface QrGenUserMapper {
 
     /**
-     * 사용자명으로 조회
+     * 로그인 ID로 조회
      */
-    QrGenUser findByUsername(@Param("username") String username);
+    QrGenUser findQrGenUserByLoginId(@Param("loginId") String loginId);
 
     /**
      * 이메일로 조회
      */
-    QrGenUser findByEmail(@Param("email") String email);
+    QrGenUser findQrGenUserByEmail(@Param("email") String email);
 
     /**
      * ID로 조회
      */
-    QrGenUser findById(@Param("id") Long id);
+    QrGenUser findQrGenUserById(@Param("id") Long id);
 
     /**
      * 사용자 등록
      */
-    void insert(QrGenUser user);
+    void insertQrGenUser(QrGenUser user);
 
     /**
      * 사용자 정보 수정
      */
-    void update(QrGenUser user);
+    void updateQrGenUser(QrGenUser user);
 
     /**
      * 마지막 로그인 시간 업데이트
      */
-    void updateLastLoginAt(@Param("id") Long id);
+    void updateQrGenUserLastLoginAt(@Param("id") Long id);
 
     /**
-     * 사용자명 중복 확인
+     * 로그인 ID 중복 확인
      */
-    int countByUsername(@Param("username") String username);
+    int countQrGenUserByLoginId(@Param("loginId") String loginId);
 
     /**
      * 이메일 중복 확인
      */
-    int countByEmail(@Param("email") String email);
+    int countQrGenUserByEmail(@Param("email") String email);
 }

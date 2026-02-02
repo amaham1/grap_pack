@@ -6,7 +6,7 @@
 
     <resultMap id="qrGenUserResultMap" type="co.grap.pack.qrgen.auth.model.QrGenUser">
         <id property="qrGenUserId" column="qr_gen_user_id"/>
-        <result property="qrGenUserUsername" column="qr_gen_user_username"/>
+        <result property="qrGenUserLoginId" column="qr_gen_user_login_id"/>
         <result property="qrGenUserPassword" column="qr_gen_user_password"/>
         <result property="qrGenUserEmail" column="qr_gen_user_email"/>
         <result property="qrGenUserNickname" column="qr_gen_user_nickname"/>
@@ -16,39 +16,39 @@
         <result property="qrGenUserLastLoginAt" column="qr_gen_user_last_login_at"/>
     </resultMap>
 
-    <!-- 사용자명으로 조회 -->
-    <select id="findByUsername" resultMap="qrGenUserResultMap">
+    <!-- 로그인 ID로 조회 -->
+    <select id="findQrGenUserByLoginId" resultMap="qrGenUserResultMap">
         SELECT *
         FROM qr_gen_user
-        WHERE qr_gen_user_username = #{username}
+        WHERE qr_gen_user_login_id = #{loginId}
     </select>
 
     <!-- 이메일로 조회 -->
-    <select id="findByEmail" resultMap="qrGenUserResultMap">
+    <select id="findQrGenUserByEmail" resultMap="qrGenUserResultMap">
         SELECT *
         FROM qr_gen_user
         WHERE qr_gen_user_email = #{email}
     </select>
 
     <!-- ID로 조회 -->
-    <select id="findById" resultMap="qrGenUserResultMap">
+    <select id="findQrGenUserById" resultMap="qrGenUserResultMap">
         SELECT *
         FROM qr_gen_user
         WHERE qr_gen_user_id = #{id}
     </select>
 
     <!-- 사용자 등록 -->
-    <insert id="insert" parameterType="co.grap.pack.qrgen.auth.model.QrGenUser"
+    <insert id="insertQrGenUser" parameterType="co.grap.pack.qrgen.auth.model.QrGenUser"
             useGeneratedKeys="true" keyProperty="qrGenUserId">
         INSERT INTO qr_gen_user (
-            qr_gen_user_username,
+            qr_gen_user_login_id,
             qr_gen_user_password,
             qr_gen_user_email,
             qr_gen_user_nickname,
             qr_gen_user_is_active,
             qr_gen_user_created_at
         ) VALUES (
-            #{qrGenUserUsername},
+            #{qrGenUserLoginId},
             #{qrGenUserPassword},
             #{qrGenUserEmail},
             #{qrGenUserNickname},
@@ -58,7 +58,7 @@
     </insert>
 
     <!-- 사용자 정보 수정 -->
-    <update id="update" parameterType="co.grap.pack.qrgen.auth.model.QrGenUser">
+    <update id="updateQrGenUser" parameterType="co.grap.pack.qrgen.auth.model.QrGenUser">
         UPDATE qr_gen_user
         SET qr_gen_user_nickname = #{qrGenUserNickname},
             qr_gen_user_email = #{qrGenUserEmail}
@@ -66,21 +66,21 @@
     </update>
 
     <!-- 마지막 로그인 시간 업데이트 -->
-    <update id="updateLastLoginAt">
+    <update id="updateQrGenUserLastLoginAt">
         UPDATE qr_gen_user
         SET qr_gen_user_last_login_at = NOW()
         WHERE qr_gen_user_id = #{id}
     </update>
 
-    <!-- 사용자명 중복 확인 -->
-    <select id="countByUsername" resultType="int">
+    <!-- 로그인 ID 중복 확인 -->
+    <select id="countQrGenUserByLoginId" resultType="int">
         SELECT COUNT(*)
         FROM qr_gen_user
-        WHERE qr_gen_user_username = #{username}
+        WHERE qr_gen_user_login_id = #{loginId}
     </select>
 
     <!-- 이메일 중복 확인 -->
-    <select id="countByEmail" resultType="int">
+    <select id="countQrGenUserByEmail" resultType="int">
         SELECT COUNT(*)
         FROM qr_gen_user
         WHERE qr_gen_user_email = #{email}

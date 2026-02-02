@@ -38,10 +38,10 @@ public class QrGenUserHistoryController {
     public String historyList(@AuthenticationPrincipal UserDetails userDetails,
                               @RequestParam(value = "page", defaultValue = "1") int page,
                               Model model) {
-        QrGenUser user = authService.findByUsername(userDetails.getUsername());
+        QrGenUser user = authService.findQrGenUserByLoginId(userDetails.getUsername());
 
-        List<QrGenHistory> historyList = generatorService.getHistoryByUserId(user.getQrGenUserId(), page, PAGE_SIZE);
-        int totalCount = generatorService.countHistoryByUserId(user.getQrGenUserId());
+        List<QrGenHistory> historyList = generatorService.findQrGenHistoryByUserId(user.getQrGenUserId(), page, PAGE_SIZE);
+        int totalCount = generatorService.countQrGenHistoryByUserId(user.getQrGenUserId());
         int totalPages = (int) Math.ceil((double) totalCount / PAGE_SIZE);
 
         model.addAttribute("historyList", historyList);
@@ -60,8 +60,8 @@ public class QrGenUserHistoryController {
     public String historyDetail(@PathVariable("id") Long id,
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 Model model) {
-        QrGenUser user = authService.findByUsername(userDetails.getUsername());
-        QrGenHistory history = generatorService.getHistory(id);
+        QrGenUser user = authService.findQrGenUserByLoginId(userDetails.getUsername());
+        QrGenHistory history = generatorService.findQrGenHistoryById(id);
 
         // 권한 확인
         if (history == null || !history.getQrGenHistoryUserId().equals(user.getQrGenUserId())) {
@@ -82,8 +82,8 @@ public class QrGenUserHistoryController {
                                 @AuthenticationPrincipal UserDetails userDetails,
                                 RedirectAttributes redirectAttributes) {
         try {
-            QrGenUser user = authService.findByUsername(userDetails.getUsername());
-            generatorService.deleteHistory(id, user.getQrGenUserId());
+            QrGenUser user = authService.findQrGenUserByLoginId(userDetails.getUsername());
+            generatorService.deleteQrGenHistory(id, user.getQrGenUserId());
             redirectAttributes.addFlashAttribute("successMessage", "삭제되었습니다.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
@@ -101,8 +101,8 @@ public class QrGenUserHistoryController {
     public String regenerateFromHistory(@PathVariable("id") Long id,
                                         @AuthenticationPrincipal UserDetails userDetails,
                                         Model model) {
-        QrGenUser user = authService.findByUsername(userDetails.getUsername());
-        QrGenHistory history = generatorService.getHistory(id);
+        QrGenUser user = authService.findQrGenUserByLoginId(userDetails.getUsername());
+        QrGenHistory history = generatorService.findQrGenHistoryById(id);
 
         // 권한 확인
         if (history == null || !history.getQrGenHistoryUserId().equals(user.getQrGenUserId())) {

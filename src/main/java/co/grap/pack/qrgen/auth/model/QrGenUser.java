@@ -20,7 +20,7 @@ public class QrGenUser {
     private Long qrGenUserId;
 
     /** 로그인 ID */
-    private String qrGenUserUsername;
+    private String qrGenUserLoginId;
 
     /** 비밀번호 (BCrypt) */
     private String qrGenUserPassword;

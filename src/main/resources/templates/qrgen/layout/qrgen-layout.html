@@ -33,8 +33,14 @@
 
     <footer class="qrgen-footer">
         <p>Grap - QR Code Generator</p>
+        <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
     </footer>
 
     <script th:src="@{/qrgen/js/qrgen.js}"></script>
+    <!-- 방문자 추적 -->
+    <script th:if="${qrGenVisitorId != null}">
+        window.QRGEN_VISITOR_ID = [[${qrGenVisitorId}]];
+    </script>
+    <script th:if="${qrGenVisitorId != null}" th:src="@{/qrgen/js/qrgen-visitor.js}"></script>
 </body>
 </html>

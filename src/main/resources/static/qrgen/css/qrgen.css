@@ -612,8 +612,14 @@ a:hover {
 .qrgen-footer {
     background: #fff;
     border-top: 1px solid #e1e5eb;
-    padding: 20px;
-    text-align: center;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     color: #888;
     font-size: 0.9rem;
+}
+
+.qrgen-footer-contact {
+    color: #666;
 }
