@@ -1,10 +1,36 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title layout:title-pattern="$CONTENT_TITLE - Grap QR">Grap QR</title>
+
+    <!-- SEO 메타 태그 -->
+    <meta name="description" th:if="${seoDescription}" th:content="${seoDescription}">
+    <meta name="description" th:unless="${seoDescription}" content="무료 QR 코드 생성기. URL, 텍스트, 연락처 등 다양한 QR 코드를 간편하게 만들어보세요.">
+    <meta name="robots" th:if="${seoRobots}" th:content="${seoRobots}">
+    <link rel="canonical" th:if="${seoCanonical}" th:href="${seoCanonical}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" th:if="${seoTitle}" th:content="${seoTitle + ' - Grap QR'}">
+    <meta property="og:description" th:if="${seoDescription}" th:content="${seoDescription}">
+    <meta property="og:url" th:if="${seoCanonical}" th:content="${seoCanonical}">
+    <meta property="og:image" th:if="${seoOgImage}" th:content="${seoOgImage}">
+    <meta property="og:type" th:if="${seoOgType}" th:content="${seoOgType}">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:site_name" th:if="${seoSiteName}" th:content="${seoSiteName}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" th:if="${seoTitle}" th:content="${seoTitle + ' - Grap QR'}">
+    <meta name="twitter:description" th:if="${seoDescription}" th:content="${seoDescription}">
+    <meta name="twitter:image" th:if="${seoOgImage}" th:content="${seoOgImage}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" th:href="@{/qrgen/images/favicon.ico}">
+
     <link rel="stylesheet" th:href="@{/qrgen/css/qrgen.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
@@ -35,6 +61,9 @@
         <p>Grap - QR Code Generator</p>
         <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
     </footer>
+
+    <!-- 구조화 데이터 (JSON-LD) 프래그먼트 -->
+    <th:block layout:fragment="structured-data"></th:block>
 
     <script th:src="@{/qrgen/js/qrgen.js}"></script>
     <!-- 방문자 추적 -->

@@ -3,12 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{qrgen/layout/qrgen-layout}">
 <head>
-    <title>QR 코드 생성</title>
+    <title>무료 QR 코드 생성기</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="qrgen-container">
-        <h1 class="qrgen-title">QR 코드 생성기</h1>
+        <h1 class="qrgen-title">무료 QR 코드 생성기</h1>
 
         <div class="qrgen-generator">
             <!-- 생성 폼 -->
@@ -103,5 +103,25 @@
         </div>
     </div>
 </div>
+
+<th:block layout:fragment="structured-data">
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Grap QR - 무료 QR 코드 생성기",
+    "url": "https://grap.co.kr/qrgen/",
+    "description": "URL, 텍스트, 연락처, Wi-Fi 등 다양한 QR 코드를 무료로 간편하게 생성하세요.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "All",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+    },
+    "inLanguage": "ko"
+}
+</script>
+</th:block>
 </body>
 </html>

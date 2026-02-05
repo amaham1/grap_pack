@@ -1,6 +1,7 @@
 package co.grap.pack.qrgen.auth.controller;
 
 import co.grap.pack.qrgen.auth.service.QrGenAuthService;
+import co.grap.pack.qrgen.seo.QrGenSeoHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,9 @@ public class QrGenAuthController {
         if (logout != null) {
             model.addAttribute("logoutMessage", "로그아웃 되었습니다.");
         }
+        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/auth/login",
+                "로그인",
+                "Grap QR 코드 생성기 로그인. 로그인하면 QR 코드 생성 기록을 저장하고 관리할 수 있습니다.");
         return "qrgen/auth/qrgen-login";
     }
 
@@ -42,7 +46,10 @@ public class QrGenAuthController {
      * 회원가입 페이지
      */
     @GetMapping("/register")
-    public String registerPage() {
+    public String registerPage(Model model) {
+        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/auth/register",
+                "무료 회원가입",
+                "Grap QR 코드 생성기 무료 회원가입. 가입하면 QR 코드 생성 기록 저장, 재생성 등 편리한 기능을 이용할 수 있습니다.");
         return "qrgen/auth/qrgen-register";
     }
 

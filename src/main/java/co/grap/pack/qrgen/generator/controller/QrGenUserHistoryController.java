@@ -5,6 +5,7 @@ import co.grap.pack.qrgen.auth.service.QrGenAuthService;
 import co.grap.pack.qrgen.generator.model.QrGenContentType;
 import co.grap.pack.qrgen.generator.model.QrGenHistory;
 import co.grap.pack.qrgen.generator.service.QrGenGeneratorService;
+import co.grap.pack.qrgen.seo.QrGenSeoHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,6 +50,7 @@ public class QrGenUserHistoryController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("user", user);
+        QrGenSeoHelper.setQrGenProtectedPageSeo(model);
 
         return "qrgen/user/qrgen-history-list";
     }
@@ -70,6 +72,7 @@ public class QrGenUserHistoryController {
 
         model.addAttribute("history", history);
         model.addAttribute("user", user);
+        QrGenSeoHelper.setQrGenProtectedPageSeo(model);
 
         return "qrgen/user/qrgen-history-detail";
     }

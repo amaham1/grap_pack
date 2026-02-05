@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{qrgen/layout/qrgen-layout}">
 <head>
-    <title>회원가입</title>
+    <title>무료 회원가입</title>
 </head>
 <body>
 <div layout:fragment="content">
@@ -53,5 +53,28 @@
         </div>
     </div>
 </div>
+
+<th:block layout:fragment="structured-data">
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "QR 코드 생성기",
+            "item": "https://grap.co.kr/qrgen/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "무료 회원가입",
+            "item": "https://grap.co.kr/qrgen/auth/register"
+        }
+    ]
+}
+</script>
+</th:block>
 </body>
 </html>

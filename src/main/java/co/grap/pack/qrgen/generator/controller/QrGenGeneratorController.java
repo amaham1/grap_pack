@@ -5,6 +5,7 @@ import co.grap.pack.qrgen.auth.service.QrGenAuthService;
 import co.grap.pack.qrgen.generator.model.QrGenContentType;
 import co.grap.pack.qrgen.generator.model.QrGenRequest;
 import co.grap.pack.qrgen.generator.service.QrGenGeneratorService;
+import co.grap.pack.qrgen.seo.QrGenSeoHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -36,6 +37,9 @@ public class QrGenGeneratorController {
     public String home(Model model) {
         model.addAttribute("contentTypes", QrGenContentType.values());
         model.addAttribute("isAuthenticated", isAuthenticated());
+        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/",
+                "무료 QR 코드 생성기",
+                "URL, 텍스트, 연락처, Wi-Fi 등 다양한 QR 코드를 무료로 간편하게 생성하세요. 회원가입 없이도 사용 가능합니다.");
         return "qrgen/qrgen-home";
     }
 
