@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 핵심 지침
+
+- **항상 한글로 응답**: 모든 대화, 설명, 주석은 한글로 작성
+- **모듈화/추상화 우선**: 코드 작성 시 재사용성과 관심사 분리를 고려하여 모듈화하고, 적절한 수준의 추상화를 적용
+- **팩트 기반 코드 분석**: 코드 분석 시 추측하지 않고, 실제 코드를 읽고 확인한 사실만을 근거로 판단. 확인되지 않은 부분은 "확인 필요"로 명시
+
 ## Project Overview
 
 Spring Boot 3.2.0 기반의 Content Management System (CMS). MyBatis를 ORM으로 사용하고, Thymeleaf + HTMX로 동적 UI를 구성합니다.
@@ -75,6 +81,28 @@ log.error("❌ [ERROR] 파일 업로드 실패: {}", e.getMessage());
 - ✅ **토큰 효율성**: 필요한 로그만 확인하여 토큰 소비 최소화
 - ✅ **빠른 피드백**: 에러 즉시 포착 및 수정
 - ✅ **협업 효율성**: Claude는 코드와 로그, 사용자는 UX 검증
+
+## Logging
+
+### 로그 출력 위치
+- **콘솔(stdout) 전용**: 별도 로그 파일 경로가 설정되어 있지 않으며, 모든 로그는 콘솔에 출력됨
+- **Logback 기본 설정 사용**: 커스텀 `logback-spring.xml` 없이 Spring Boot 기본 Logback 설정 사용
+
+### 로그 레벨 설정 (`application.yml`)
+```yaml
+logging:
+  level:
+    root: INFO
+    co.grap.pack: DEBUG
+    org.springframework: INFO
+    org.springframework.security: DEBUG
+    org.mybatis: DEBUG
+```
+
+- `co.grap.pack` (애플리케이션 코드): DEBUG
+- `org.springframework.security` (인증/인가): DEBUG
+- `org.mybatis` (SQL): DEBUG
+- 나머지: INFO
 
 ## Architecture
 

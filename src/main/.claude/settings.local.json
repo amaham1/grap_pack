@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mysql:*)",
+      "Bash(./gradlew build:*)",
+      "Bash(cmd.exe /c \"gradlew.bat build\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\MMM\\\\Desktop\\\\development\\\\grap\\\\grap_pack''; .\\\\gradlew.bat build 2>&1\")",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path ''C:\\\\Users\\\\MMM\\\\Desktop\\\\development\\\\grap\\\\grap_pack\\\\src\\\\main'' -Recurse -Include ''*.java'',''*.xml'',''*.html'' | Where-Object { $_FullName -match ''qrgen'' } | ForEach-Object { $_FullName }\")",
+      "Bash(powershell.exe -Command \"cd ''C:\\\\Users\\\\MMM\\\\Desktop\\\\development\\\\grap\\\\grap_pack''; .\\\\gradlew.bat clean build 2>&1\")",
+      "Bash(./gradlew compileJava:*)",
+      "Bash(cmd //c \"gradlew.bat compileJava --no-daemon\")",
+      "Bash(cmd.exe:*)",
+      "Bash(powershell -Command \"cd 'C:/Users/MMM/Desktop/development/grap/grap_pack'; ./gradlew.bat compileJava 2>&1\":*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}
