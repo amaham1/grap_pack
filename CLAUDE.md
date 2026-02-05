@@ -31,7 +31,7 @@ http://localhost:8080/grap/user/...      → Grap 사용자 기능
 
 ## Development Commands
 
-### Build and Run
+### Build and Run (로컬)
 ```bash
 ./gradlew build
 ./gradlew bootRun
@@ -46,6 +46,47 @@ http://localhost:8080/grap/user/...      → Grap 사용자 기능
 ### Clean Build
 ```bash
 ./gradlew clean build
+```
+
+### 서버 배포 (Ubuntu - Oracle Cloud)
+
+**서버 정보**
+- IP: 152.69.232.158
+- 도메인: https://grap.co.kr
+- 사용자: ubuntu
+- Nginx 리버스 프록시: 443(HTTPS) → localhost:8080
+- JAR 경로: `/home/ubuntu/grap_pack/build/libs/cms-0.0.1-SNAPSHOT.jar`
+- 로그 경로: `/home/ubuntu/grap_pack/app.log`
+- 배포 스크립트: `/home/ubuntu/grap_pack/deploy.sh`
+
+**배포 순서**
+1. 로컬에서 빌드
+```bash
+./gradlew clean build
+```
+2. FileZilla(SFTP)로 `build/libs/cms-0.0.1-SNAPSHOT.jar`를 서버의 `/home/ubuntu/grap_pack/build/libs/`에 업로드
+3. SSH 접속 후 배포 스크립트 실행
+```bash
+bash /home/ubuntu/grap_pack/deploy.sh
+```
+
+**deploy.sh 내용** (프로필: qrgen)
+```bash
+#!/bin/bash
+JAR_PATH="/home/ubuntu/grap_pack/build/libs/cms-0.0.1-SNAPSHOT.jar"
+LOG_PATH="/home/ubuntu/grap_pack/app.log"
+PORT=8080
+PID=$(lsof -t -i :$PORT)
+if [ -n "$PID" ]; then kill -9 $PID; echo "기존 프로세스 강제 종료"; sleep 2; else echo "실행 중인 프로세스 없음"; fi
+if [ ! -f "$JAR_PATH" ]; then echo "JAR 파일 없음"; exit 1; fi
+nohup java -jar $JAR_PATH --spring.profiles.active=qrgen > $LOG_PATH 2>&1 &
+echo "서버 시작됨 (PID: $!), 프로필: qrgen"
+echo "로그 확인: tail -f $LOG_PATH"
+```
+
+**실시간 로그 확인**
+```bash
+tail -f /home/ubuntu/grap_pack/app.log
 ```
 
 ## Claude Code 협업 워크플로우

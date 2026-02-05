@@ -25,8 +25,14 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
-# QR Generator 설정
+# QR Generator 전용 데이터소스 (멀티 데이터소스)
 qrgen:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    username: jursi
+    password: Qnflck2##$
+
   qr-image:
     # Windows 개발 환경
     save-path: ${user.dir}/uploads/qrgen/images
