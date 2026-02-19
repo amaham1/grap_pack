@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -68,7 +70,7 @@ public class QrGenGeneratorService {
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.ERROR_CORRECTION, getErrorCorrectionLevel(request.getErrorCorrection()));
         hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-        hints.put(EncodeHintType.MARGIN, 2);
+        hints.put(EncodeHintType.MARGIN, 0);
 
         // QR 코드 생성
         QRCodeWriter writer = new QRCodeWriter();
@@ -81,6 +83,9 @@ public class QrGenGeneratorService {
         MatrixToImageConfig config = new MatrixToImageConfig(fgColor, bgColor);
 
         BufferedImage image = MatrixToImageWriter.toBufferedImage(bitMatrix, config);
+
+        // ZXing 나머지 픽셀 패딩 제거: 실제 QR 영역만 크롭 후 요청 크기로 리사이즈
+        image = cropAndResizeQrImage(bitMatrix, image, size, bgColor);
 
         // byte[] 변환
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -165,6 +170,39 @@ public class QrGenGeneratorService {
 
         historyMapper.deleteQrGenHistory(id);
         log.info("✅ [CHECK] 히스토리 삭제 완료: id={}", id);
+    }
+
+    /**
+     * ZXing BitMatrix의 나머지 픽셀 패딩 제거
+     * QR 모듈 수가 요청 크기로 나누어떨어지지 않을 때 발생하는 여백을 크롭 후 리사이즈
+     */
+    private BufferedImage cropAndResizeQrImage(BitMatrix bitMatrix, BufferedImage image, int targetSize, int bgColor) {
+        int[] enclosingRect = bitMatrix.getEnclosingRectangle();
+        if (enclosingRect == null) {
+            return image;
+        }
+
+        int x = enclosingRect[0];
+        int y = enclosingRect[1];
+        int w = enclosingRect[2];
+        int h = enclosingRect[3];
+
+        // 패딩이 없으면 원본 반환
+        if (x == 0 && y == 0 && w == image.getWidth() && h == image.getHeight()) {
+            return image;
+        }
+
+        // 실제 QR 영역만 크롭
+        BufferedImage cropped = image.getSubimage(x, y, w, h);
+
+        // 요청 크기로 리사이즈
+        BufferedImage resized = new BufferedImage(targetSize, targetSize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = resized.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        g2d.drawImage(cropped, 0, 0, targetSize, targetSize, null);
+        g2d.dispose();
+
+        return resized;
     }
 
     /**
