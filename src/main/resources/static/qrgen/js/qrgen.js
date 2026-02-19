@@ -12,6 +12,41 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let currentQrBlob = null;
 
+    // 남은 생성 횟수 UI 요소
+    const rateLimitInfo = document.getElementById('qrgenRateLimitInfo');
+    const remainingCountEl = document.getElementById('qrgenRemainingCount');
+    const rateLimitBar = document.getElementById('qrgenRateLimitBar');
+
+    // ==========================================
+    // 남은 생성 횟수 업데이트
+    // ==========================================
+
+    /**
+     * 남은 생성 횟수 UI 업데이트
+     */
+    const qrgenUpdateRateLimitDisplay = (remaining, limit) => {
+        if (!remainingCountEl || !rateLimitBar || !rateLimitInfo) return;
+
+        remainingCountEl.textContent = remaining;
+        const percent = limit > 0 ? (remaining / limit) * 100 : 0;
+        rateLimitBar.style.width = percent + '%';
+
+        // 색상 단계 변경
+        rateLimitBar.classList.remove('qrgen-rate-limit-warning', 'qrgen-rate-limit-danger');
+        if (percent <= 10) {
+            rateLimitBar.classList.add('qrgen-rate-limit-danger');
+        } else if (percent <= 30) {
+            rateLimitBar.classList.add('qrgen-rate-limit-warning');
+        }
+    };
+
+    // 초기 로드 시 색상 단계 적용
+    if (rateLimitInfo && rateLimitBar) {
+        const initRemaining = parseInt(rateLimitInfo.dataset.remaining) || 0;
+        const initLimit = parseInt(rateLimitInfo.dataset.limit) || 1;
+        qrgenUpdateRateLimitDisplay(initRemaining, initLimit);
+    }
+
     // ==========================================
     // 유형별 필드 전환
     // ==========================================
@@ -283,6 +318,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (!response.ok) {
                     throw new Error('QR 코드 생성에 실패했습니다.');
+                }
+
+                // 남은 생성 횟수 업데이트
+                const headerRemaining = response.headers.get('X-QrGen-Remaining');
+                const headerLimit = response.headers.get('X-QrGen-Limit');
+                if (headerRemaining !== null && headerLimit !== null) {
+                    qrgenUpdateRateLimitDisplay(parseInt(headerRemaining), parseInt(headerLimit));
                 }
 
                 const blob = await response.blob();

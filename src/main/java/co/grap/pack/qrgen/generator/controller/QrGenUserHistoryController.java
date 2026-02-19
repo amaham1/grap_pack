@@ -5,6 +5,8 @@ import co.grap.pack.qrgen.auth.service.QrGenAuthService;
 import co.grap.pack.qrgen.generator.model.QrGenContentType;
 import co.grap.pack.qrgen.generator.model.QrGenHistory;
 import co.grap.pack.qrgen.generator.service.QrGenGeneratorService;
+import co.grap.pack.qrgen.generator.service.QrGenRateLimitService;
+import co.grap.pack.qrgen.generator.service.QrGenRateLimitService.QrGenRateLimitCheckResult;
 import co.grap.pack.qrgen.seo.QrGenSeoHelper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ public class QrGenUserHistoryController {
 
     private final QrGenGeneratorService generatorService;
     private final QrGenAuthService authService;
+    private final QrGenRateLimitService rateLimitService;
 
     private static final int PAGE_SIZE = 20;
 
@@ -115,6 +118,11 @@ public class QrGenUserHistoryController {
         model.addAttribute("history", history);
         model.addAttribute("contentTypes", QrGenContentType.values());
         model.addAttribute("isAuthenticated", true);
+
+        // 남은 생성 횟수 조회
+        QrGenRateLimitCheckResult rateLimitInfo = rateLimitService.checkQrGenAuthenticatedRateLimit(user.getQrGenUserId());
+        model.addAttribute("qrGenRemaining", rateLimitInfo.remaining());
+        model.addAttribute("qrGenDailyLimit", rateLimitInfo.limit());
 
         return "qrgen/qrgen-home";
     }

@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS qr_gen_history (
     qr_gen_history_user_id BIGINT NOT NULL COMMENT '사용자 ID (FK)',
 
     -- QR 코드 정보
-    qr_gen_history_content_type VARCHAR(50) NOT NULL COMMENT 'QR 콘텐츠 타입 (URL, TEXT, VCARD, WIFI, EMAIL, SMS, PHONE, GEO)',
+    qr_gen_history_content_type VARCHAR(50) NOT NULL COMMENT 'QR 콘텐츠 타입 (URL, TEXT, WIFI, EMAIL, PHONE, GEO)',
     qr_gen_history_content_value TEXT NOT NULL COMMENT 'QR 코드에 인코딩된 값',
 
     -- 생성 옵션

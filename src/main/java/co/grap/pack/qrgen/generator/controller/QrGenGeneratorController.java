@@ -41,12 +41,18 @@ public class QrGenGeneratorController {
      * QR Generator 메인 페이지
      */
     @GetMapping({"", "/"})
-    public String home(Model model) {
+    public String home(Model model, HttpServletRequest httpRequest) {
         model.addAttribute("contentTypes", QrGenContentType.values());
         model.addAttribute("isAuthenticated", isAuthenticated());
+
+        // 남은 생성 횟수 조회
+        QrGenRateLimitCheckResult rateLimitInfo = getQrGenRateLimitInfo(httpRequest);
+        model.addAttribute("qrGenRemaining", rateLimitInfo.remaining());
+        model.addAttribute("qrGenDailyLimit", rateLimitInfo.limit());
+
         QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/",
                 "무료 QR 코드 생성기",
-                "URL, 텍스트, 연락처, Wi-Fi 등 다양한 QR 코드를 무료로 간편하게 생성하세요. 회원가입 없이도 사용 가능합니다.");
+                "URL, 텍스트, Wi-Fi, 이메일, 전화번호 등 다양한 QR 코드를 무료로 간편하게 생성하세요. 회원가입 없이도 사용 가능합니다.");
         return "qrgen/qrgen-home";
     }
 
@@ -127,9 +133,14 @@ public class QrGenGeneratorController {
                 rateLimitService.incrementQrGenAnonymousCount(ipAddress);
             }
 
+            // 생성 후 남은 횟수 조회 (히스토리 저장/카운트 증가 이후이므로 이미 반영됨)
+            QrGenRateLimitCheckResult rateLimitInfo = getQrGenRateLimitInfo(httpRequest);
+
             return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_PNG)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"qrcode.png\"")
+                .header("X-QrGen-Remaining", String.valueOf(rateLimitInfo.remaining()))
+                .header("X-QrGen-Limit", String.valueOf(rateLimitInfo.limit()))
                 .body(qrImage);
 
         } catch (Exception e) {
@@ -187,6 +198,20 @@ public class QrGenGeneratorController {
                     ));
         }
         return null;
+    }
+
+    /**
+     * 현재 사용자의 Rate Limit 정보 조회 (로그인/비로그인 분기)
+     */
+    private QrGenRateLimitCheckResult getQrGenRateLimitInfo(HttpServletRequest httpRequest) {
+        if (isAuthenticated()) {
+            QrGenUser user = getCurrentQrGenUser();
+            if (user != null) {
+                return rateLimitService.checkQrGenAuthenticatedRateLimit(user.getQrGenUserId());
+            }
+        }
+        String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
+        return rateLimitService.checkQrGenAnonymousRateLimit(ipAddress);
     }
 
     /**

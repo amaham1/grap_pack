@@ -147,6 +147,27 @@
                     </div>
                 </form>
 
+                <!-- 남은 생성 횟수 -->
+                <div class="qrgen-rate-limit-info"
+                     id="qrgenRateLimitInfo"
+                     th:data-remaining="${qrGenRemaining}"
+                     th:data-limit="${qrGenDailyLimit}">
+                    <span class="qrgen-rate-limit-label">오늘 남은 생성 횟수</span>
+                    <span class="qrgen-rate-limit-count">
+                        <span id="qrgenRemainingCount" th:text="${qrGenRemaining}">10</span>
+                        /
+                        <span th:text="${qrGenDailyLimit}">10</span>
+                    </span>
+                    <div class="qrgen-rate-limit-bar">
+                        <div class="qrgen-rate-limit-bar-fill"
+                             id="qrgenRateLimitBar"
+                             th:style="'width: ' + ${qrGenDailyLimit > 0 ? (qrGenRemaining * 100 / qrGenDailyLimit) : 0} + '%'"></div>
+                    </div>
+                    <span th:unless="${isAuthenticated}" class="qrgen-rate-limit-hint">
+                        <a th:href="@{/qrgen/auth/login}">로그인</a> 시 일일 100회까지 생성 가능
+                    </span>
+                </div>
+
                 <div class="qrgen-notice" th:if="${isAuthenticated}">
                     <span class="qrgen-notice-icon">&#10003;</span>
                     QR 코드 생성 기록이 자동으로 저장됩니다.
@@ -178,7 +199,7 @@
     "@type": "WebApplication",
     "name": "Grap QR - 무료 QR 코드 생성기",
     "url": "https://grap.co.kr/qrgen/",
-    "description": "URL, 텍스트, 연락처, Wi-Fi 등 다양한 QR 코드를 무료로 간편하게 생성하세요.",
+    "description": "URL, 텍스트, Wi-Fi, 이메일, 전화번호 등 다양한 QR 코드를 무료로 간편하게 생성하세요.",
     "applicationCategory": "UtilitiesApplication",
     "operatingSystem": "All",
     "offers": {
