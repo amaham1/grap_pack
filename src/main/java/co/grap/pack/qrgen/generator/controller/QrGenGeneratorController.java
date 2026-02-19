@@ -5,10 +5,14 @@ import co.grap.pack.qrgen.auth.service.QrGenAuthService;
 import co.grap.pack.qrgen.generator.model.QrGenContentType;
 import co.grap.pack.qrgen.generator.model.QrGenRequest;
 import co.grap.pack.qrgen.generator.service.QrGenGeneratorService;
+import co.grap.pack.qrgen.generator.service.QrGenRateLimitService;
+import co.grap.pack.qrgen.generator.service.QrGenRateLimitService.QrGenRateLimitCheckResult;
 import co.grap.pack.qrgen.seo.QrGenSeoHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -16,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * QR Generator 컨트롤러
@@ -29,6 +35,7 @@ public class QrGenGeneratorController {
 
     private final QrGenGeneratorService generatorService;
     private final QrGenAuthService authService;
+    private final QrGenRateLimitService rateLimitService;
 
     /**
      * QR Generator 메인 페이지
@@ -44,12 +51,61 @@ public class QrGenGeneratorController {
     }
 
     /**
+     * QR 코드 미리보기 API (히스토리 저장 없음, 분당 60회 제한)
+     * 폼 입력값 변경 시 실시간 미리보기 제공
+     */
+    @GetMapping("/preview")
+    @ResponseBody
+    public ResponseEntity<byte[]> previewQrCode(
+            @RequestParam("contentType") String contentType,
+            @RequestParam("contentValue") String contentValue,
+            @RequestParam(value = "size", defaultValue = "300") Integer size,
+            @RequestParam(value = "errorCorrection", defaultValue = "M") String errorCorrection,
+            @RequestParam(value = "foregroundColor", defaultValue = "#000000") String foregroundColor,
+            @RequestParam(value = "backgroundColor", defaultValue = "#FFFFFF") String backgroundColor,
+            HttpServletRequest httpRequest) {
+        try {
+            // 미리보기 Rate Limit 체크
+            String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
+            if (rateLimitService.isQrGenPreviewRateLimitExceeded(ipAddress)) {
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
+            }
+
+            QrGenRequest request = QrGenRequest.builder()
+                    .contentType(QrGenContentType.valueOf(contentType))
+                    .contentValue(contentValue)
+                    .size(size)
+                    .errorCorrection(errorCorrection)
+                    .foregroundColor(foregroundColor)
+                    .backgroundColor(backgroundColor)
+                    .build();
+
+            byte[] qrImage = generatorService.generateQrCode(request);
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_PNG)
+                    .header(HttpHeaders.CACHE_CONTROL, "max-age=60")
+                    .body(qrImage);
+        } catch (Exception e) {
+            log.warn("QR 미리보기 실패: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
      * QR 코드 생성 API (익명/로그인 사용자 모두 가능)
      */
     @PostMapping("/generate")
     @ResponseBody
-    public ResponseEntity<byte[]> generateQrCode(@RequestBody QrGenRequest request) {
+    public ResponseEntity<?> generateQrCode(@RequestBody QrGenRequest request,
+                                            HttpServletRequest httpRequest) {
         try {
+            // Rate Limit 체크
+            ResponseEntity<?> rateLimitResponse = checkQrGenGenerateRateLimit(httpRequest);
+            if (rateLimitResponse != null) {
+                return rateLimitResponse;
+            }
+
             log.info("✅ [CHECK] QR 생성 요청: type={}, value={}",
                     request.getContentType(),
                     request.getContentValue() != null ?
@@ -62,11 +118,13 @@ public class QrGenGeneratorController {
             if (isAuthenticated()) {
                 QrGenUser user = getCurrentQrGenUser();
                 if (user != null) {
-                    // 파일 저장
                     String imagePath = generatorService.saveQrCodeToFile(qrImage, user.getQrGenUserId());
-                    // 히스토리 저장
                     generatorService.saveQrGenHistory(user.getQrGenUserId(), request, imagePath);
                 }
+            } else {
+                // 비로그인 사용자 카운트 증가
+                String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
+                rateLimitService.incrementQrGenAnonymousCount(ipAddress);
             }
 
             return ResponseEntity.ok()
@@ -100,6 +158,35 @@ public class QrGenGeneratorController {
             log.error("❌ [ERROR] QR 코드 다운로드 실패: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    /**
+     * QR 생성 Rate Limit 체크 (로그인/비로그인 분기)
+     * @return 제한 초과 시 429 응답, 정상이면 null
+     */
+    private ResponseEntity<?> checkQrGenGenerateRateLimit(HttpServletRequest httpRequest) {
+        QrGenRateLimitCheckResult result;
+
+        if (isAuthenticated()) {
+            QrGenUser user = getCurrentQrGenUser();
+            if (user == null) return null;
+            result = rateLimitService.checkQrGenAuthenticatedRateLimit(user.getQrGenUserId());
+        } else {
+            String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
+            result = rateLimitService.checkQrGenAnonymousRateLimit(ipAddress);
+        }
+
+        if (result.exceeded()) {
+            log.info("✅ [CHECK] QR 생성 제한 초과: limit={}, remaining={}", result.limit(), result.remaining());
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of(
+                            "error", "RATE_LIMIT_EXCEEDED",
+                            "message", result.message(),
+                            "remaining", result.remaining()
+                    ));
+        }
+        return null;
     }
 
     /**

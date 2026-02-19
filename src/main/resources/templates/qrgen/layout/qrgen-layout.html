@@ -29,8 +29,9 @@
     <meta name="twitter:image" th:if="${seoOgImage}" th:content="${seoOgImage}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" th:href="@{/qrgen/images/favicon.ico}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/qrgen/images/favicon.svg}">
 
+    <link rel="stylesheet" th:href="@{/common/css/base.css}">
     <link rel="stylesheet" th:href="@{/qrgen/css/qrgen.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>

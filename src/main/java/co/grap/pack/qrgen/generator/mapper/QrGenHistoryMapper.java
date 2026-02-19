@@ -40,6 +40,11 @@ public interface QrGenHistoryMapper {
     void deleteQrGenHistory(@Param("id") Long id);
 
     /**
+     * 사용자 ID로 오늘 날짜 히스토리 개수 조회 (일일 제한 체크용)
+     */
+    int countQrGenHistoryTodayByUserId(@Param("userId") Long userId);
+
+    /**
      * 이미지 경로 업데이트
      */
     void updateQrGenHistoryImagePath(@Param("id") Long id, @Param("imagePath") String imagePath);

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Grap - QR 코드 생성 &amp; 콘텐츠 관리 플랫폼</title>
+    <meta name="description" th:attr="content=${pageDescription}">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://grap.co.kr/">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" th:attr="content=${pageTitle}">
+    <meta property="og:description" th:attr="content=${pageDescription}">
+    <meta property="og:url" content="https://grap.co.kr/">
+    <meta property="og:site_name" content="Grap">
+    <meta property="og:locale" content="ko_KR">
+
+    <link rel="stylesheet" th:href="@{/common/css/base.css}">
+    <link rel="stylesheet" th:href="@{/common/css/landing.css}">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="landing-header">
+        <div class="landing-header-container">
+            <a th:href="@{/}" class="landing-logo">Grap</a>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="landing-hero">
+        <h1 class="landing-hero-title">Grap 플랫폼</h1>
+        <p class="landing-hero-subtitle">QR 코드 생성, 축제·전시 콘텐츠 관리, QR 메뉴판까지 — 다양한 서비스를 한곳에서 이용하세요.</p>
+    </section>
+
+    <!-- Services -->
+    <main class="landing-main">
+        <div class="landing-services">
+            <!-- QR 코드 생성기 (메인 서비스) -->
+            <a th:href="@{/qrgen/}" class="landing-card landing-card-featured">
+                <h2 class="landing-card-title">QR 코드 생성기</h2>
+                <p class="landing-card-desc">URL, 텍스트, 연락처 등 다양한 QR 코드를 무료로 생성하세요. 색상 커스터마이징과 고해상도 다운로드를 지원합니다.</p>
+                <span class="landing-card-badge landing-badge-active">바로 사용하기</span>
+            </a>
+
+            <!-- 콘텐츠 관리 -->
+            <!-- <a th:href="@{/grap}" class="landing-card">
+                <div class="landing-card-icon">🎪</div>
+                <h2 class="landing-card-title">콘텐츠 관리</h2>
+                <p class="landing-card-desc">축제, 전시, 공연 등 문화 콘텐츠 정보를 관리하고 공유할 수 있는 CMS 서비스입니다.</p>
+                <span class="landing-card-badge landing-badge-active">이용 가능</span>
+            </a> -->
+
+            <!-- QR 메뉴판 -->
+            <!-- <div class="landing-card">
+                <div class="landing-card-icon">🍽️</div>
+                <h2 class="landing-card-title">QR 메뉴판</h2>
+                <p class="landing-card-desc">매장용 QR 메뉴판을 손쉽게 만들고 관리하세요. 고객이 QR 코드를 스캔하면 메뉴를 바로 확인할 수 있습니다.</p>
+                <span class="landing-card-badge landing-badge-soon">준비 중</span>
+            </div> -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="landing-footer">
+        <span>&copy; 2026 Grap. All rights reserved.</span>
+        <span class="landing-footer-contact">문의: contact@grap.co.kr</span>
+    </footer>
+
+    <!-- JSON-LD 구조화 데이터 -->
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Grap",
+    "url": "https://grap.co.kr/",
+    "description": "QR 코드 생성, 축제·전시 콘텐츠 관리, QR 메뉴판 서비스를 제공하는 Grap 플랫폼"
+}
+</script>
+
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Grap",
+    "url": "https://grap.co.kr/",
+    "sameAs": []
+}
+</script>
+
+</body>
+
+</html>

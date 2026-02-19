@@ -1,6 +1,7 @@
 package co.grap.pack.grap.home.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -10,11 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class CmsHomeController {
 
     /**
-     * 루트 페이지 - grap 서비스로 리다이렉트
+     * 루트 랜딩 페이지 - 서비스 소개 및 링크
      */
     @GetMapping("/")
-    public String home() {
-        return "redirect:/grap";
+    public String home(Model model) {
+        model.addAttribute("pageTitle", "Grap - QR 코드 생성 & 콘텐츠 관리 플랫폼");
+        model.addAttribute("pageDescription", "무료 QR 코드 생성기, 축제·전시 콘텐츠 관리, QR 메뉴판 서비스를 제공하는 Grap 플랫폼입니다.");
+        return "landing";
     }
 
     /**

@@ -45,6 +45,14 @@
         WHERE h.qr_gen_history_id = #{id}
     </select>
 
+    <!-- 사용자 ID로 오늘 날짜 히스토리 개수 조회 (일일 제한 체크용) -->
+    <select id="countQrGenHistoryTodayByUserId" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_gen_history
+        WHERE qr_gen_history_user_id = #{userId}
+          AND DATE(qr_gen_history_created_at) = CURDATE()
+    </select>
+
     <!-- 히스토리 저장 -->
     <insert id="insertQrGenHistory" parameterType="co.grap.pack.qrgen.generator.model.QrGenHistory"
             useGeneratedKeys="true" keyProperty="qrGenHistoryId">

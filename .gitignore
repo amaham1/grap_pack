@@ -43,6 +43,11 @@ src/main/resources/static/uploads/
 *.log
 logs/
 
+# SSH 키
+*.key
+*.key.pub
+*.pem
+
 # 기타
 *.swp
 *.bak

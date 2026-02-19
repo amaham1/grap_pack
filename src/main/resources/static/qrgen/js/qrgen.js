@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const contentTypeSelect = document.getElementById('contentType');
     const contentValueInput = document.getElementById('contentValue');
     const contentHint = document.getElementById('contentHint');
+    const previewImg = document.getElementById('qrgen-preview-img');
+    const previewPlaceholder = document.getElementById('qrgen-preview-placeholder');
 
     let currentQrBlob = null;
 
@@ -24,12 +26,75 @@ document.addEventListener('DOMContentLoaded', function() {
         'GEO': '위도,경도 (예: 37.5665,126.9780)'
     };
 
-    // 콘텐츠 타입 변경 시 힌트 업데이트
+    /**
+     * 실시간 미리보기 업데이트 (서버 미리보기 API 호출)
+     */
+    const qrgenUpdatePreview = () => {
+        const value = contentValueInput?.value?.trim();
+        if (!value) {
+            if (previewImg) previewImg.style.display = 'none';
+            if (previewPlaceholder) previewPlaceholder.style.display = '';
+            return;
+        }
+
+        const params = new URLSearchParams({
+            contentType: contentTypeSelect?.value || 'TEXT',
+            contentValue: value,
+            size: document.getElementById('size')?.value || '300',
+            errorCorrection: document.getElementById('errorCorrection')?.value || 'M',
+            foregroundColor: document.getElementById('foregroundColor')?.value || '#000000',
+            backgroundColor: document.getElementById('backgroundColor')?.value || '#FFFFFF'
+        });
+
+        if (previewImg) {
+            previewImg.src = '/qrgen/preview?' + params.toString();
+            previewImg.style.display = '';
+        }
+        if (previewPlaceholder) previewPlaceholder.style.display = 'none';
+
+        // 서버 생성 후 폼 수정 시: 다운로드 버튼 숨기고 blob 초기화
+        if (currentQrBlob) {
+            currentQrBlob = null;
+            if (downloadBtn) downloadBtn.style.display = 'none';
+        }
+    };
+
+    /**
+     * 디바운스 유틸리티
+     */
+    const qrgenDebounce = (fn, delay) => {
+        let timer = null;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => fn(...args), delay);
+        };
+    };
+
+    const qrgenDebouncedPreview = qrgenDebounce(qrgenUpdatePreview, 300);
+    const qrgenDebouncedColorPreview = qrgenDebounce(qrgenUpdatePreview, 50);
+
+    // 미리보기 이미지 로드 실패 시 placeholder 표시
+    if (previewImg) {
+        previewImg.addEventListener('error', () => {
+            previewImg.style.display = 'none';
+            if (previewPlaceholder) previewPlaceholder.style.display = '';
+        });
+    }
+
+    // --- 이벤트 바인딩 ---
+
+    // textarea 입력: 300ms 디바운스
+    if (contentValueInput) {
+        contentValueInput.addEventListener('input', qrgenDebouncedPreview);
+    }
+
+    // 콘텐츠 타입 변경: 힌트 업데이트 + 즉시 미리보기 반영
     if (contentTypeSelect && contentHint) {
         contentTypeSelect.addEventListener('change', function() {
             const type = this.value;
             contentHint.textContent = hints[type] || '';
             contentValueInput.placeholder = hints[type] || '내용을 입력하세요';
+            qrgenUpdatePreview();
         });
 
         // 초기 힌트 설정
@@ -40,7 +105,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // QR 코드 생성
+    // 에러 보정 변경: 즉시 반영
+    const errorCorrectionSelect = document.getElementById('errorCorrection');
+    if (errorCorrectionSelect) {
+        errorCorrectionSelect.addEventListener('change', qrgenUpdatePreview);
+    }
+
+    // 크기 변경: input 300ms 디바운스, change 즉시
+    const sizeInput = document.getElementById('size');
+    if (sizeInput) {
+        sizeInput.addEventListener('input', qrgenDebouncedPreview);
+        sizeInput.addEventListener('change', qrgenUpdatePreview);
+    }
+
+    // 전경색 변경: input 50ms 디바운스, change 즉시
+    const foregroundColorInput = document.getElementById('foregroundColor');
+    if (foregroundColorInput) {
+        foregroundColorInput.addEventListener('input', qrgenDebouncedColorPreview);
+        foregroundColorInput.addEventListener('change', qrgenUpdatePreview);
+    }
+
+    // 배경색 변경: input 50ms 디바운스, change 즉시
+    const backgroundColorInput = document.getElementById('backgroundColor');
+    if (backgroundColorInput) {
+        backgroundColorInput.addEventListener('input', qrgenDebouncedColorPreview);
+        backgroundColorInput.addEventListener('change', qrgenUpdatePreview);
+    }
+
+    // --- QR 코드 생성 (서버 API 호출 + 히스토리 저장 + Rate Limit) ---
     if (generateBtn) {
         generateBtn.addEventListener('click', async function() {
             if (!contentValueInput.value.trim()) {
@@ -72,6 +164,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: JSON.stringify(requestData)
                 });
 
+                if (response.status === 429) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || '일일 QR 생성 한도를 초과했습니다.');
+                }
+
                 if (!response.ok) {
                     throw new Error('QR 코드 생성에 실패했습니다.');
                 }
@@ -79,9 +176,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 const blob = await response.blob();
                 currentQrBlob = blob;
 
-                // 미리보기 표시
+                // 서버 생성 이미지로 미리보기 교체
                 const imageUrl = URL.createObjectURL(blob);
-                preview.innerHTML = `<img src="${imageUrl}" alt="Generated QR Code">`;
+                if (previewImg) {
+                    previewImg.src = imageUrl;
+                    previewImg.style.display = '';
+                }
+                if (previewPlaceholder) previewPlaceholder.style.display = 'none';
 
                 // 다운로드 버튼 표시
                 downloadBtn.style.display = 'inline-block';
@@ -123,5 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 generateBtn.click();
             }
         });
+    }
+
+    // 초기 미리보기 (히스토리에서 값이 미리 채워진 경우)
+    if (contentValueInput?.value?.trim()) {
+        qrgenUpdatePreview();
     }
 });

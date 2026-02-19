@@ -58,11 +58,12 @@ http://localhost:8080/grap/user/...      → Grap 사용자 기능
 - JAR 경로: `/home/ubuntu/grap_pack/build/libs/cms-0.0.1-SNAPSHOT.jar`
 - 로그 경로: `/home/ubuntu/grap_pack/app.log`
 - 배포 스크립트: `/home/ubuntu/grap_pack/deploy.sh`
+- SSH 접속: `ssh -i "<프로젝트루트>/ssh-key-2026-02-03.key" ubuntu@152.69.232.158`
 
 **배포 순서**
 1. 로컬에서 빌드
 ```bash
-./gradlew clean build
+./gradlew clean bootjar -x test
 ```
 2. FileZilla(SFTP)로 `build/libs/cms-0.0.1-SNAPSHOT.jar`를 서버의 `/home/ubuntu/grap_pack/build/libs/`에 업로드
 3. SSH 접속 후 배포 스크립트 실행
