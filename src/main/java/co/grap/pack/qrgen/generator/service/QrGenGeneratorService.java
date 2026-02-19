@@ -219,11 +219,9 @@ public class QrGenGeneratorService {
         return switch (type) {
             case URL, TEXT -> value;
             case EMAIL -> "mailto:" + value;
-            case SMS -> "sms:" + value;
             case PHONE -> "tel:" + value;
             case GEO -> "geo:" + value;
             case WIFI -> formatWifiContent(value);
-            case VCARD -> value; // vCard 형식은 클라이언트에서 완성하여 전달
         };
     }
 

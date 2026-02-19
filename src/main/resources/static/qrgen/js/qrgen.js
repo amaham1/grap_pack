@@ -5,37 +5,147 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('qrgen-form');
     const generateBtn = document.getElementById('generateBtn');
     const downloadBtn = document.getElementById('downloadBtn');
-    const preview = document.getElementById('qrgen-preview');
     const contentTypeSelect = document.getElementById('contentType');
     const contentValueInput = document.getElementById('contentValue');
-    const contentHint = document.getElementById('contentHint');
     const previewImg = document.getElementById('qrgen-preview-img');
     const previewPlaceholder = document.getElementById('qrgen-preview-placeholder');
 
     let currentQrBlob = null;
 
-    // 콘텐츠 타입별 힌트
-    const hints = {
-        'URL': 'https://example.com',
-        'TEXT': '원하는 텍스트를 입력하세요',
-        'EMAIL': 'example@email.com',
-        'PHONE': '+82-10-1234-5678',
-        'SMS': '+82-10-1234-5678',
-        'WIFI': 'SSID:비밀번호:WPA (예: MyWiFi:password123:WPA)',
-        'VCARD': 'BEGIN:VCARD\\nVERSION:3.0\\nN:홍길동\\nTEL:010-1234-5678\\nEND:VCARD',
-        'GEO': '위도,경도 (예: 37.5665,126.9780)'
+    // ==========================================
+    // 유형별 필드 전환
+    // ==========================================
+
+    /**
+     * 선택된 QR 유형에 맞는 입력 필드만 표시
+     */
+    const qrgenShowFieldsForType = (type) => {
+        document.querySelectorAll('.qrgen-dynamic-fields').forEach(el => {
+            el.classList.remove('active');
+        });
+        const activeFields = document.querySelector(`.qrgen-fields-${type}`);
+        if (activeFields) {
+            activeFields.classList.add('active');
+        }
     };
+
+    // ==========================================
+    // 값 조합 (개별 필드 → contentValue)
+    // ==========================================
+
+    /**
+     * 현재 유형의 개별 필드 값을 읽어 contentValue 문자열로 조합
+     */
+    const qrgenBuildContentValue = () => {
+        const type = contentTypeSelect?.value || 'URL';
+
+        switch (type) {
+            case 'URL':
+                return document.getElementById('qrgen-url')?.value?.trim() || '';
+
+            case 'TEXT':
+                return document.getElementById('qrgen-text')?.value?.trim() || '';
+
+            case 'EMAIL':
+                return document.getElementById('qrgen-email-addr')?.value?.trim() || '';
+
+            case 'PHONE':
+                return document.getElementById('qrgen-phone')?.value?.trim() || '';
+
+            case 'WIFI': {
+                const ssid = document.getElementById('qrgen-wifi-ssid')?.value?.trim() || '';
+                const password = document.getElementById('qrgen-wifi-password')?.value?.trim() || '';
+                const encryption = document.getElementById('qrgen-wifi-encryption')?.value || 'WPA';
+                if (!ssid) return '';
+                return `${ssid}:${password}:${encryption}`;
+            }
+
+            case 'GEO': {
+                const lat = document.getElementById('qrgen-geo-lat')?.value?.trim() || '';
+                const lng = document.getElementById('qrgen-geo-lng')?.value?.trim() || '';
+                if (!lat || !lng) return '';
+                return `${lat},${lng}`;
+            }
+
+            default:
+                return '';
+        }
+    };
+
+    // ==========================================
+    // 히스토리 복원 (contentValue → 개별 필드)
+    // ==========================================
+
+    /**
+     * 저장된 contentValue를 파싱하여 개별 필드에 분배
+     */
+    const qrgenParseContentValue = (type, value) => {
+        if (!value) return;
+
+        switch (type) {
+            case 'URL': {
+                const el = document.getElementById('qrgen-url');
+                if (el) el.value = value;
+                break;
+            }
+
+            case 'TEXT': {
+                const el = document.getElementById('qrgen-text');
+                if (el) el.value = value;
+                break;
+            }
+
+            case 'EMAIL': {
+                const addrEl = document.getElementById('qrgen-email-addr');
+                if (addrEl) addrEl.value = value.split('?')[0] || '';
+                break;
+            }
+
+            case 'PHONE': {
+                const el = document.getElementById('qrgen-phone');
+                if (el) el.value = value;
+                break;
+            }
+
+            case 'WIFI': {
+                const parts = value.split(':');
+                const ssidEl = document.getElementById('qrgen-wifi-ssid');
+                const passEl = document.getElementById('qrgen-wifi-password');
+                const encEl = document.getElementById('qrgen-wifi-encryption');
+                if (ssidEl) ssidEl.value = parts[0] || '';
+                if (passEl) passEl.value = parts[1] || '';
+                if (encEl && parts[2]) encEl.value = parts[2];
+                break;
+            }
+
+            case 'GEO': {
+                const [lat, lng] = value.split(',');
+                const latEl = document.getElementById('qrgen-geo-lat');
+                const lngEl = document.getElementById('qrgen-geo-lng');
+                if (latEl) latEl.value = lat || '';
+                if (lngEl) lngEl.value = lng || '';
+                break;
+            }
+        }
+    };
+
+    // ==========================================
+    // 실시간 미리보기
+    // ==========================================
 
     /**
      * 실시간 미리보기 업데이트 (서버 미리보기 API 호출)
      */
     const qrgenUpdatePreview = () => {
-        const value = contentValueInput?.value?.trim();
+        const value = qrgenBuildContentValue();
         if (!value) {
             if (previewImg) previewImg.style.display = 'none';
             if (previewPlaceholder) previewPlaceholder.style.display = '';
             return;
         }
+
+        // hidden input에 조합된 값 동기화
+        if (contentValueInput) contentValueInput.value = value;
 
         const params = new URLSearchParams({
             contentType: contentTypeSelect?.value || 'TEXT',
@@ -81,28 +191,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- 이벤트 바인딩 ---
+    // ==========================================
+    // 이벤트 바인딩
+    // ==========================================
 
-    // textarea 입력: 300ms 디바운스
-    if (contentValueInput) {
-        contentValueInput.addEventListener('input', qrgenDebouncedPreview);
-    }
+    // 동적 필드 입력 이벤트: 디바운스 미리보기
+    document.querySelectorAll('.qrgen-dynamic-fields input, .qrgen-dynamic-fields textarea').forEach(el => {
+        el.addEventListener('input', qrgenDebouncedPreview);
+    });
+    document.querySelectorAll('.qrgen-dynamic-fields select').forEach(el => {
+        el.addEventListener('change', qrgenDebouncedPreview);
+    });
 
-    // 콘텐츠 타입 변경: 힌트 업데이트 + 즉시 미리보기 반영
-    if (contentTypeSelect && contentHint) {
+    // 콘텐츠 타입 변경: 필드 전환 + 미리보기 반영
+    if (contentTypeSelect) {
         contentTypeSelect.addEventListener('change', function() {
-            const type = this.value;
-            contentHint.textContent = hints[type] || '';
-            contentValueInput.placeholder = hints[type] || '내용을 입력하세요';
+            qrgenShowFieldsForType(this.value);
             qrgenUpdatePreview();
         });
-
-        // 초기 힌트 설정
-        const initialType = contentTypeSelect.value;
-        if (hints[initialType]) {
-            contentHint.textContent = hints[initialType];
-            contentValueInput.placeholder = hints[initialType];
-        }
     }
 
     // 에러 보정 변경: 즉시 반영
@@ -132,18 +238,24 @@ document.addEventListener('DOMContentLoaded', function() {
         backgroundColorInput.addEventListener('change', qrgenUpdatePreview);
     }
 
-    // --- QR 코드 생성 (서버 API 호출 + 히스토리 저장 + Rate Limit) ---
+    // ==========================================
+    // QR 코드 생성 (서버 API 호출)
+    // ==========================================
+
     if (generateBtn) {
         generateBtn.addEventListener('click', async function() {
-            if (!contentValueInput.value.trim()) {
+            const builtValue = qrgenBuildContentValue();
+            if (!builtValue) {
                 alert('내용을 입력해주세요.');
-                contentValueInput.focus();
                 return;
             }
 
+            // hidden input에 조합된 값 동기화
+            if (contentValueInput) contentValueInput.value = builtValue;
+
             const requestData = {
-                contentType: document.getElementById('contentType').value,
-                contentValue: document.getElementById('contentValue').value,
+                contentType: contentTypeSelect.value,
+                contentValue: builtValue,
                 size: parseInt(document.getElementById('size').value) || 300,
                 errorCorrection: document.getElementById('errorCorrection').value,
                 foregroundColor: document.getElementById('foregroundColor').value,
@@ -226,8 +338,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // 초기 미리보기 (히스토리에서 값이 미리 채워진 경우)
-    if (contentValueInput?.value?.trim()) {
+    // ==========================================
+    // 초기화
+    // ==========================================
+
+    // 히스토리 복원 또는 초기 필드 표시
+    const historyType = document.getElementById('historyContentType')?.value;
+    const historyValue = document.getElementById('historyContentValue')?.value;
+
+    if (historyType && historyValue) {
+        // 히스토리에서 복원
+        qrgenShowFieldsForType(historyType);
+        qrgenParseContentValue(historyType, historyValue);
         qrgenUpdatePreview();
+    } else {
+        // 초기 유형에 맞는 필드 표시
+        qrgenShowFieldsForType(contentTypeSelect?.value || 'URL');
     }
 });

@@ -25,12 +25,78 @@
                         </select>
                     </div>
 
-                    <div class="qrgen-form-group">
-                        <label for="contentValue">내용</label>
-                        <textarea id="contentValue" name="contentValue" rows="4" required
-                                  placeholder="URL, 텍스트, 또는 데이터를 입력하세요"
-                                  th:text="${history?.qrGenHistoryContentValue}"></textarea>
-                        <small id="contentHint" class="qrgen-hint"></small>
+                    <!-- 조합된 값을 API에 전달하는 hidden input -->
+                    <input type="hidden" id="contentValue" name="contentValue">
+                    <!-- 히스토리 복원용 hidden input -->
+                    <input type="hidden" id="historyContentType" th:value="${history?.qrGenHistoryContentType}" />
+                    <input type="hidden" id="historyContentValue" th:value="${history?.qrGenHistoryContentValue}" />
+
+                    <!-- URL 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-URL">
+                        <div class="qrgen-form-group">
+                            <label for="qrgen-url">URL</label>
+                            <input type="text" id="qrgen-url" placeholder="https://example.com" required>
+                        </div>
+                    </div>
+
+                    <!-- TEXT 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-TEXT">
+                        <div class="qrgen-form-group">
+                            <label for="qrgen-text">텍스트</label>
+                            <textarea id="qrgen-text" rows="4" placeholder="원하는 텍스트를 입력하세요" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- EMAIL 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-EMAIL">
+                        <div class="qrgen-form-group">
+                            <label for="qrgen-email-addr">이메일 주소</label>
+                            <input type="email" id="qrgen-email-addr" placeholder="example@email.com" required>
+                        </div>
+                    </div>
+
+                    <!-- PHONE 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-PHONE">
+                        <div class="qrgen-form-group">
+                            <label for="qrgen-phone">전화번호</label>
+                            <input type="tel" id="qrgen-phone" placeholder="010-1234-5678" required>
+                        </div>
+                    </div>
+
+                    <!-- WIFI 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-WIFI">
+                        <div class="qrgen-form-group">
+                            <label for="qrgen-wifi-ssid">네트워크 이름 (SSID)</label>
+                            <input type="text" id="qrgen-wifi-ssid" placeholder="MyWiFi" required>
+                        </div>
+                        <div class="qrgen-fields-grid">
+                            <div class="qrgen-form-group">
+                                <label for="qrgen-wifi-password">비밀번호 <span class="qrgen-field-label-optional">(선택)</span></label>
+                                <input type="text" id="qrgen-wifi-password" placeholder="비밀번호">
+                            </div>
+                            <div class="qrgen-form-group">
+                                <label for="qrgen-wifi-encryption">암호화 방식</label>
+                                <select id="qrgen-wifi-encryption">
+                                    <option value="WPA" selected>WPA/WPA2</option>
+                                    <option value="WEP">WEP</option>
+                                    <option value="nopass">없음</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- GEO 필드 -->
+                    <div class="qrgen-dynamic-fields qrgen-fields-GEO">
+                        <div class="qrgen-fields-grid">
+                            <div class="qrgen-form-group">
+                                <label for="qrgen-geo-lat">위도</label>
+                                <input type="number" id="qrgen-geo-lat" step="any" placeholder="37.5665" required>
+                            </div>
+                            <div class="qrgen-form-group">
+                                <label for="qrgen-geo-lng">경도</label>
+                                <input type="number" id="qrgen-geo-lng" step="any" placeholder="126.9780" required>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="qrgen-options">

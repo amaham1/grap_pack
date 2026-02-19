@@ -159,6 +159,35 @@
     color: #888;
 }
 
+/* Dynamic Fields */
+.qrgen-dynamic-fields {
+    display: none;
+}
+
+.qrgen-dynamic-fields.active {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.qrgen-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 480px) {
+    .qrgen-fields-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.qrgen-field-label-optional {
+    font-weight: 400;
+    color: #aaa;
+    font-size: 0.8rem;
+}
+
 /* Preview */
 .qrgen-preview-section {
     display: flex;
