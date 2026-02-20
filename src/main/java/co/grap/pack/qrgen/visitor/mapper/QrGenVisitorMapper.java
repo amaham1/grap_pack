@@ -52,4 +52,14 @@ public interface QrGenVisitorMapper {
      * @return 방문자 목록
      */
     List<QrGenVisitor> findQrGenVisitorsByUserId(@Param("userId") Long userId);
+
+    /**
+     * 전체 방문자 목록 조회 (페이징)
+     */
+    List<QrGenVisitor> findAllQrGenVisitors(@Param("limit") int limit, @Param("offset") int offset);
+
+    /**
+     * 전체 방문자 개수 조회
+     */
+    int countAllQrGenVisitors();
 }

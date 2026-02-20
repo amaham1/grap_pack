@@ -149,6 +149,21 @@ public class QrGenGeneratorService {
     }
 
     /**
+     * 전체 히스토리 목록 조회 (페이징)
+     */
+    public List<QrGenHistory> findAllQrGenHistory(int page, int size) {
+        int offset = (page - 1) * size;
+        return historyMapper.findAllQrGenHistory(size, offset);
+    }
+
+    /**
+     * 전체 히스토리 개수 조회
+     */
+    public int countAllQrGenHistory() {
+        return historyMapper.countAllQrGenHistory();
+    }
+
+    /**
      * 히스토리 상세 조회
      */
     public QrGenHistory findQrGenHistoryById(Long id) {

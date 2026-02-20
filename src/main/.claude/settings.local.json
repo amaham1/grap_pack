@@ -15,7 +15,12 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(gradlew.bat build:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "mcp__auggie-mcp__codebase-retrieval",
+      "Bash(gradlew.bat compileJava:*)",
+      "Bash(\"C:/Users/MMM/Desktop/development/grap/grap_pack/gradlew.bat\" compileJava -p \"C:/Users/MMM/Desktop/development/grap/grap_pack\")",
+      "WebFetch(domain:grap.co.kr)",
+      "WebSearch"
     ]
   }
 }

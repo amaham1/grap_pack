@@ -48,4 +48,14 @@ public interface QrGenHistoryMapper {
      * 이미지 경로 업데이트
      */
     void updateQrGenHistoryImagePath(@Param("id") Long id, @Param("imagePath") String imagePath);
+
+    /**
+     * 전체 히스토리 목록 조회 (페이징)
+     */
+    List<QrGenHistory> findAllQrGenHistory(@Param("limit") int limit, @Param("offset") int offset);
+
+    /**
+     * 전체 히스토리 개수 조회
+     */
+    int countAllQrGenHistory();
 }

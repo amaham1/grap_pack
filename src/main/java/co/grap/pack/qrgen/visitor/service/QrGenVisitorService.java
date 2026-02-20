@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,6 +100,21 @@ public class QrGenVisitorService {
 
         log.info("✅ [CHECK] 방문자 체류시간 업데이트: visitorId={}, duration={}초",
                 updateRequest.getVisitorId(), updateRequest.getDurationSeconds());
+    }
+
+    /**
+     * 전체 방문자 목록 조회 (페이징)
+     */
+    public List<QrGenVisitor> findAllQrGenVisitors(int page, int size) {
+        int offset = (page - 1) * size;
+        return qrGenVisitorMapper.findAllQrGenVisitors(size, offset);
+    }
+
+    /**
+     * 전체 방문자 개수 조회
+     */
+    public int countAllQrGenVisitors() {
+        return qrGenVisitorMapper.countAllQrGenVisitors();
     }
 
     /**

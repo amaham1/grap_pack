@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>데이터 열람</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-container" style="max-width: 1400px;">
+        <h1 class="qrgen-title">데이터 열람</h1>
+
+        <!-- 탭 -->
+        <div class="qrgen-data-tabs">
+            <a th:href="@{/qrgen/data(tab='history')}"
+               th:classappend="${activeTab == 'history'} ? ' qrgen-data-tab-active'"
+               class="qrgen-data-tab">히스토리</a>
+            <a th:href="@{/qrgen/data(tab='visitor')}"
+               th:classappend="${activeTab == 'visitor'} ? ' qrgen-data-tab-active'"
+               class="qrgen-data-tab">방문자</a>
+        </div>
+
+        <div class="qrgen-history-info">
+            총 <strong th:text="${totalCount}">0</strong>건
+        </div>
+
+        <!-- 히스토리 탭 -->
+        <th:block th:if="${activeTab == 'history'}">
+            <div th:if="${#lists.isEmpty(historyList)}" class="qrgen-empty">
+                <p>히스토리 데이터가 없습니다.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(historyList)}" class="qrgen-data-table-wrap">
+                <table class="qrgen-data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>사용자</th>
+                            <th>타입</th>
+                            <th>제목</th>
+                            <th>내용</th>
+                            <th>크기</th>
+                            <th>에러보정</th>
+                            <th>전경색</th>
+                            <th>배경색</th>
+                            <th>이미지경로</th>
+                            <th>메모</th>
+                            <th>생성일</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="h : ${historyList}">
+                            <td th:text="${h.qrGenHistoryId}"></td>
+                            <td th:text="${h.qrGenUserLoginId}"></td>
+                            <td th:text="${h.qrGenHistoryContentType}"></td>
+                            <td th:text="${h.qrGenHistoryTitle}"></td>
+                            <td class="qrgen-data-cell-content" th:text="${h.qrGenHistoryContentValue}"></td>
+                            <td th:text="${h.qrGenHistorySize}"></td>
+                            <td th:text="${h.qrGenHistoryErrorCorrection}"></td>
+                            <td>
+                                <span th:if="${h.qrGenHistoryFgColor}" class="qrgen-color-preview"
+                                      th:style="'background-color:' + ${h.qrGenHistoryFgColor}"></span>
+                                <span th:text="${h.qrGenHistoryFgColor}"></span>
+                            </td>
+                            <td>
+                                <span th:if="${h.qrGenHistoryBgColor}" class="qrgen-color-preview"
+                                      th:style="'background-color:' + ${h.qrGenHistoryBgColor}"></span>
+                                <span th:text="${h.qrGenHistoryBgColor}"></span>
+                            </td>
+                            <td class="qrgen-data-cell-path" th:text="${h.qrGenHistoryImagePath}"></td>
+                            <td th:text="${h.qrGenHistoryMemo}"></td>
+                            <td th:text="${h.qrGenHistoryCreatedAt != null ? #temporals.format(h.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 히스토리 페이지네이션 -->
+            <div th:if="${totalPages > 1}" class="qrgen-pagination">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/qrgen/data(tab='history', page=${currentPage - 1})}"
+                   class="qrgen-page-link">이전</a>
+                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${i != currentPage}"
+                       th:href="@{/qrgen/data(tab='history', page=${i})}"
+                       th:text="${i}"
+                       class="qrgen-page-link">1</a>
+                    <span th:if="${i == currentPage}"
+                          th:text="${i}"
+                          class="qrgen-page-current">1</span>
+                </span>
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/qrgen/data(tab='history', page=${currentPage + 1})}"
+                   class="qrgen-page-link">다음</a>
+            </div>
+        </th:block>
+
+        <!-- 방문자 탭 -->
+        <th:block th:if="${activeTab == 'visitor'}">
+            <div th:if="${#lists.isEmpty(visitorList)}" class="qrgen-empty">
+                <p>방문자 데이터가 없습니다.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(visitorList)}" class="qrgen-data-table-wrap">
+                <table class="qrgen-data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>세션ID</th>
+                            <th>사용자ID</th>
+                            <th>IP</th>
+                            <th>User-Agent</th>
+                            <th>페이지URL</th>
+                            <th>리퍼러</th>
+                            <th>브라우저</th>
+                            <th>OS</th>
+                            <th>디바이스</th>
+                            <th>해상도</th>
+                            <th>언어</th>
+                            <th>방문시간</th>
+                            <th>체류시간(초)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${visitorList}">
+                            <td th:text="${v.qrGenVisitorId}"></td>
+                            <td class="qrgen-data-cell-session" th:text="${v.qrGenVisitorSessionId}"></td>
+                            <td th:text="${v.qrGenVisitorUserId}"></td>
+                            <td th:text="${v.qrGenVisitorIpAddress}"></td>
+                            <td class="qrgen-data-cell-ua" th:text="${v.qrGenVisitorUserAgent}"></td>
+                            <td class="qrgen-data-cell-path" th:text="${v.qrGenVisitorPageUrl}"></td>
+                            <td class="qrgen-data-cell-path" th:text="${v.qrGenVisitorReferrer}"></td>
+                            <td>
+                                <span th:text="${v.qrGenVisitorBrowserName}"></span>
+                                <span th:if="${v.qrGenVisitorBrowserVersion}" th:text="' ' + ${v.qrGenVisitorBrowserVersion}"></span>
+                            </td>
+                            <td>
+                                <span th:text="${v.qrGenVisitorOsName}"></span>
+                                <span th:if="${v.qrGenVisitorOsVersion}" th:text="' ' + ${v.qrGenVisitorOsVersion}"></span>
+                            </td>
+                            <td th:text="${v.qrGenVisitorDeviceType}"></td>
+                            <td th:text="${v.qrGenVisitorScreenResolution}"></td>
+                            <td th:text="${v.qrGenVisitorLanguage}"></td>
+                            <td th:text="${v.qrGenVisitorVisitedAt != null ? #temporals.format(v.qrGenVisitorVisitedAt, 'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                            <td th:text="${v.qrGenVisitorDurationSeconds}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 방문자 페이지네이션 -->
+            <div th:if="${totalPages > 1}" class="qrgen-pagination">
+                <a th:if="${currentPage > 1}"
+                   th:href="@{/qrgen/data(tab='visitor', page=${currentPage - 1})}"
+                   class="qrgen-page-link">이전</a>
+                <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                    <a th:if="${i != currentPage}"
+                       th:href="@{/qrgen/data(tab='visitor', page=${i})}"
+                       th:text="${i}"
+                       class="qrgen-page-link">1</a>
+                    <span th:if="${i == currentPage}"
+                          th:text="${i}"
+                          class="qrgen-page-current">1</span>
+                </span>
+                <a th:if="${currentPage < totalPages}"
+                   th:href="@{/qrgen/data(tab='visitor', page=${currentPage + 1})}"
+                   class="qrgen-page-link">다음</a>
+            </div>
+        </th:block>
+    </div>
+</div>
+</body>
+</html>

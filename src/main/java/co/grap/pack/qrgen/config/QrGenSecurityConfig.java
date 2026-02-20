@@ -93,7 +93,7 @@ public class QrGenSecurityConfig {
             .authenticationProvider(qrGenUserAuthProvider)
             // CSRF 설정 - generate API와 visitor API는 예외
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/visitor/**")
+                .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/visitor/**", "/qrgen/data/verify")
             )
             // 모든 요청 허용 (익명 + 로그인 모두)
             .authorizeHttpRequests(auth -> auth
