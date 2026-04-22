@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.admin.content.mapper.AdminContentQueryMapper">
+
+    <select id="selectSyncJobSummaries" resultType="map">
+        SELECT 'festivals' AS jobKey,
+               '축제/행사' AS jobLabel,
+               (SELECT COUNT(*) FROM festivals) AS totalCount,
+               (SELECT MAX(fetched_at) FROM festivals) AS lastFetchedAt
+        UNION ALL
+        SELECT 'exhibitions' AS jobKey,
+               '전시/공연' AS jobLabel,
+               (SELECT COUNT(*) FROM exhibitions) AS totalCount,
+               (SELECT MAX(fetched_at) FROM exhibitions) AS lastFetchedAt
+        UNION ALL
+        SELECT 'welfare' AS jobKey,
+               '복지 서비스' AS jobLabel,
+               (SELECT COUNT(*) FROM welfare_services) AS totalCount,
+               (SELECT MAX(fetched_at) FROM welfare_services) AS lastFetchedAt
+        UNION ALL
+        SELECT 'gas-stations' AS jobKey,
+               '주유소' AS jobLabel,
+               (SELECT COUNT(*) FROM gas_stations) AS totalCount,
+               (SELECT MAX(fetched_at) FROM gas_prices) AS lastFetchedAt
+        UNION ALL
+        SELECT 'real-estate' AS jobKey,
+               '부동산' AS jobLabel,
+               (SELECT COUNT(*) FROM real_estate_transactions) AS totalCount,
+               (SELECT MAX(fetched_at) FROM real_estate_transactions) AS lastFetchedAt
+        UNION ALL
+        SELECT 'real-estate-bootstrap' AS jobKey,
+               '부동산 전체 적재' AS jobLabel,
+               (SELECT COUNT(*) FROM real_estate_transactions) AS totalCount,
+               (SELECT MAX(fetched_at) FROM real_estate_transactions) AS lastFetchedAt
+        UNION ALL
+        SELECT 'all' AS jobKey,
+               '전체 동기화' AS jobLabel,
+               (
+                    (SELECT COUNT(*) FROM festivals)
+                  + (SELECT COUNT(*) FROM exhibitions)
+                  + (SELECT COUNT(*) FROM welfare_services)
+                  + (SELECT COUNT(*) FROM gas_stations)
+                  + (SELECT COUNT(*) FROM real_estate_transactions)
+               ) AS totalCount,
+               GREATEST(
+                    COALESCE((SELECT MAX(fetched_at) FROM festivals), '1970-01-01'),
+                    COALESCE((SELECT MAX(fetched_at) FROM exhibitions), '1970-01-01'),
+                    COALESCE((SELECT MAX(fetched_at) FROM welfare_services), '1970-01-01'),
+                    COALESCE((SELECT MAX(fetched_at) FROM gas_prices), '1970-01-01'),
+                    COALESCE((SELECT MAX(fetched_at) FROM real_estate_transactions), '1970-01-01')
+               ) AS lastFetchedAt
+    </select>
+
+</mapper>

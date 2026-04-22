@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card" th:each="job : ${syncJobs}">
+            <p class="admin-card-label">콘텐츠 동기화</p>
+            <h2 th:text="${job.jobLabel}">작업명</h2>
+            <div class="admin-meta-list">
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">누적 건수</span>
+                    <span th:text="${job.totalCount}">0</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">최종 수집</span>
+                    <span th:text="${job.lastFetchedAt != null ? #temporals.format(job.lastFetchedAt, 'yyyy-MM-dd HH:mm') : '기록 없음'}">기록 없음</span>
+                </div>
+            </div>
+            <form th:action="@{/admin/content/sync-jobs/{jobKey}(jobKey=${job.jobKey})}" method="post" class="admin-form-stack">
+                <button type="submit" class="admin-primary-button">작업 실행</button>
+            </form>
+        </section>
+    </div>
+</section>
+</body>
+</html>

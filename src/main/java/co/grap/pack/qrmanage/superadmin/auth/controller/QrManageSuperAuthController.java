@@ -1,26 +1,24 @@
 package co.grap.pack.qrmanage.superadmin.auth.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * QR 관리 서비스 최고관리자 인증 컨트롤러
+ * QR 愿由??쒕퉬??理쒓퀬愿由ъ옄 ?몄쬆 而⑦듃濡ㅻ윭
  */
 @Slf4j
 @Controller
 @RequestMapping("/qr-manage/super/auth")
-@RequiredArgsConstructor
 public class QrManageSuperAuthController {
 
     /**
-     * 최고관리자 로그인 페이지
+     * 旧 ?덊띁 愿由ъ옄 濡쒓렇???섏씠吏瑜??듯빀 ?대떎?댁젆?몃줈 ?좏솚?쒕떎.
      */
     @GetMapping("/login")
     public String loginPage() {
-        log.info("✅ [CHECK] 최고관리자 로그인 페이지 요청");
-        return "qrmanage/super/auth/qr-manage-super-login";
+        log.info("✅ [CHECK] QR Manage super login path redirected to /admin/login");
+        return "redirect:/admin/login";
     }
 }

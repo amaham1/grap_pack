@@ -1,36 +1,21 @@
 package co.grap.pack.qrmanage.superadmin.dashboard.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * QR 관리 최고관리자 대시보드 컨트롤러다.
+ * QR 愿由?理쒓퀬愿由ъ옄 ??쒕낫???ш린 ?몄엯???듯빀 ?ы꽭濡?諛붽퓭以묐떎.
  */
 @Slf4j
 @Controller
 @RequestMapping("/qr-manage/super/admin")
-@RequiredArgsConstructor
 public class QrManageSuperDashboardController {
 
-    /**
-     * 대시보드 페이지를 조회한다.
-     */
     @GetMapping("/dashboard")
-    public String dashboard(Model model) {
-        log.info("✅ [CHECK] 최고관리자 대시보드 페이지 요청");
-
-        model.addAttribute("title", "대시보드");
-        model.addAttribute("totalShopAdmins", 0);
-        model.addAttribute("pendingShopAdmins", 0);
-        model.addAttribute("totalShops", 0);
-        model.addAttribute("pendingShops", 0);
-        model.addAttribute("totalQrCodes", 0);
-        model.addAttribute("todayScans", 0);
-
-        return "qrmanage/super/dashboard/qr-manage-super-dashboard";
+    public String dashboard() {
+        log.info("✅ [CHECK] QR Manage super dashboard redirected to /admin/dashboard");
+        return "redirect:/admin/dashboard";
     }
 }

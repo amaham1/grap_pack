@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/qr/shops}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>상태</span>
+                <select name="status">
+                    <option value="">전체</option>
+                    <option th:each="item : ${statuses}"
+                            th:value="${item.name()}"
+                            th:selected="${selectedStatus == item}"
+                            th:text="${item.name()}">PENDING</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>노출</span>
+                <select name="isVisible">
+                    <option value="">전체</option>
+                    <option value="true" th:selected="${selectedVisible == true}">노출</option>
+                    <option value="false" th:selected="${selectedVisible == false}">비노출</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>검색어</span>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="상점명 또는 주소">
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>상점</th>
+                    <th>점주</th>
+                    <th>상태</th>
+                    <th>노출</th>
+                    <th>생성일</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.items}">
+                    <td th:text="${item.id}">1</td>
+                    <td>
+                        <strong th:text="${item.name}">상점명</strong>
+                        <div><small th:text="${item.address}">주소</small></div>
+                    </td>
+                    <td>
+                        <span th:text="${item.shopAdminName}">점주명</span>
+                        <div><small th:text="${item.shopAdminEmail}">email@example.com</small></div>
+                    </td>
+                    <td><span class="admin-chip" th:text="${item.status}">PENDING</span></td>
+                    <td>
+                        <span class="admin-chip" th:if="${item.isVisible}">노출</span>
+                        <span class="admin-chip admin-chip-muted" th:unless="${item.isVisible}">비노출</span>
+                    </td>
+                    <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                    <td>
+                        <a th:href="@{/admin/qr/shops/{id}(id=${item.id})}" class="admin-secondary-button">상세</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.items)}">
+                    <td colspan="7">조회된 상점이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qr/shops')}"></div>
+    </div>
+</section>
+</body>
+</html>

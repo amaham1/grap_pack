@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card-stack">
+        <div class="admin-toolbar">
+            <div class="admin-toolbar-actions">
+                <a th:each="item : ${datasetTypes}"
+                   th:href="@{/admin/content/datasets/{type}(type=${item.pathSegment})}"
+                   class="admin-secondary-button"
+                   th:classappend="${item == datasetType} ? ' admin-active-button'">
+                    <span th:text="${item.displayName}">데이터셋</span>
+                </a>
+            </div>
+            <a th:href="@{/admin/content/datasets/{type}(type=${datasetType.pathSegment})}" class="admin-secondary-button">목록</a>
+        </div>
+
+        <div class="admin-detail-grid">
+            <section class="admin-card">
+                <div class="admin-section-head">
+                    <div>
+                        <p class="admin-card-label" th:text="${datasetType.displayName}">데이터셋</p>
+                        <h2 th:if="${datasetType.pathSegment == 'welfare'}" th:text="${detailData.serviceName}">서비스명</h2>
+                        <h2 th:if="${datasetType.pathSegment == 'gas-stations'}" th:text="${detailData.stationName}">상호명</h2>
+                        <h2 th:if="${datasetType.pathSegment == 'real-estate'}" th:text="${detailData.property.displayName}">매물명</h2>
+                        <h2 th:if="${datasetType.pathSegment != 'welfare' and datasetType.pathSegment != 'gas-stations' and datasetType.pathSegment != 'real-estate'}"
+                            th:text="${detailData.title}">제목</h2>
+                    </div>
+                </div>
+
+                <div class="admin-meta-list" th:if="${datasetType.pathSegment != 'real-estate'}">
+                    <div class="admin-meta-item" th:if="${detailData.originalApiId != null}">
+                        <span class="admin-meta-label">원본 API ID</span>
+                        <span th:text="${detailData.originalApiId}">api-id</span>
+                    </div>
+                    <div class="admin-meta-item" th:if="${detailData.locationName != null}">
+                        <span class="admin-meta-label">장소</span>
+                        <span th:text="${detailData.locationName}">장소</span>
+                    </div>
+                    <div class="admin-meta-item" th:if="${detailData.writerName != null}">
+                        <span class="admin-meta-label">작성자</span>
+                        <span th:text="${detailData.writerName}">작성자</span>
+                    </div>
+                    <div class="admin-meta-item" th:if="${detailData.address != null}">
+                        <span class="admin-meta-label">주소</span>
+                        <span th:text="${detailData.address}">주소</span>
+                    </div>
+                    <div class="admin-meta-item" th:if="${detailData.adminMemo != null}">
+                        <span class="admin-meta-label">현재 메모</span>
+                        <span th:text="${detailData.adminMemo}">메모</span>
+                    </div>
+                </div>
+
+                <div class="admin-meta-list" th:if="${datasetType.pathSegment == 'real-estate'}">
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">주소</span>
+                        <span th:text="${detailData.property.address}">주소</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">거래월</span>
+                        <span th:text="${detailData.property.formattedDealYearMonth}">2026년 4월</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">거래 유형</span>
+                        <span th:text="${detailData.property.transactionLabel}">매매</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">금액</span>
+                        <span th:text="${detailData.property.formattedDisplayAmount}">3억 1,000만</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">면적</span>
+                        <span th:text="${detailData.property.formattedAreaLabel}">84㎡</span>
+                    </div>
+                </div>
+
+                <div class="admin-rich-preview" th:if="${datasetType.pathSegment == 'festivals'}" th:utext="${detailData.contentHtml}"></div>
+                <div class="admin-rich-preview" th:if="${datasetType.pathSegment == 'welfare'}" th:utext="${detailData.supportContentHtml}"></div>
+                <div class="admin-code-block" th:if="${datasetType.pathSegment == 'gas-stations'}">
+                    <p><strong>브랜드:</strong> <span th:text="${detailData.brand}">브랜드</span></p>
+                    <p><strong>전화:</strong> <span th:text="${detailData.phone}">전화</span></p>
+                    <p><strong>Opinet ID:</strong> <span th:text="${detailData.opinetId}">opinet</span></p>
+                </div>
+                <div class="admin-code-block" th:if="${datasetType.pathSegment == 'real-estate'}">
+                    <p><strong>매물 키:</strong> <span th:text="${detailData.property.propertyMatchKey}">match-key</span></p>
+                    <p><strong>연도 옵션:</strong> <span th:text="${detailData.availableYears}">[2026]</span></p>
+                </div>
+                <div class="admin-code-block" th:if="${detailData.apiRawData != null}">
+                    <pre th:text="${detailData.apiRawData}">raw data</pre>
+                </div>
+            </section>
+
+            <section class="admin-card-stack">
+                <section class="admin-card" th:if="${datasetType.supportsVisibility}">
+                    <p class="admin-card-label">노출 상태</p>
+                    <form th:action="@{/admin/content/datasets/{type}/{id}/visibility(type=${datasetType.pathSegment},id=${detailData.id})}" method="post" class="admin-form-stack">
+                        <select name="isVisible">
+                            <option value="true" th:selected="${detailData.isShow == true}">노출</option>
+                            <option value="false" th:selected="${detailData.isShow == false or detailData.isShow == null}">비노출</option>
+                        </select>
+                        <button type="submit" class="admin-secondary-button">저장</button>
+                    </form>
+                </section>
+
+                <section class="admin-card" th:if="${datasetType.supportsMemo}">
+                    <p class="admin-card-label">관리 메모</p>
+                    <form th:action="@{/admin/content/datasets/{type}/{id}/memo(type=${datasetType.pathSegment},id=${detailData.id})}" method="post" class="admin-form-stack">
+                        <textarea name="adminMemo" th:text="${detailData.adminMemo}"></textarea>
+                        <button type="submit" class="admin-secondary-button">메모 저장</button>
+                    </form>
+                </section>
+
+                <section class="admin-card" th:if="${datasetType.supportsConfirm}">
+                    <p class="admin-card-label">검수 처리</p>
+                    <form th:action="@{/admin/content/datasets/{type}/{id}/confirm(type=${datasetType.pathSegment},id=${detailData.id})}" method="post" class="admin-form-stack">
+                        <select name="confirmStatus">
+                            <option value="APPROVED">승인</option>
+                            <option value="REJECTED">반려</option>
+                        </select>
+                        <textarea name="confirmMemo" placeholder="검수 메모"></textarea>
+                        <button type="submit" class="admin-primary-button">검수 저장</button>
+                    </form>
+                </section>
+
+                <section class="admin-card" th:if="${datasetType.supportsDelete}">
+                    <p class="admin-card-label">위험 액션</p>
+                    <form th:action="@{/admin/content/datasets/{type}/{id}/delete(type=${datasetType.pathSegment},id=${detailData.id})}" method="post">
+                        <button type="submit" class="admin-danger-button">데이터 삭제</button>
+                    </form>
+                </section>
+            </section>
+        </div>
+    </div>
+</section>
+</body>
+</html>

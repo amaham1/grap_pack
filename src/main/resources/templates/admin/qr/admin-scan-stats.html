@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 스캔</p>
+            <strong class="admin-card-value" th:text="${stats.summary.total}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 스캔</p>
+            <strong class="admin-card-value" th:text="${stats.summary.today}">0</strong>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card">
+            <p class="admin-card-label">최근 30일 일별 스캔</p>
+            <div class="admin-mini-chart">
+                <div class="admin-mini-chart-row" th:each="item : ${stats.dailyStats}">
+                    <span class="admin-mini-chart-label" th:text="${item.date}">2026-04-22</span>
+                    <div class="admin-mini-chart-bar-wrap">
+                        <div class="admin-mini-chart-bar admin-mini-chart-bar-secondary"
+                             th:style="'width:' + (${item.count} * 8 + 12) + 'px'"></div>
+                    </div>
+                    <span class="admin-mini-chart-value" th:text="${item.count}">0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <p class="admin-card-label">상점별 스캔 랭킹</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>상점</th>
+                        <th>스캔 수</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${stats.shopRanking}">
+                        <td th:text="${item.shopName}">상점명</td>
+                        <td th:text="${item.count}">0</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(stats.shopRanking)}">
+                        <td colspan="2">집계된 스캔 랭킹이 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

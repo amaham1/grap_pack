@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/qrgen/histories}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>회원 ID</span>
+                <input type="number" name="userId" th:value="${userId}">
+            </label>
+            <label class="admin-field">
+                <span>콘텐츠 타입</span>
+                <select name="contentType">
+                    <option value="">전체</option>
+                    <option th:each="item : ${contentTypes}"
+                            th:value="${item.name()}"
+                            th:selected="${contentType == item.name()}"
+                            th:text="${item.name()}">URL</option>
+                </select>
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-card-grid admin-card-grid-2">
+            <section class="admin-card">
+                <p class="admin-card-label">타입별 집계</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>콘텐츠 타입</th>
+                            <th>건수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${result.typeStats}">
+                            <td th:text="${item.contentType}">URL</td>
+                            <td th:text="${item.count}">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(result.typeStats)}">
+                            <td colspan="2">집계 데이터가 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="admin-card">
+                <p class="admin-card-label">총 이력 건수</p>
+                <strong class="admin-card-value" th:text="${result.totalCount}">0</strong>
+            </section>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>회원</th>
+                    <th>타입</th>
+                    <th>제목</th>
+                    <th>생성일</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.items}">
+                    <td th:text="${item.qrGenHistoryId}">1</td>
+                    <td th:text="${item.qrGenUserLoginId}">user</td>
+                    <td th:text="${item.qrGenHistoryContentType}">URL</td>
+                    <td th:text="${item.qrGenHistoryTitle != null and item.qrGenHistoryTitle != '' ? item.qrGenHistoryTitle : item.qrGenHistoryContentValue}">제목</td>
+                    <td th:text="${#temporals.format(item.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                    <td>
+                        <a th:href="@{/admin/qrgen/histories/{id}(id=${item.qrGenHistoryId})}" class="admin-secondary-button">상세</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.items)}">
+                    <td colspan="6">조회된 생성 이력이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qrgen/histories')}"></div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-detail-grid">
+        <section class="admin-card">
+            <p class="admin-card-label">점주 계정</p>
+            <h2 th:text="${detail.shopAdmin.name}">이름</h2>
+            <div class="admin-meta-list">
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">로그인 ID</span>
+                    <span th:text="${detail.shopAdmin.username}">username</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">이메일</span>
+                    <span th:text="${detail.shopAdmin.email}">email@example.com</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">전화번호</span>
+                    <span th:text="${detail.shopAdmin.phone}">010-0000-0000</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">상태</span>
+                    <span class="admin-chip" th:text="${detail.shopAdmin.status}">ACTIVE</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card-stack">
+            <section class="admin-card">
+                <p class="admin-card-label">계정 상태 액션</p>
+                <div class="admin-actions">
+                    <form th:action="@{/admin/qr/shop-admins/{id}/status(id=${detail.shopAdmin.id})}" method="post">
+                        <input type="hidden" name="action" value="APPROVE">
+                        <button type="submit" class="admin-primary-button">승인</button>
+                    </form>
+                    <form th:action="@{/admin/qr/shop-admins/{id}/status(id=${detail.shopAdmin.id})}" method="post">
+                        <input type="hidden" name="action" value="ACTIVATE">
+                        <button type="submit" class="admin-secondary-button">활성</button>
+                    </form>
+                    <form th:action="@{/admin/qr/shop-admins/{id}/status(id=${detail.shopAdmin.id})}" method="post">
+                        <input type="hidden" name="action" value="DEACTIVATE">
+                        <button type="submit" class="admin-secondary-button">비활성</button>
+                    </form>
+                    <form th:action="@{/admin/qr/shop-admins/{id}/status(id=${detail.shopAdmin.id})}" method="post">
+                        <input type="hidden" name="action" value="SUSPEND">
+                        <button type="submit" class="admin-danger-button">정지</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">관리 상점</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>상점명</th>
+                            <th>상태</th>
+                            <th>노출</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.shops}">
+                            <td>
+                                <a th:href="@{/admin/qr/shops/{id}(id=${item.id})}" th:text="${item.name}">상점명</a>
+                            </td>
+                            <td th:text="${item.status}">PENDING</td>
+                            <td th:text="${item.isVisible} ? '노출' : '비노출'">노출</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.shops)}">
+                            <td colspan="3">관리 중인 상점이 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </div>
+</section>
+</body>
+</html>

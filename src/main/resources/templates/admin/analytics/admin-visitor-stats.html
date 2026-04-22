@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>시작일</span>
+                <input type="date" name="startDate" th:value="${selectedStartDate}">
+            </label>
+            <label class="admin-field">
+                <span>종료일</span>
+                <input type="date" name="endDate" th:value="${selectedEndDate}">
+            </label>
+            <label class="admin-field">
+                <span>서비스</span>
+                <select name="serviceCode">
+                    <option value="">전체</option>
+                    <option th:each="item : ${serviceCodes}"
+                            th:value="${item.name()}"
+                            th:selected="${selectedServiceCode == item}"
+                            th:text="${item.displayName}">서비스</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>메뉴</span>
+                <select name="menuCode">
+                    <option value="">전체</option>
+                    <option th:each="item : ${availableMenuCodes}"
+                            th:value="${item.name()}"
+                            th:selected="${selectedMenuCode == item}"
+                            th:text="${item.displayName}">메뉴</option>
+                </select>
+            </label>
+            <button type="submit" class="admin-secondary-button">조회</button>
+        </form>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">총 PV</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">총 UV</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalUv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 PV</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 UV</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayUv}">0</strong>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card">
+            <p class="admin-card-label">일별 PV/UV</p>
+            <div class="admin-mini-chart">
+                <div class="admin-mini-chart-row" th:each="item : ${dailyStats}">
+                    <span class="admin-mini-chart-label" th:text="${item.date}">2026-04-22</span>
+                    <div class="admin-mini-chart-bar-wrap">
+                        <div class="admin-mini-chart-bar" th:style="'width:' + (${item.pv} * 3 + 12) + 'px'"></div>
+                    </div>
+                    <span class="admin-mini-chart-value" th:text="${item.pv + ' / ' + item.uv}">0 / 0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <p class="admin-card-label">디바이스 비율</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>디바이스</th>
+                        <th>PV</th>
+                        <th>비율</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${deviceStats}">
+                        <td th:text="${item.deviceDisplayName}">모바일</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.ratio} + '%'">0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card">
+            <p class="admin-card-label">서비스/메뉴 요약</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>서비스</th>
+                        <th>메뉴</th>
+                        <th>PV</th>
+                        <th>UV</th>
+                        <th>평균 체류시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${menuStats}">
+                        <td th:text="${item.serviceDisplayName}">서비스</td>
+                        <td th:text="${item.menuDisplayName}">메뉴</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.uv}">0</td>
+                        <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(menuStats)}">
+                        <td colspan="5">집계 데이터가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <p class="admin-card-label">routeKey 상세</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>routeKey</th>
+                        <th>PV</th>
+                        <th>UV</th>
+                        <th>평균 체류시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${routeStats}">
+                        <td th:text="${item.routeKey}">/grap/user/...</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.uv}">0</td>
+                        <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(routeStats)}">
+                        <td colspan="4">선택한 메뉴의 routeKey 집계가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

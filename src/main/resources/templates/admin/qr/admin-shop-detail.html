@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-detail-grid">
+        <section class="admin-card-stack">
+            <section class="admin-card">
+                <div class="admin-section-head">
+                    <div>
+                        <p class="admin-card-label">상점 상세</p>
+                        <h2 th:text="${detail.shop.name}">상점명</h2>
+                    </div>
+                    <span class="admin-chip" th:text="${detail.shop.status}">PENDING</span>
+                </div>
+                <div class="admin-meta-list">
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">주소</span>
+                        <span th:text="${detail.shop.address}">주소</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">전화</span>
+                        <span th:text="${detail.shop.phone}">전화번호</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">점주</span>
+                        <span th:text="${detail.shop.shopAdminName + ' / ' + detail.shop.shopAdminEmail}">점주 정보</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">최근 QR 코드</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>타입</th>
+                            <th>코드</th>
+                            <th>활성</th>
+                            <th>스캔</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.qrCodes}">
+                            <td th:text="${item.qrType}">SHOP</td>
+                            <td th:text="${item.qrCode}">code</td>
+                            <td th:text="${item.isActive} ? '활성' : '비활성'">활성</td>
+                            <td th:text="${item.scanCount}">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.qrCodes)}">
+                            <td colspan="4">QR 코드가 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">최근 메뉴</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>메뉴명</th>
+                            <th>카테고리</th>
+                            <th>가격</th>
+                            <th>노출</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.menus}">
+                            <td th:text="${item.name}">메뉴명</td>
+                            <td th:text="${item.categoryName}">카테고리</td>
+                            <td th:text="${item.price}">10000</td>
+                            <td th:text="${item.isVisible} ? '노출' : '비노출'">노출</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.menus)}">
+                            <td colspan="4">등록된 메뉴가 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">검수 이력</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>처리</th>
+                            <th>검수자</th>
+                            <th>메모</th>
+                            <th>시각</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.reviewHistory}">
+                            <td th:text="${item.action}">APPROVED</td>
+                            <td th:text="${item.reviewerName}">검수자</td>
+                            <td th:text="${item.comment}">메모</td>
+                            <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.reviewHistory)}">
+                            <td colspan="4">검수 이력이 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+
+        <section class="admin-card-stack">
+            <section class="admin-card">
+                <p class="admin-card-label">검수 액션</p>
+                <form th:action="@{/admin/qr/shops/{id}/approve(id=${detail.shop.id})}" method="post" class="admin-form-stack">
+                    <textarea name="comment" placeholder="승인 메모"></textarea>
+                    <button type="submit" class="admin-primary-button">승인</button>
+                </form>
+                <form th:action="@{/admin/qr/shops/{id}/reject(id=${detail.shop.id})}" method="post" class="admin-form-stack" style="margin-top: 12px;">
+                    <textarea name="comment" placeholder="반려 사유"></textarea>
+                    <button type="submit" class="admin-danger-button">반려</button>
+                </form>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">노출 상태</p>
+                <form th:action="@{/admin/qr/shops/{id}/visibility(id=${detail.shop.id})}" method="post" class="admin-form-stack">
+                    <select name="isVisible">
+                        <option value="true" th:selected="${detail.shop.isVisible == true}">노출</option>
+                        <option value="false" th:selected="${detail.shop.isVisible == false}">비노출</option>
+                    </select>
+                    <button type="submit" class="admin-secondary-button">저장</button>
+                </form>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">메모</p>
+                <form th:action="@{/admin/qr/shops/{id}/memo(id=${detail.shop.id})}" method="post" class="admin-form-stack">
+                    <textarea name="content" placeholder="운영 메모"></textarea>
+                    <button type="submit" class="admin-secondary-button">메모 추가</button>
+                </form>
+                <div class="admin-card-stack" style="margin-top: 14px;">
+                    <div class="admin-card" th:each="item : ${detail.memos}">
+                        <div class="admin-meta-item">
+                            <span class="admin-meta-label" th:text="${item.adminName}">운영자</span>
+                            <span th:text="${item.content}">메모</span>
+                            <small th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</small>
+                        </div>
+                        <form th:action="@{/admin/qr/shops/{shopId}/memo/{memoId}/delete(shopId=${detail.shop.id},memoId=${item.id})}" method="post">
+                            <button type="submit" class="admin-link-button">삭제</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">스캔 요약</p>
+                <div class="admin-meta-list">
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">전체 스캔</span>
+                        <span th:text="${detail.scanSummary.total}">0</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">오늘</span>
+                        <span th:text="${detail.scanSummary.today}">0</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">이번 주</span>
+                        <span th:text="${detail.scanSummary.week}">0</span>
+                    </div>
+                    <div class="admin-meta-item">
+                        <span class="admin-meta-label">이번 달</span>
+                        <span th:text="${detail.scanSummary.month}">0</span>
+                    </div>
+                </div>
+            </section>
+        </section>
+    </div>
+</section>
+</body>
+</html>

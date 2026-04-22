@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <div class="admin-toolbar">
+            <form method="get" th:action="@{/admin/content/articles}" class="admin-toolbar-form">
+                <label class="admin-field">
+                    <span>검색어</span>
+                    <input type="text" name="keyword" th:value="${searchParam.keyword}" placeholder="제목 또는 본문">
+                </label>
+                <label class="admin-field">
+                    <span>콘텐츠 타입</span>
+                    <select name="contentTypeId">
+                        <option value="">전체</option>
+                        <option th:each="item : ${contentTypes}"
+                                th:value="${item.contentTypeId}"
+                                th:selected="${searchParam.contentTypeId == item.contentTypeId}"
+                                th:text="${item.typeName}">타입</option>
+                    </select>
+                </label>
+                <label class="admin-field">
+                    <span>공개 상태</span>
+                    <select name="isPublished">
+                        <option value="">전체</option>
+                        <option value="true" th:selected="${searchParam.isPublished == true}">공개</option>
+                        <option value="false" th:selected="${searchParam.isPublished == false}">비공개</option>
+                    </select>
+                </label>
+                <button type="submit" class="admin-secondary-button">검색</button>
+            </form>
+            <div class="admin-toolbar-actions">
+                <a th:href="@{/admin/content/articles/new}" class="admin-primary-button">새 콘텐츠</a>
+            </div>
+        </div>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>제목</th>
+                    <th>타입</th>
+                    <th>공개</th>
+                    <th>조회수</th>
+                    <th>작성/수정</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.contentList}">
+                    <td th:text="${item.contentId}">1</td>
+                    <td>
+                        <strong th:text="${item.title}">제목</strong>
+                    </td>
+                    <td th:text="${item.typeName}">타입</td>
+                    <td>
+                        <span class="admin-chip" th:if="${item.isPublished}">공개</span>
+                        <span class="admin-chip admin-chip-muted" th:unless="${item.isPublished}">비공개</span>
+                    </td>
+                    <td th:text="${item.viewCount}">0</td>
+                    <td>
+                        <div class="admin-meta-item">
+                            <span th:text="${item.createName}">작성자</span>
+                            <small th:text="${#temporals.format(item.createDt, 'yyyy-MM-dd HH:mm')}">2026-04-22 10:00</small>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="admin-actions">
+                            <a th:href="@{/admin/content/articles/{id}/edit(id=${item.contentId})}" class="admin-secondary-button">수정</a>
+                            <form th:action="@{/admin/content/articles/{id}/publish(id=${item.contentId})}" method="post">
+                                <input type="hidden" name="isPublished" th:value="${!item.isPublished}">
+                                <button type="submit" class="admin-secondary-button" th:text="${item.isPublished} ? '비공개' : '공개'">상태</button>
+                            </form>
+                            <form th:action="@{/admin/content/articles/{id}/delete(id=${item.contentId})}" method="post">
+                                <button type="submit" class="admin-danger-button">삭제</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.contentList)}">
+                    <td colspan="7">등록된 수기 콘텐츠가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/content/articles')}"></div>
+    </div>
+</section>
+</body>
+</html>

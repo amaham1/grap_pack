@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card-stack">
+        <section class="admin-card">
+            <p class="admin-card-label">QR 생성 이력</p>
+            <h2 th:text="${detail.history.qrGenHistoryTitle != null and detail.history.qrGenHistoryTitle != '' ? detail.history.qrGenHistoryTitle : '제목 없음'}">제목</h2>
+            <div class="admin-meta-list">
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">회원</span>
+                    <span th:text="${detail.history.qrGenUserLoginId}">user</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">콘텐츠 타입</span>
+                    <span th:text="${detail.history.qrGenHistoryContentType}">URL</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">크기</span>
+                    <span th:text="${detail.history.qrGenHistorySize}">300</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">생성일</span>
+                    <span th:text="${#temporals.format(detail.history.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <p class="admin-card-label">인코딩 값</p>
+            <div class="admin-code-block">
+                <pre th:text="${detail.history.qrGenHistoryContentValue}">content</pre>
+            </div>
+            <div class="admin-meta-list" style="margin-top: 14px;">
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">메모</span>
+                    <span th:text="${detail.history.qrGenHistoryMemo}">메모</span>
+                </div>
+                <div class="admin-meta-item" th:if="${detail.history.qrGenHistoryImagePath != null}">
+                    <span class="admin-meta-label">이미지 경로</span>
+                    <a th:href="${detail.history.qrGenHistoryImagePath}" th:text="${detail.history.qrGenHistoryImagePath}">image</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+</body>
+</html>

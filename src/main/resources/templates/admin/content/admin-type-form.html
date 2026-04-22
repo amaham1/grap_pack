@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form th:action="@{/admin/content/types/save}" method="post" class="admin-form-stack">
+            <input type="hidden" name="contentTypeId" th:value="${contentType.contentTypeId}">
+            <label class="admin-field">
+                <span>타입명</span>
+                <input type="text" name="typeName" th:value="${contentType.typeName}" required>
+            </label>
+            <label class="admin-field">
+                <span>설명</span>
+                <textarea name="typeDesc" th:text="${contentType.typeDesc}"></textarea>
+            </label>
+            <label class="admin-field">
+                <span>활성 여부</span>
+                <select name="isActive">
+                    <option value="true" th:selected="${contentType.isActive == null or contentType.isActive == true}">활성</option>
+                    <option value="false" th:selected="${contentType.isActive == false}">비활성</option>
+                </select>
+            </label>
+            <div class="admin-actions">
+                <button type="submit" class="admin-primary-button">저장</button>
+                <a th:href="@{/admin/content/types}" class="admin-secondary-button">목록</a>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

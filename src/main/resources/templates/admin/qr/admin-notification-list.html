@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <div class="admin-toolbar">
+            <div>
+                <p class="admin-card-label">QR 운영</p>
+                <h2>알림</h2>
+            </div>
+            <form th:action="@{/admin/qr/notifications/read-all}" method="post">
+                <button type="submit" class="admin-secondary-button">모두 읽음 처리</button>
+            </form>
+        </div>
+
+        <div class="admin-card-stack">
+            <article class="admin-card" th:each="item : ${result.items}">
+                <div class="admin-section-head">
+                    <div>
+                        <p class="admin-card-label" th:text="${item.notificationType}">SYSTEM_NOTICE</p>
+                        <h3 th:text="${item.title}">알림 제목</h3>
+                    </div>
+                    <span class="admin-chip admin-chip-muted" th:if="${item.isRead}">읽음</span>
+                    <span class="admin-chip admin-chip-warn" th:unless="${item.isRead}">읽지 않음</span>
+                </div>
+                <p th:text="${item.message}">알림 메시지</p>
+                <div class="admin-toolbar-actions">
+                    <small th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</small>
+                    <a th:if="${item.linkUrl != null and item.linkUrl != ''}" th:href="${item.linkUrl}" class="admin-secondary-button">바로가기</a>
+                    <form th:if="${!item.isRead}" th:action="@{/admin/qr/notifications/{id}/read(id=${item.id})}" method="post">
+                        <button type="submit" class="admin-secondary-button">읽음</button>
+                    </form>
+                    <form th:action="@{/admin/qr/notifications/{id}/delete(id=${item.id})}" method="post">
+                        <button type="submit" class="admin-danger-button">삭제</button>
+                    </form>
+                </div>
+            </article>
+            <div th:if="${#lists.isEmpty(result.items)}" class="admin-card">알림이 없습니다.</div>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qr/notifications')}"></div>
+    </div>
+</section>
+</body>
+</html>
