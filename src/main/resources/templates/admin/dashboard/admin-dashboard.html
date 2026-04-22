@@ -23,7 +23,10 @@
         <section class="admin-card admin-metric-card">
             <p class="admin-card-label">오늘 방문 수</p>
             <strong class="admin-card-value" th:text="${dashboardSummary.visitorTodayPv}">0</strong>
-            <span class="admin-card-note">중복 제외 방문자 수 <b th:text="${dashboardSummary.visitorTodayUv}">0</b></span>
+            <span class="admin-card-note">
+                중복 제외 방문자 수 <b th:text="${dashboardSummary.visitorTodayUv}">0</b>
+                / BOT 요청 <b th:text="${dashboardSummary.visitorTodayBotPv}">0</b>
+            </span>
         </section>
     </div>
 

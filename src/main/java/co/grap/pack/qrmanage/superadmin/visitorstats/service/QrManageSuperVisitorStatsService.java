@@ -65,6 +65,10 @@ public class QrManageSuperVisitorStatsService {
                 .totalUv(orZero(periodStats != null ? periodStats.getTotalUv() : null))
                 .todayPv(orZero(todayStats != null ? todayStats.getTodayPv() : null))
                 .todayUv(orZero(todayStats != null ? todayStats.getTodayUv() : null))
+                .totalBotPv(orZero(periodStats != null ? periodStats.getTotalBotPv() : null))
+                .totalBotUv(orZero(periodStats != null ? periodStats.getTotalBotUv() : null))
+                .todayBotPv(orZero(todayStats != null ? todayStats.getTodayBotPv() : null))
+                .todayBotUv(orZero(todayStats != null ? todayStats.getTodayBotUv() : null))
                 .averageDurationSeconds(orZero(periodStats != null ? periodStats.getAverageDurationSeconds() : null))
                 .build();
     }
@@ -98,10 +102,14 @@ public class QrManageSuperVisitorStatsService {
                         .date(date)
                         .pv(0L)
                         .uv(0L)
+                        .botPv(0L)
+                        .botUv(0L)
                         .build();
             } else {
                 stat.setPv(orZero(stat.getPv()));
                 stat.setUv(orZero(stat.getUv()));
+                stat.setBotPv(orZero(stat.getBotPv()));
+                stat.setBotUv(orZero(stat.getBotUv()));
             }
 
             result.add(stat);
@@ -187,6 +195,7 @@ public class QrManageSuperVisitorStatsService {
         }
 
         long totalPv = rawStats.stream()
+                .filter(stat -> parseDeviceType(stat.getDeviceType()) != PackVisitorDeviceType.BOT)
                 .map(QrManageSuperVisitorDeviceStats::getPv)
                 .filter(value -> value != null)
                 .mapToLong(Long::longValue)
@@ -194,6 +203,10 @@ public class QrManageSuperVisitorStatsService {
 
         List<QrManageSuperVisitorDeviceStats> result = new ArrayList<>();
         for (PackVisitorDeviceType deviceType : PackVisitorDeviceType.values()) {
+            if (deviceType == PackVisitorDeviceType.BOT) {
+                continue;
+            }
+
             QrManageSuperVisitorDeviceStats rawStat = statsByType.get(deviceType);
             long pv = rawStat != null ? orZero(rawStat.getPv()) : 0L;
             double ratio = totalPv > 0 ? Math.round((pv * 1000.0) / totalPv) / 10.0 : 0.0;

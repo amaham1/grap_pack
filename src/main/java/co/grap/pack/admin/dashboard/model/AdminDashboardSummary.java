@@ -27,6 +27,8 @@ public class AdminDashboardSummary {
     private Long todayQrGenHistoryCount;
     private Long visitorTodayPv;
     private Long visitorTodayUv;
+    private Long visitorTodayBotPv;
+    private Long visitorTodayBotUv;
     private List<AdminDashboardDailyCount> qrGenDailyCounts;
     private List<QrManageSuperVisitorDailyStats> visitorDailyStats;
 }

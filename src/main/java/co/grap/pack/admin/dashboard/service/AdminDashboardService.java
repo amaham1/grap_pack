@@ -9,6 +9,7 @@ import co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShopStatus;
 import co.grap.pack.qrmanage.shopadmin.stats.service.QrManageStatsService;
 import co.grap.pack.qrmanage.superadmin.shop.model.QrManageShopSearchParam;
 import co.grap.pack.qrmanage.superadmin.shop.service.QrManageSuperShopService;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.service.QrManageSuperVisitorStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,12 @@ public class AdminDashboardService {
         LocalDate startDate = endDate.minusDays(6);
 
         Map<String, Integer> qrStats = qrManageStatsService.getSystemDashboardStats();
+        QrManageSuperVisitorDashboardStats visitorTodayStats = visitorStatsService.getDashboardStats(
+                endDate,
+                endDate,
+                null,
+                null
+        );
         List<AdminDashboardDailyCount> qrGenDailyCounts = normalizeDailyCounts(
                 startDate,
                 endDate,
@@ -64,18 +71,10 @@ public class AdminDashboardService {
                 .todayQrScanCount((long) qrStats.getOrDefault("today", 0))
                 .qrGenUserCount(orZero(adminQrGenQueryMapper.countUsers(null, null)))
                 .todayQrGenHistoryCount(orZero(adminQrGenQueryMapper.countTodayHistories()))
-                .visitorTodayPv(visitorStatsService.getDashboardStats(
-                        endDate,
-                        endDate,
-                        null,
-                        null
-                ).getTodayPv())
-                .visitorTodayUv(visitorStatsService.getDashboardStats(
-                        endDate,
-                        endDate,
-                        null,
-                        null
-                ).getTodayUv())
+                .visitorTodayPv(visitorTodayStats.getTodayPv())
+                .visitorTodayUv(visitorTodayStats.getTodayUv())
+                .visitorTodayBotPv(visitorTodayStats.getTodayBotPv())
+                .visitorTodayBotUv(visitorTodayStats.getTodayBotUv())
                 .qrGenDailyCounts(qrGenDailyCounts)
                 .visitorDailyStats(visitorStatsService.getDailyStats(
                         startDate,

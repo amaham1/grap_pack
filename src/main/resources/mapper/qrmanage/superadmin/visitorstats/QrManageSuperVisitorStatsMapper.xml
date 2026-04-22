@@ -3,6 +3,10 @@
 
 <mapper namespace="co.grap.pack.qrmanage.superadmin.visitorstats.mapper.QrManageSuperVisitorStatsMapper">
 
+    <sql id="nonBotFilter">
+        (device_type IS NULL OR device_type <> 'BOT')
+    </sql>
+
     <sql id="visitorDateRangeFilter">
         DATE(visited_at) BETWEEN #{startDate} AND #{endDate}
         <if test="serviceCode != null and serviceCode != ''">
@@ -25,17 +29,24 @@
 
     <select id="selectDashboardStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats">
         SELECT
-            COALESCE(COUNT(*), 0) AS totalPv,
-            COALESCE(COUNT(DISTINCT session_id), 0) AS totalUv,
-            ROUND(COALESCE(AVG(COALESCE(duration_seconds, 0)), 0), 1) AS averageDurationSeconds
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS totalPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS totalUv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS totalBotPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS totalBotUv,
+            ROUND(
+                COALESCE(AVG(CASE WHEN <include refid="nonBotFilter"/> THEN COALESCE(duration_seconds, 0) END), 0),
+                1
+            ) AS averageDurationSeconds
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
     </select>
 
     <select id="selectTodayStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats">
         SELECT
-            COALESCE(COUNT(*), 0) AS todayPv,
-            COALESCE(COUNT(DISTINCT session_id), 0) AS todayUv
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS todayPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS todayUv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS todayBotPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS todayBotUv
         FROM grap_pack_visitor
         WHERE <include refid="visitorTodayFilter"/>
     </select>
@@ -43,8 +54,10 @@
     <select id="selectDailyStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats">
         SELECT
             DATE_FORMAT(MIN(visited_at), '%Y-%m-%d') AS date,
-            COALESCE(COUNT(*), 0) AS pv,
-            COALESCE(COUNT(DISTINCT session_id), 0) AS uv
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS pv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS uv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS botPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS botUv
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
         GROUP BY DATE(visited_at)
@@ -67,6 +80,7 @@
             ) AS mobileRatio
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
         GROUP BY service_code, menu_code
         ORDER BY pv DESC, uv DESC, service_code ASC, menu_code ASC
     </select>
@@ -79,6 +93,7 @@
             ROUND(COALESCE(AVG(COALESCE(duration_seconds, 0)), 0), 1) AS averageDurationSeconds
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
         GROUP BY route_key
         ORDER BY pv DESC, uv DESC, route_key ASC
     </select>
@@ -89,8 +104,9 @@
             COALESCE(COUNT(*), 0) AS pv
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
         GROUP BY device_type
-        ORDER BY FIELD(device_type, 'DESKTOP', 'MOBILE', 'TABLET', 'BOT', 'UNKNOWN')
+        ORDER BY FIELD(device_type, 'DESKTOP', 'MOBILE', 'TABLET', 'UNKNOWN')
     </select>
 
 </mapper>

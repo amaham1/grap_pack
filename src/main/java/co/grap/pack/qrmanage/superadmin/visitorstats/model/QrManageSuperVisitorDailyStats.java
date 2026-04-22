@@ -17,9 +17,15 @@ public class QrManageSuperVisitorDailyStats {
     /** 집계 일자 */
     private String date;
 
-    /** PV */
+    /** 방문 수(BOT 제외) */
     private Long pv;
 
-    /** UV */
+    /** 중복 제외 방문자 수(BOT 제외) */
     private Long uv;
+
+    /** BOT 요청 수 */
+    private Long botPv;
+
+    /** BOT 세션 수 */
+    private Long botUv;
 }
