@@ -2,8 +2,10 @@ package co.grap.pack.grap.user.content.controller;
 
 import co.grap.pack.grap.user.content.model.CmsUserWelfareRequest;
 import co.grap.pack.grap.user.content.service.CmsUserWelfareService;
+import co.grap.pack.grap.user.content.support.CmsUserContentFallbacks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +40,19 @@ public class CmsUserWelfareController {
                                @RequestParam(value = "page", required = false) Integer page,
                                @RequestParam(value = "size", required = false) Integer size,
                                Model model) {
-        Map<String, Object> result = welfareService.getWelfareList(keyword, page, size);
+        Map<String, Object> result;
+        try {
+            result = welfareService.getWelfareList(keyword, page, size);
+        } catch (DataAccessException exception) {
+            log.warn("Welfare tables are not ready in the current CMS database. Showing fallback page.", exception);
+            result = CmsUserContentFallbacks.unavailableList(
+                    "welfareList",
+                    keyword,
+                    page,
+                    size,
+                    "복지서비스 데이터는 아직 이 서버에서 준비 중입니다."
+            );
+        }
 
         model.addAllAttributes(result);
         model.addAttribute("content", "grap/user/content/cms-welfare-list");

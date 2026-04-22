@@ -2,8 +2,10 @@ package co.grap.pack.grap.user.content.controller;
 
 import co.grap.pack.grap.user.content.model.CmsUserExhibitionRequest;
 import co.grap.pack.grap.user.content.service.CmsUserExhibitionService;
+import co.grap.pack.grap.user.content.support.CmsUserContentFallbacks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +42,20 @@ public class CmsUserExhibitionController {
                                   @RequestParam(value = "page", required = false) Integer page,
                                   @RequestParam(value = "size", required = false) Integer size,
                                   Model model) {
-        Map<String, Object> result = exhibitionService.getExhibitionList(keyword, tab, page, size);
+        Map<String, Object> result;
+        try {
+            result = exhibitionService.getExhibitionList(keyword, tab, page, size);
+        } catch (DataAccessException exception) {
+            log.warn("Exhibition tables are not ready in the current CMS database. Showing fallback page.", exception);
+            result = CmsUserContentFallbacks.unavailableList(
+                    "exhibitionList",
+                    keyword,
+                    page,
+                    size,
+                    "공연/전시 데이터는 아직 이 서버에서 준비 중입니다.",
+                    Map.of()
+            );
+        }
 
         model.addAllAttributes(result);
         model.addAttribute("content", "grap/user/content/cms-exhibition-list");

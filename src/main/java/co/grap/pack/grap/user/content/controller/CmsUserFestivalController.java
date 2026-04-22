@@ -2,8 +2,10 @@ package co.grap.pack.grap.user.content.controller;
 
 import co.grap.pack.grap.user.content.model.CmsUserFestivalRequest;
 import co.grap.pack.grap.user.content.service.CmsUserFestivalService;
+import co.grap.pack.grap.user.content.support.CmsUserContentFallbacks;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,7 +40,19 @@ public class CmsUserFestivalController {
                                 @RequestParam(value = "page", required = false) Integer page,
                                 @RequestParam(value = "size", required = false) Integer size,
                                 Model model) {
-        Map<String, Object> result = festivalService.getFestivalList(keyword, page, size);
+        Map<String, Object> result;
+        try {
+            result = festivalService.getFestivalList(keyword, page, size);
+        } catch (DataAccessException exception) {
+            log.warn("Festival tables are not ready in the current CMS database. Showing fallback page.", exception);
+            result = CmsUserContentFallbacks.unavailableList(
+                    "festivalList",
+                    keyword,
+                    page,
+                    size,
+                    "축제/행사 데이터는 아직 이 서버에서 준비 중입니다."
+            );
+        }
 
         model.addAllAttributes(result);
         model.addAttribute("content", "grap/user/content/cms-festival-list");
