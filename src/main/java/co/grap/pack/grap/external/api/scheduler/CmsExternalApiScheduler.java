@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * 제주도 외부 API 데이터 동기화 스케줄러
  *
- * 실행 주기: 새벽 2시 5분, 8시 5분, 14시 5분, 20시 5분 (하루 4회)
+ * 실행 주기: 매일 새벽 6시
  */
 @Slf4j
 @Component
@@ -38,9 +38,9 @@ public class CmsExternalApiScheduler {
     /**
      * 통합 데이터 동기화 스케줄러
      * 크론 표현식: "초 분 시 일 월 요일"
-     * "0 5 2,8,14,20 * * *" = 매일 2시 5분, 8시 5분, 14시 5분, 20시 5분에 실행
+     * "0 0 6 * * *" = 매일 6시 0분에 실행
      */
-    @Scheduled(cron = "0 5 2,8,14,20 * * *")
+    @Scheduled(cron = "${external-api.scheduler.cron:0 0 6 * * *}")
     public void syncAllExternalApiData() {
         // 이미 실행 중이면 건너뛰기
         if (!isRunning.compareAndSet(false, true)) {

@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 ## 핵심 지침
 
@@ -90,17 +90,17 @@ echo "로그 확인: tail -f $LOG_PATH"
 tail -f /home/ubuntu/grap_pack/app.log
 ```
 
-## Claude Code 협업 워크플로우
+## Codex 협업 워크플로우
 
 ### 기능 구현 및 검증 프로세스
 
-Claude Code와 효율적으로 협업하기 위한 표준 워크플로우:
+Codex와 효율적으로 협업하기 위한 표준 워크플로우:
 
-#### 1. 기능 구현 (Claude)
+#### 1. 기능 구현 (Codex)
 - 요구사항에 맞게 코드 작성
 - 필요한 Service, Controller, Mapper, Model 구현
 
-#### 2. 검증 로그 추가 (Claude)
+#### 2. 검증 로그 추가 (Codex)
 - 기능의 핵심 지점에 검증용 로그 추가
 - 패턴화된 로그 메시지 사용으로 필터링 용이하게 구성
 ```java
@@ -110,9 +110,9 @@ log.error("❌ [ERROR] 파일 업로드 실패: {}", e.getMessage());
 ```
 
 #### 3. 서버 실행 + 사용자 테스트 + 로그 확인 (협업)
-- **Claude**: 백그라운드로 서버 실행 및 로그 모니터링
+- **Codex**: 백그라운드로 서버 실행 및 로그 모니터링
 - **사용자**: 브라우저에서 실제 UI/기능 테스트
-- **Claude**: 필터링된 로그로 기능 정상 작동 검증
+- **Codex**: 필터링된 로그로 기능 정상 작동 검증
 
 #### 로그 레벨 최적화 (토큰 효율성)
 
@@ -122,7 +122,7 @@ log.error("❌ [ERROR] 파일 업로드 실패: {}", e.getMessage());
 - ✅ **실제 사용자 시나리오 테스트**: JWT 인증, 복잡한 UI 상호작용 등 실제 환경에서 검증
 - ✅ **토큰 효율성**: 필요한 로그만 확인하여 토큰 소비 최소화
 - ✅ **빠른 피드백**: 에러 즉시 포착 및 수정
-- ✅ **협업 효율성**: Claude는 코드와 로그, 사용자는 UX 검증
+- ✅ **협업 효율성**: Codex는 코드와 로그, 사용자는 UX 검증
 
 ## Logging
 

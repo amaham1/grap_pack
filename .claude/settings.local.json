@@ -35,7 +35,10 @@
       "Bash(cmd.exe //c \"gradlew.bat compileJava\")",
       "Bash(cmd.exe //c \".\\\\gradlew.bat compileJava\")",
       "Bash(cmd.exe //c \"gradlew.bat build -x test\")",
-      "Bash(cmd.exe //c \".\\\\gradlew.bat compileJava 2>&1\")"
+      "Bash(cmd.exe //c \".\\\\gradlew.bat compileJava 2>&1\")",
+      "Bash(cmd.exe /c \"gradlew.bat build 2>&1\")",
+      "Bash(\"C:/Users/MMM/Desktop/development/grap/grap_pack/gradlew.bat\" build -p \"C:/Users/MMM/Desktop/development/grap/grap_pack\")",
+      "Bash(\"C:/Users/MMM/Desktop/development/grap/grap_pack/gradlew.bat\" compileJava -p \"C:/Users/MMM/Desktop/development/grap/grap_pack\")"
     ],
     "deny": [],
     "ask": []

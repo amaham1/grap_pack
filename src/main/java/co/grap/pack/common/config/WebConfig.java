@@ -1,7 +1,10 @@
 package co.grap.pack.common.config;
 
+import co.grap.pack.common.visitor.interceptor.PackVisitorInterceptor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -9,7 +12,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * Spring MVC 설정
  */
 @Configuration
+@RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
+
+    private final PackVisitorInterceptor packVisitorInterceptor;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -22,12 +28,24 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 업로드된 파일 접근 경로 설정
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/");
 
-        // QR Generator 이미지 접근 경로 설정
         registry.addResourceHandler("/qrgen/images/**")
                 .addResourceLocations("file:" + qrgenImagePath + "/");
+    }
+
+    /**
+     * 공통 방문자 인터셉터 등록
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(packVisitorInterceptor)
+                .addPathPatterns(
+                        "/",
+                        "/grap/user/**",
+                        "/qrgen/**",
+                        "/qr-manage/view/**"
+                );
     }
 }

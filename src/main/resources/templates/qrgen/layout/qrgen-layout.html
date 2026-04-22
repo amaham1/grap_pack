@@ -8,7 +8,7 @@
     <title layout:title-pattern="$CONTENT_TITLE - Grap QR">Grap QR</title>
 
     <meta name="description" th:if="${seoDescription}" th:content="${seoDescription}">
-    <meta name="description" th:unless="${seoDescription}" content="무료 QR 코드 생성기입니다. URL, 텍스트, 연락처 등 다양한 정보를 간편하게 QR 코드로 만들 수 있습니다.">
+    <meta name="description" th:unless="${seoDescription}" content="무료 QR 코드를 생성할 수 있습니다. URL, 텍스트, 연락처 등 다양한 정보를 간편하게 QR 코드로 만들 수 있습니다.">
     <meta name="robots" th:if="${seoRobots}" th:content="${seoRobots}">
     <link rel="canonical" th:if="${seoCanonical}" th:href="${seoCanonical}">
 
@@ -48,9 +48,9 @@
     <th:block layout:fragment="structured-data"></th:block>
 
     <script th:src="@{/qrgen/js/qrgen.js}"></script>
-    <script th:if="${qrGenVisitorId != null}">
-        window.QRGEN_VISITOR_ID = [[${qrGenVisitorId}]];
+    <script th:if="${packVisitorId != null}">
+        window.PACK_VISITOR_ID = [[${packVisitorId}]];
     </script>
-    <script th:if="${qrGenVisitorId != null}" th:src="@{/qrgen/js/qrgen-visitor.js}"></script>
+    <script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
 </body>
 </html>

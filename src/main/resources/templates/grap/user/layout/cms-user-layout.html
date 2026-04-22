@@ -10,22 +10,21 @@
     <link rel="stylesheet" th:href="@{/grap/css/user.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    <!-- Google AdSense 자동 광고 -->
     <th:block th:replace="~{common/fragments/adsense-script :: adsense-script}"></th:block>
 </head>
 <body>
-    <!-- 헤더 -->
     <div th:replace="~{common/fragments/cms-header :: user-header}"></div>
 
-    <!-- 메인 컨텐츠 -->
     <main class="user-container">
         <div th:replace="${content}"></div>
     </main>
 
-    <!-- 푸터 -->
     <div th:replace="~{common/fragments/cms-footer :: user-footer}"></div>
 
-    <!-- 공통 JavaScript -->
     <script th:src="@{/common/js/common.js}"></script>
+    <script th:if="${packVisitorId != null}">
+        window.PACK_VISITOR_ID = [[${packVisitorId}]];
+    </script>
+    <script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
 </body>
 </html>
