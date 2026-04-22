@@ -5,6 +5,10 @@
 <body>
 <section layout:fragment="content">
     <div class="admin-card">
+        <p class="admin-card-note" style="margin: 0 0 16px; line-height: 1.6;">
+            방문 수는 페이지가 열린 전체 횟수입니다.
+            중복 제외 방문자 수는 같은 세션의 반복 방문을 한 번으로 묶은 수치입니다.
+        </p>
         <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
             <label class="admin-field">
                 <span>시작일</span>
@@ -40,45 +44,46 @@
 
     <div class="admin-card-grid admin-card-grid-4">
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">총 PV</p>
+            <p class="admin-card-label">전체 방문 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">총 UV</p>
+            <p class="admin-card-label">전체 중복 제외 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalUv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 PV</p>
+            <p class="admin-card-label">오늘 방문 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 UV</p>
+            <p class="admin-card-label">오늘 중복 제외 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayUv}">0</strong>
         </section>
     </div>
 
     <div class="admin-card-grid admin-card-grid-2">
         <section class="admin-card">
-            <p class="admin-card-label">일별 PV/UV</p>
+            <p class="admin-card-label">일별 방문 현황</p>
             <div class="admin-mini-chart">
                 <div class="admin-mini-chart-row" th:each="item : ${dailyStats}">
                     <span class="admin-mini-chart-label" th:text="${item.date}">2026-04-22</span>
                     <div class="admin-mini-chart-bar-wrap">
                         <div class="admin-mini-chart-bar" th:style="'width:' + (${item.pv} * 3 + 12) + 'px'"></div>
                     </div>
-                    <span class="admin-mini-chart-value" th:text="${item.pv + ' / ' + item.uv}">0 / 0</span>
+                    <span class="admin-mini-chart-value"
+                          th:text="${'방문 ' + item.pv + ' / 중복 제외 ' + item.uv}">방문 0 / 중복 제외 0</span>
                 </div>
             </div>
         </section>
 
         <section class="admin-card">
-            <p class="admin-card-label">디바이스 비율</p>
+            <p class="admin-card-label">기기 비율</p>
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
                     <tr>
-                        <th>디바이스</th>
-                        <th>PV</th>
+                        <th>기기</th>
+                        <th>방문 수</th>
                         <th>비율</th>
                     </tr>
                     </thead>
@@ -96,15 +101,15 @@
 
     <div class="admin-card-grid admin-card-grid-2">
         <section class="admin-card">
-            <p class="admin-card-label">서비스/메뉴 요약</p>
+            <p class="admin-card-label">서비스 / 메뉴별 방문 요약</p>
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
                     <tr>
                         <th>서비스</th>
                         <th>메뉴</th>
-                        <th>PV</th>
-                        <th>UV</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
                         <th>평균 체류시간</th>
                     </tr>
                     </thead>
@@ -125,14 +130,14 @@
         </section>
 
         <section class="admin-card">
-            <p class="admin-card-label">routeKey 상세</p>
+            <p class="admin-card-label">상세 경로별 방문 현황</p>
             <div class="admin-table-wrap">
                 <table class="admin-table">
                     <thead>
                     <tr>
-                        <th>routeKey</th>
-                        <th>PV</th>
-                        <th>UV</th>
+                        <th>상세 경로</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
                         <th>평균 체류시간</th>
                     </tr>
                     </thead>
@@ -144,7 +149,7 @@
                         <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(routeStats)}">
-                        <td colspan="4">선택한 메뉴의 routeKey 집계가 없습니다.</td>
+                        <td colspan="4">선택한 메뉴의 상세 경로 집계가 없습니다.</td>
                     </tr>
                     </tbody>
                 </table>
