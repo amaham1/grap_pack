@@ -1,5 +1,6 @@
 package co.grap.pack.grap.user.content.controller;
 
+import co.grap.pack.grap.seo.CmsPublicSeoService;
 import co.grap.pack.grap.user.content.model.CmsUserWelfareRequest;
 import co.grap.pack.grap.user.content.service.CmsUserWelfareService;
 import co.grap.pack.grap.user.content.support.CmsUserContentFallbacks;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 사용자 복지서비스 컨트롤러
+ * 사용자 복지 서비스 컨트롤러다.
  */
 @Slf4j
 @Controller
@@ -31,15 +32,22 @@ import java.util.Map;
 public class CmsUserWelfareController {
 
     private final CmsUserWelfareService welfareService;
+    private final CmsPublicSeoService cmsPublicSeoService;
 
     /**
-     * 복지서비스 목록 페이지
+     * 복지 서비스 목록 페이지를 보여준다.
+     *
+     * @param keyword 검색어
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping
     public String welfareList(@RequestParam(value = "keyword", required = false) String keyword,
-                               @RequestParam(value = "page", required = false) Integer page,
-                               @RequestParam(value = "size", required = false) Integer size,
-                               Model model) {
+                              @RequestParam(value = "page", required = false) Integer page,
+                              @RequestParam(value = "size", required = false) Integer size,
+                              Model model) {
         Map<String, Object> result;
         try {
             result = welfareService.getWelfareList(keyword, page, size);
@@ -50,42 +58,62 @@ public class CmsUserWelfareController {
                     keyword,
                     page,
                     size,
-                    "복지서비스 데이터는 아직 이 서버에서 준비 중입니다."
+                    "복지 서비스 데이터는 아직 이 서버에서 준비 중입니다."
             );
         }
 
         model.addAllAttributes(result);
+        cmsPublicSeoService.applyWelfareListSeo(model, keyword, page);
         model.addAttribute("content", "grap/user/content/cms-welfare-list");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 복지서비스 상세 페이지
+     * 복지 서비스 상세 페이지를 보여준다.
+     *
+     * @param id 복지 서비스 ID
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/{id}")
     public String welfareDetail(@PathVariable("id") Long id, Model model) {
         Map<String, Object> welfare = welfareService.getWelfareDetail(id);
-
         if (welfare == null) {
             return "redirect:/grap/user/content/welfare";
         }
 
         model.addAttribute("welfare", welfare);
+        cmsPublicSeoService.applyWelfareDetailSeo(model, welfare);
         model.addAttribute("content", "grap/user/content/cms-welfare-detail");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 복지서비스 등록 요청 페이지 (폼)
+     * 복지 서비스 등록 요청 폼을 보여준다.
+     *
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/request")
     public String welfareRequestForm(Model model) {
+        cmsPublicSeoService.applyRequestSeo(
+                model,
+                "/grap/user/content/welfare/request",
+                "제주 복지 서비스 등록 요청",
+                "제주 복지 서비스 정보를 등록 요청하는 사용자 전용 폼입니다."
+        );
         model.addAttribute("content", "grap/user/content/cms-welfare-request");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 복지서비스 등록 요청 처리
+     * 복지 서비스 등록 요청을 처리한다.
+     *
+     * @param request 요청 데이터
+     * @param images 첨부 이미지
+     * @param thumbnailIndex 대표 이미지 인덱스
+     * @param redirectAttributes 리다이렉트 메시지 모델
+     * @return 리다이렉트 경로
      */
     @PostMapping("/request")
     public String createWelfareRequest(@ModelAttribute CmsUserWelfareRequest request,
@@ -93,15 +121,20 @@ public class CmsUserWelfareController {
                                        @RequestParam(value = "thumbnailIndex", required = false) Integer thumbnailIndex,
                                        RedirectAttributes redirectAttributes) {
         try {
-            log.info("✅ [CHECK] 복지서비스 등록 요청 컨트롤러 시작");
+            log.info("✅ [CHECK] 복지 서비스 등록 요청 컨트롤러 시작");
             Long welfareServiceId = welfareService.createWelfareRequest(request, images, thumbnailIndex);
-            log.info("✅ [CHECK] 복지서비스 등록 요청 컨트롤러 완료: welfareServiceId={}", welfareServiceId);
-
-            redirectAttributes.addFlashAttribute("successMessage", "등록에 성공하였습니다. 빠른 검수 요청을 원할시에는 82grap@gmail.com 으로 메일보내주세요");
+            log.info("✅ [CHECK] 복지 서비스 등록 요청 컨트롤러 완료: welfareServiceId={}", welfareServiceId);
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "등록이 접수되었습니다. 빠른 검토가 필요하면 82grap@gmail.com 으로 메일을 보내주세요."
+            );
             return "redirect:/grap/user/content/welfare";
-        } catch (IOException e) {
-            log.error("❌ [ERROR] 복지서비스 등록 요청 실패: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "등록 요청 중 오류가 발생했습니다: " + e.getMessage());
+        } catch (IOException exception) {
+            log.error("❌ [ERROR] 복지 서비스 등록 요청 실패: {}", exception.getMessage());
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "등록 요청 중 오류가 발생했습니다: " + exception.getMessage()
+            );
             return "redirect:/grap/user/content/welfare/request";
         }
     }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * QR Generator 인증 컨트롤러
+ * QR Generator 인증 컨트롤러다.
  */
 @Slf4j
 @Controller
@@ -24,7 +24,12 @@ public class QrGenAuthController {
     private final QrGenAuthService authService;
 
     /**
-     * 로그인 페이지
+     * 로그인 페이지를 보여준다.
+     *
+     * @param error 에러 여부
+     * @param logout 로그아웃 여부
+     * @param model 화면 모델
+     * @return 템플릿 경로
      */
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
@@ -34,27 +39,33 @@ public class QrGenAuthController {
             model.addAttribute("errorMessage", "아이디 또는 비밀번호가 올바르지 않습니다.");
         }
         if (logout != null) {
-            model.addAttribute("logoutMessage", "로그아웃 되었습니다.");
+            model.addAttribute("logoutMessage", "로그아웃되었습니다.");
         }
-        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/auth/login",
-                "로그인",
-                "Grap QR 코드 생성기 로그인. 로그인하면 QR 코드 생성 기록을 저장하고 관리할 수 있습니다.");
+        QrGenSeoHelper.setQrGenLoginSeo(model);
         return "qrgen/auth/qrgen-login";
     }
 
     /**
-     * 회원가입 페이지
+     * 회원가입 페이지를 보여준다.
+     *
+     * @param model 화면 모델
+     * @return 템플릿 경로
      */
     @GetMapping("/register")
     public String registerPage(Model model) {
-        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/auth/register",
-                "무료 회원가입",
-                "Grap QR 코드 생성기 무료 회원가입. 가입하면 QR 코드 생성 기록 저장, 재생성 등 편리한 기능을 이용할 수 있습니다.");
+        QrGenSeoHelper.setQrGenRegisterSeo(model);
         return "qrgen/auth/qrgen-register";
     }
 
     /**
-     * 회원가입 처리
+     * 회원가입을 처리한다.
+     *
+     * @param loginId 로그인 아이디
+     * @param password 비밀번호
+     * @param passwordConfirm 비밀번호 확인
+     * @param nickname 닉네임
+     * @param redirectAttributes 리다이렉트 메시지 모델
+     * @return 리다이렉트 경로
      */
     @PostMapping("/register")
     public String register(@RequestParam("loginId") String loginId,
@@ -63,13 +74,11 @@ public class QrGenAuthController {
                            @RequestParam(value = "nickname", required = false) String nickname,
                            RedirectAttributes redirectAttributes) {
         try {
-            // 비밀번호 확인
             if (!password.equals(passwordConfirm)) {
                 redirectAttributes.addFlashAttribute("errorMessage", "비밀번호가 일치하지 않습니다.");
                 return "redirect:/qrgen/auth/register";
             }
 
-            // 유효성 검사
             if (loginId.length() < 4 || loginId.length() > 20) {
                 redirectAttributes.addFlashAttribute("errorMessage", "아이디는 4~20자여야 합니다.");
                 return "redirect:/qrgen/auth/register";
@@ -80,14 +89,11 @@ public class QrGenAuthController {
                 return "redirect:/qrgen/auth/register";
             }
 
-            // 회원가입
             authService.registerQrGenUser(loginId, password, nickname);
-            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인해주세요.");
-
+            redirectAttributes.addFlashAttribute("successMessage", "회원가입이 완료되었습니다. 로그인해 주세요.");
             return "redirect:/qrgen/auth/login";
-
-        } catch (IllegalArgumentException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (IllegalArgumentException exception) {
+            redirectAttributes.addFlashAttribute("errorMessage", exception.getMessage());
             return "redirect:/qrgen/auth/register";
         }
     }

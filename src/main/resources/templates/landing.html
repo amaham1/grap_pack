@@ -3,21 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Grap - QR 코드 생성과 제주 부동산 정보</title>
-    <meta name="description" th:attr="content=${pageDescription}">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://grap.co.kr/">
+    <title th:text="${seoTitle != null ? seoTitle + ' | Grap' : 'Grap'}">Grap</title>
+    <meta name="description"
+          th:content="${seoDescription != null ? seoDescription : '제주 생활 정보와 QR 도구를 Grap에서 확인하세요.'}">
+    <meta name="robots" th:content="${seoRobots != null ? seoRobots : 'index, follow'}">
+    <link rel="canonical" th:if="${seoCanonical != null}" th:href="${seoCanonical}">
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" th:attr="content=${pageTitle}">
-    <meta property="og:description" th:attr="content=${pageDescription}">
-    <meta property="og:url" content="https://grap.co.kr/">
-    <meta property="og:site_name" content="Grap">
-    <meta property="og:locale" content="ko_KR">
+    <meta property="og:type" th:content="${seoOgType != null ? seoOgType : 'website'}">
+    <meta property="og:title" th:content="${seoTitle != null ? seoTitle : 'Grap'}">
+    <meta property="og:description"
+          th:content="${seoDescription != null ? seoDescription : '제주 생활 정보와 QR 도구를 Grap에서 확인하세요.'}">
+    <meta property="og:url" th:if="${seoCanonical != null}" th:content="${seoCanonical}">
+    <meta property="og:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+    <meta property="og:site_name" th:content="${seoSiteName != null ? seoSiteName : 'Grap'}">
+    <meta property="og:locale" th:content="${seoLocale != null ? seoLocale : 'ko_KR'}">
+
+    <meta name="twitter:card" th:content="${seoTwitterCard != null ? seoTwitterCard : 'summary'}">
+    <meta name="twitter:title" th:content="${seoTitle != null ? seoTitle : 'Grap'}">
+    <meta name="twitter:description"
+          th:content="${seoDescription != null ? seoDescription : '제주 생활 정보와 QR 도구를 Grap에서 확인하세요.'}">
+    <meta name="twitter:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
 
     <link rel="stylesheet" th:href="@{/common/css/base.css}">
     <link rel="stylesheet" th:href="@{/common/css/landing.css}">
     <th:block th:replace="~{common/fragments/adsense-script :: adsense-script}"></th:block>
+    <th:block th:if="${seoStructuredDataList != null}">
+        <script th:each="seoStructuredData : ${seoStructuredDataList}"
+                type="application/ld+json"
+                th:utext="${seoStructuredData}"></script>
+    </th:block>
 </head>
 <body>
 <header class="landing-header">
@@ -25,27 +39,27 @@
         <a th:href="@{/grap/user/content/real-estate}" class="landing-logo">Grap</a>
         <nav class="landing-nav" aria-label="서비스 바로가기">
             <a th:href="@{/grap/user/content/real-estate}" class="landing-nav-link">부동산</a>
-            <a th:href="@{/qrgen/}" class="landing-nav-link">QR코드 생성</a>
+            <a th:href="@{/qrgen/}" class="landing-nav-link">QR 코드 생성</a>
         </nav>
     </div>
 </header>
 
 <section class="landing-hero">
     <h1 class="landing-hero-title">Grap 플랫폼</h1>
-    <p class="landing-hero-subtitle">QR 코드 생성과 제주 부동산 정보를 한곳에서 제공합니다.</p>
+    <p class="landing-hero-subtitle">제주 생활 정보와 QR 도구를 한 곳에서 제공합니다.</p>
 </section>
 
 <main class="landing-main">
     <div class="landing-services">
         <a th:href="@{/qrgen/}" class="landing-card landing-card-featured">
-            <h2 class="landing-card-title">QR코드 생성기</h2>
-            <p class="landing-card-desc">URL, 텍스트, 연락처 등 다양한 정보를 QR코드로 빠르게 만들고 내려받을 수 있습니다.</p>
+            <h2 class="landing-card-title">QR 코드 생성기</h2>
+            <p class="landing-card-desc">URL, 텍스트, 연락처 등 다양한 정보를 QR 코드로 빠르게 만들고 내려받을 수 있습니다.</p>
             <span class="landing-card-badge landing-badge-active">바로 사용하기</span>
         </a>
 
         <a th:href="@{/grap/user/content/real-estate}" class="landing-card">
             <h2 class="landing-card-title">제주 부동산</h2>
-            <p class="landing-card-desc">제주 거래량 목록, 연도별 시세 흐름, 매수 대출 계산까지 한 번에 확인할 수 있습니다.</p>
+            <p class="landing-card-desc">제주 실거래가 목록과 시세 흐름, 대출 계산까지 한 번에 확인할 수 있습니다.</p>
             <span class="landing-card-badge landing-badge-active">바로 보기</span>
         </a>
     </div>
@@ -56,25 +70,6 @@
     <span class="landing-footer-contact">문의: contact@grap.co.kr</span>
 </footer>
 
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Grap",
-    "url": "https://grap.co.kr/",
-    "description": "QR 코드 생성과 제주 부동산 정보를 제공하는 Grap 플랫폼"
-}
-</script>
-
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Grap",
-    "url": "https://grap.co.kr/",
-    "sameAs": []
-}
-</script>
 <script th:if="${packVisitorId != null}">
     window.PACK_VISITOR_ID = [[${packVisitorId}]];
 </script>

@@ -2,6 +2,7 @@ package co.grap.pack.grap.user.content.controller;
 
 import co.grap.pack.grap.admin.content.model.CmsAdminContentType;
 import co.grap.pack.grap.admin.content.service.CmsAdminContentTypeService;
+import co.grap.pack.grap.seo.CmsPublicSeoService;
 import co.grap.pack.grap.user.content.model.CmsUserContent;
 import co.grap.pack.grap.user.content.model.CmsUserContentSearchParam;
 import co.grap.pack.grap.user.content.service.CmsUserContentService;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 사용자 콘텐츠 컨트롤러
+ * 사용자 일반 콘텐츠 컨트롤러다.
  */
 @Controller
 @RequestMapping("/grap/user/content")
@@ -25,9 +26,14 @@ public class CmsUserContentController {
 
     private final CmsUserContentService userContentService;
     private final CmsAdminContentTypeService adminContentTypeService;
+    private final CmsPublicSeoService cmsPublicSeoService;
 
     /**
-     * 콘텐츠 목록 페이지
+     * 일반 콘텐츠 목록 페이지를 보여준다.
+     *
+     * @param searchParam 검색 파라미터
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/list")
     public String contentList(CmsUserContentSearchParam searchParam, Model model) {
@@ -41,23 +47,27 @@ public class CmsUserContentController {
         model.addAttribute("size", result.get("size"));
         model.addAttribute("searchParam", searchParam);
         model.addAttribute("contentTypeList", contentTypeList);
+        cmsPublicSeoService.applyContentListSeo(model, searchParam);
         model.addAttribute("content", "grap/user/content/cms-content-list");
-
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 콘텐츠 상세 페이지
+     * 일반 콘텐츠 상세 페이지를 보여준다.
+     *
+     * @param contentId 콘텐츠 ID
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/detail/{contentId}")
     public String contentDetail(@PathVariable("contentId") Long contentId, Model model) {
         CmsUserContent contentData = userContentService.getContent(contentId);
-
         if (contentData == null) {
             return "redirect:/grap/user/content/festivals";
         }
 
         model.addAttribute("contentData", contentData);
+        cmsPublicSeoService.applyContentDetailSeo(model, contentData);
         model.addAttribute("content", "grap/user/content/cms-detail");
         return "grap/user/layout/cms-user-layout";
     }

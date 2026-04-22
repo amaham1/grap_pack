@@ -15,7 +15,10 @@ import javax.sql.DataSource;
  */
 @org.springframework.context.annotation.Configuration
 @MapperScan(
-        basePackages = "co.grap.pack.common.visitor.mapper",
+        basePackages = {
+                "co.grap.pack.common.visitor.mapper",
+                "co.grap.pack.common.seo.mapper"
+        },
         sqlSessionFactoryRef = "commonSqlSessionFactory"
 )
 public class CommonMyBatisConfig {
@@ -32,7 +35,9 @@ public class CommonMyBatisConfig {
 
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/common/**/*.xml"));
-        sessionFactory.setTypeAliasesPackage("co.grap.pack.common.visitor.model");
+        sessionFactory.setTypeAliasesPackage(
+                "co.grap.pack.common.visitor.model,co.grap.pack.common.seo.model"
+        );
 
         Configuration configuration = new Configuration();
         configuration.setMapUnderscoreToCamelCase(true);

@@ -1,27 +1,36 @@
 package co.grap.pack.grap.home.controller;
 
+import co.grap.pack.grap.seo.CmsPublicSeoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * 홈 컨트롤러
+ * 루트 홈 컨트롤러다.
  */
 @Controller
+@RequiredArgsConstructor
 public class CmsHomeController {
 
+    private final CmsPublicSeoService cmsPublicSeoService;
+
     /**
-     * 루트 랜딩 페이지 - 서비스 소개 및 링크
+     * 루트 랜딩 페이지를 보여준다.
+     *
+     * @param model 화면 모델
+     * @return 랜딩 템플릿
      */
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("pageTitle", "Grap - QR 코드 생성 & 콘텐츠 관리 플랫폼");
-        model.addAttribute("pageDescription", "무료 QR 코드 생성기, 축제·전시 콘텐츠 관리, QR 메뉴판 서비스를 제공하는 Grap 플랫폼입니다.");
+        cmsPublicSeoService.applyLandingSeo(model);
         return "landing";
     }
 
     /**
-     * grap 서비스 루트 - 축제 목록으로 리다이렉트
+     * Grap 서비스 루트는 공개 축제 목록으로 보낸다.
+     *
+     * @return 리다이렉트 경로
      */
     @GetMapping("/grap")
     public String grapHome() {

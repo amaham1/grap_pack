@@ -1,16 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-    <title>Grap</title>
+    <title th:text="${seoTitle != null ? seoTitle + ' | Grap' : 'Grap'}">Grap</title>
+
+    <meta name="description"
+          th:content="${seoDescription != null ? seoDescription : 'Grap에서 제주 생활 정보와 공개 콘텐츠를 확인하세요.'}">
+    <meta name="robots" th:content="${seoRobots != null ? seoRobots : 'index, follow'}">
+    <link rel="canonical" th:if="${seoCanonical != null}" th:href="${seoCanonical}">
+
+    <meta property="og:type" th:content="${seoOgType != null ? seoOgType : 'website'}">
+    <meta property="og:title" th:content="${seoTitle != null ? seoTitle : 'Grap'}">
+    <meta property="og:description"
+          th:content="${seoDescription != null ? seoDescription : 'Grap에서 제주 생활 정보와 공개 콘텐츠를 확인하세요.'}">
+    <meta property="og:url" th:if="${seoCanonical != null}" th:content="${seoCanonical}">
+    <meta property="og:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+    <meta property="og:site_name" th:content="${seoSiteName != null ? seoSiteName : 'Grap'}">
+    <meta property="og:locale" th:content="${seoLocale != null ? seoLocale : 'ko_KR'}">
+
+    <meta name="twitter:card" th:content="${seoTwitterCard != null ? seoTwitterCard : 'summary'}">
+    <meta name="twitter:title" th:content="${seoTitle != null ? seoTitle : 'Grap'}">
+    <meta name="twitter:description"
+          th:content="${seoDescription != null ? seoDescription : 'Grap에서 제주 생활 정보와 공개 콘텐츠를 확인하세요.'}">
+    <meta name="twitter:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+
     <link rel="stylesheet" th:href="@{/common/css/site-header.css}">
     <link rel="stylesheet" th:href="@{/grap/css/user.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <th:block th:replace="~{common/fragments/adsense-script :: adsense-script}"></th:block>
+    <th:block th:if="${seoStructuredDataList != null}">
+        <script th:each="seoStructuredData : ${seoStructuredDataList}"
+                type="application/ld+json"
+                th:utext="${seoStructuredData}"></script>
+    </th:block>
 </head>
 <body>
 <div th:replace="~{common/fragments/cms-header :: user-header}"></div>

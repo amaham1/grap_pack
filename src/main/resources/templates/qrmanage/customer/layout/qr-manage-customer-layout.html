@@ -1,14 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title th:text="${title}">QR 메뉴</title>
+    <title th:text="${seoTitle != null ? seoTitle + ' | Grap' : 'QR 메뉴 | Grap'}">QR 메뉴 | Grap</title>
+
+    <meta name="description"
+          th:content="${seoDescription != null ? seoDescription : 'QR 메뉴와 상점 안내 정보를 확인하세요.'}">
+    <meta name="robots" th:content="${seoRobots != null ? seoRobots : 'noindex, nofollow'}">
+    <link rel="canonical" th:if="${seoCanonical != null}" th:href="${seoCanonical}">
+
+    <meta property="og:type" th:content="${seoOgType != null ? seoOgType : 'website'}">
+    <meta property="og:title" th:content="${seoTitle != null ? seoTitle : 'QR 메뉴'}">
+    <meta property="og:description"
+          th:content="${seoDescription != null ? seoDescription : 'QR 메뉴와 상점 안내 정보를 확인하세요.'}">
+    <meta property="og:url" th:if="${seoCanonical != null}" th:content="${seoCanonical}">
+    <meta property="og:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+    <meta property="og:site_name" th:content="${seoSiteName != null ? seoSiteName : 'Grap'}">
+    <meta property="og:locale" th:content="${seoLocale != null ? seoLocale : 'ko_KR'}">
+
+    <meta name="twitter:card" th:content="${seoTwitterCard != null ? seoTwitterCard : 'summary'}">
+    <meta name="twitter:title" th:content="${seoTitle != null ? seoTitle : 'QR 메뉴'}">
+    <meta name="twitter:description"
+          th:content="${seoDescription != null ? seoDescription : 'QR 메뉴와 상점 안내 정보를 확인하세요.'}">
+    <meta name="twitter:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+
     <link rel="stylesheet" th:href="@{/qrmanage/css/customer.css}">
+    <th:block th:if="${seoStructuredDataList != null}">
+        <script th:each="seoStructuredData : ${seoStructuredDataList}"
+                type="application/ld+json"
+                th:utext="${seoStructuredData}"></script>
+    </th:block>
 </head>
 <body>
 <main class="qr-manage-customer-main">
-    <div th:replace="${content}"></div>
+    <div layout:fragment="content"></div>
 </main>
 
 <footer class="qr-manage-customer-footer">

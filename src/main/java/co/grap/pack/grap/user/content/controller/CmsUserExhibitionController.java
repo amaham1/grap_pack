@@ -1,5 +1,6 @@
 package co.grap.pack.grap.user.content.controller;
 
+import co.grap.pack.grap.seo.CmsPublicSeoService;
 import co.grap.pack.grap.user.content.model.CmsUserExhibitionRequest;
 import co.grap.pack.grap.user.content.service.CmsUserExhibitionService;
 import co.grap.pack.grap.user.content.support.CmsUserContentFallbacks;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 사용자 공연/전시 컨트롤러
+ * 사용자 공연/전시 컨트롤러다.
  */
 @Slf4j
 @Controller
@@ -31,17 +32,24 @@ import java.util.Map;
 public class CmsUserExhibitionController {
 
     private final CmsUserExhibitionService exhibitionService;
+    private final CmsPublicSeoService cmsPublicSeoService;
 
     /**
-     * 공연/전시 목록 페이지
-     * @param tab 탭 구분 (ongoing: 진행 중, upcoming: 다가올 공연, ended: 끝난 공연)
+     * 공연/전시 목록 페이지를 보여준다.
+     *
+     * @param keyword 검색어
+     * @param tab 탭 값
+     * @param page 페이지 번호
+     * @param size 페이지 크기
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping
     public String exhibitionList(@RequestParam(value = "keyword", required = false) String keyword,
-                                  @RequestParam(value = "tab", required = false) String tab,
-                                  @RequestParam(value = "page", required = false) Integer page,
-                                  @RequestParam(value = "size", required = false) Integer size,
-                                  Model model) {
+                                 @RequestParam(value = "tab", required = false) String tab,
+                                 @RequestParam(value = "page", required = false) Integer page,
+                                 @RequestParam(value = "size", required = false) Integer size,
+                                 Model model) {
         Map<String, Object> result;
         try {
             result = exhibitionService.getExhibitionList(keyword, tab, page, size);
@@ -58,37 +66,57 @@ public class CmsUserExhibitionController {
         }
 
         model.addAllAttributes(result);
+        cmsPublicSeoService.applyExhibitionListSeo(model, keyword, tab, page);
         model.addAttribute("content", "grap/user/content/cms-exhibition-list");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 공연/전시 상세 페이지
+     * 공연/전시 상세 페이지를 보여준다.
+     *
+     * @param id 전시 ID
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/{id}")
     public String exhibitionDetail(@PathVariable("id") Long id, Model model) {
         Map<String, Object> exhibition = exhibitionService.getExhibitionDetail(id);
-
         if (exhibition == null) {
             return "redirect:/grap/user/content/exhibitions";
         }
 
         model.addAttribute("exhibition", exhibition);
+        cmsPublicSeoService.applyExhibitionDetailSeo(model, exhibition);
         model.addAttribute("content", "grap/user/content/cms-exhibition-detail");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 공연/전시 등록 요청 페이지 (폼)
+     * 공연/전시 등록 요청 폼을 보여준다.
+     *
+     * @param model 화면 모델
+     * @return 레이아웃 템플릿
      */
     @GetMapping("/request")
     public String exhibitionRequestForm(Model model) {
+        cmsPublicSeoService.applyRequestSeo(
+                model,
+                "/grap/user/content/exhibitions/request",
+                "제주 공연 전시 등록 요청",
+                "제주 공연과 전시 정보를 등록 요청하는 사용자 전용 폼입니다."
+        );
         model.addAttribute("content", "grap/user/content/cms-exhibition-request");
         return "grap/user/layout/cms-user-layout";
     }
 
     /**
-     * 공연/전시 등록 요청 처리
+     * 공연/전시 등록 요청을 처리한다.
+     *
+     * @param request 요청 데이터
+     * @param images 첨부 이미지
+     * @param thumbnailIndex 대표 이미지 인덱스
+     * @param redirectAttributes 리다이렉트 메시지 모델
+     * @return 리다이렉트 경로
      */
     @PostMapping("/request")
     public String createExhibitionRequest(@ModelAttribute CmsUserExhibitionRequest request,
@@ -99,12 +127,17 @@ public class CmsUserExhibitionController {
             log.info("✅ [CHECK] 공연/전시 등록 요청 컨트롤러 시작");
             Long exhibitionId = exhibitionService.createExhibitionRequest(request, images, thumbnailIndex);
             log.info("✅ [CHECK] 공연/전시 등록 요청 컨트롤러 완료: exhibitionId={}", exhibitionId);
-
-            redirectAttributes.addFlashAttribute("successMessage", "등록에 성공하였습니다. 빠른 검수 요청을 원할시에는 82grap@gmail.com 으로 메일보내주세요");
+            redirectAttributes.addFlashAttribute(
+                    "successMessage",
+                    "등록이 접수되었습니다. 빠른 검토가 필요하면 82grap@gmail.com 으로 메일을 보내주세요."
+            );
             return "redirect:/grap/user/content/exhibitions";
-        } catch (IOException e) {
-            log.error("❌ [ERROR] 공연/전시 등록 요청 실패: {}", e.getMessage());
-            redirectAttributes.addFlashAttribute("errorMessage", "등록 요청 중 오류가 발생했습니다: " + e.getMessage());
+        } catch (IOException exception) {
+            log.error("❌ [ERROR] 공연/전시 등록 요청 실패: {}", exception.getMessage());
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    "등록 요청 중 오류가 발생했습니다: " + exception.getMessage()
+            );
             return "redirect:/grap/user/content/exhibitions/request";
         }
     }

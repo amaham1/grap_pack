@@ -19,13 +19,17 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
 /**
- * QR Generator 컨트롤러
- * 익명/로그인 사용자 모두 QR 생성 가능
+ * QR Generator 공개 컨트롤러다.
  */
 @Slf4j
 @Controller
@@ -38,40 +42,46 @@ public class QrGenGeneratorController {
     private final QrGenRateLimitService rateLimitService;
 
     /**
-     * QR Generator 메인 페이지
+     * QR Generator 메인 페이지를 보여준다.
+     *
+     * @param model 화면 모델
+     * @param httpRequest 현재 요청
+     * @return 템플릿 경로
      */
     @GetMapping({"", "/"})
     public String home(Model model, HttpServletRequest httpRequest) {
         model.addAttribute("contentTypes", QrGenContentType.values());
         model.addAttribute("isAuthenticated", isAuthenticated());
 
-        // 남은 생성 횟수 조회
         QrGenRateLimitCheckResult rateLimitInfo = getQrGenRateLimitInfo(httpRequest);
         model.addAttribute("qrGenRemaining", rateLimitInfo.remaining());
         model.addAttribute("qrGenDailyLimit", rateLimitInfo.limit());
-
-        QrGenSeoHelper.setQrGenPublicPageSeo(model, "/qrgen/",
-                "무료 QR 코드 생성기",
-                "URL, 텍스트, Wi-Fi, 이메일, 전화번호 등 다양한 QR 코드를 무료로 간편하게 생성하세요. 회원가입 없이도 사용 가능합니다.");
+        QrGenSeoHelper.setQrGenHomeSeo(model);
         return "qrgen/qrgen-home";
     }
 
     /**
-     * QR 코드 미리보기 API (히스토리 저장 없음, 분당 60회 제한)
-     * 폼 입력값 변경 시 실시간 미리보기 제공
+     * QR 코드 미리보기 API다.
+     *
+     * @param contentType 콘텐츠 타입
+     * @param contentValue 콘텐츠 값
+     * @param size 이미지 크기
+     * @param errorCorrection 오류 보정 레벨
+     * @param foregroundColor 전경색
+     * @param backgroundColor 배경색
+     * @param httpRequest 현재 요청
+     * @return PNG 바이트 응답
      */
     @GetMapping("/preview")
     @ResponseBody
-    public ResponseEntity<byte[]> previewQrCode(
-            @RequestParam("contentType") String contentType,
-            @RequestParam("contentValue") String contentValue,
-            @RequestParam(value = "size", defaultValue = "300") Integer size,
-            @RequestParam(value = "errorCorrection", defaultValue = "M") String errorCorrection,
-            @RequestParam(value = "foregroundColor", defaultValue = "#000000") String foregroundColor,
-            @RequestParam(value = "backgroundColor", defaultValue = "#FFFFFF") String backgroundColor,
-            HttpServletRequest httpRequest) {
+    public ResponseEntity<byte[]> previewQrCode(@RequestParam("contentType") String contentType,
+                                                @RequestParam("contentValue") String contentValue,
+                                                @RequestParam(value = "size", defaultValue = "300") Integer size,
+                                                @RequestParam(value = "errorCorrection", defaultValue = "M") String errorCorrection,
+                                                @RequestParam(value = "foregroundColor", defaultValue = "#000000") String foregroundColor,
+                                                @RequestParam(value = "backgroundColor", defaultValue = "#FFFFFF") String backgroundColor,
+                                                HttpServletRequest httpRequest) {
         try {
-            // 미리보기 Rate Limit 체크
             String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
             if (rateLimitService.isQrGenPreviewRateLimitExceeded(ipAddress)) {
                 return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
@@ -87,26 +97,28 @@ public class QrGenGeneratorController {
                     .build();
 
             byte[] qrImage = generatorService.generateQrCode(request);
-
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_PNG)
                     .header(HttpHeaders.CACHE_CONTROL, "max-age=60")
                     .body(qrImage);
-        } catch (Exception e) {
-            log.warn("QR 미리보기 실패: {}", e.getMessage());
+        } catch (Exception exception) {
+            log.warn("QR 미리보기 실패: {}", exception.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
 
     /**
-     * QR 코드 생성 API (익명/로그인 사용자 모두 가능)
+     * QR 코드 생성 API다.
+     *
+     * @param request QR 생성 요청
+     * @param httpRequest 현재 요청
+     * @return QR 이미지 또는 오류 응답
      */
     @PostMapping("/generate")
     @ResponseBody
     public ResponseEntity<?> generateQrCode(@RequestBody QrGenRequest request,
                                             HttpServletRequest httpRequest) {
         try {
-            // Rate Limit 체크
             ResponseEntity<?> rateLimitResponse = checkQrGenGenerateRateLimit(httpRequest);
             if (rateLimitResponse != null) {
                 return rateLimitResponse;
@@ -114,13 +126,12 @@ public class QrGenGeneratorController {
 
             log.info("✅ [CHECK] QR 생성 요청: type={}, value={}",
                     request.getContentType(),
-                    request.getContentValue() != null ?
-                        request.getContentValue().substring(0, Math.min(50, request.getContentValue().length())) : "null");
+                    request.getContentValue() != null
+                            ? request.getContentValue().substring(0, Math.min(50, request.getContentValue().length()))
+                            : "null");
 
-            // QR 코드 생성
             byte[] qrImage = generatorService.generateQrCode(request);
 
-            // 로그인 사용자면 히스토리 저장
             if (isAuthenticated()) {
                 QrGenUser user = getCurrentQrGenUser();
                 if (user != null) {
@@ -128,59 +139,61 @@ public class QrGenGeneratorController {
                     generatorService.saveQrGenHistory(user.getQrGenUserId(), request, imagePath);
                 }
             } else {
-                // 비로그인 사용자 카운트 증가
                 String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
                 rateLimitService.incrementQrGenAnonymousCount(ipAddress);
             }
 
-            // 생성 후 남은 횟수 조회 (히스토리 저장/카운트 증가 이후이므로 이미 반영됨)
             QrGenRateLimitCheckResult rateLimitInfo = getQrGenRateLimitInfo(httpRequest);
 
             return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"qrcode.png\"")
-                .header("X-QrGen-Remaining", String.valueOf(rateLimitInfo.remaining()))
-                .header("X-QrGen-Limit", String.valueOf(rateLimitInfo.limit()))
-                .body(qrImage);
-
-        } catch (Exception e) {
-            log.error("❌ [ERROR] QR 코드 생성 실패: {}", e.getMessage(), e);
+                    .contentType(MediaType.IMAGE_PNG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"qrcode.png\"")
+                    .header("X-QrGen-Remaining", String.valueOf(rateLimitInfo.remaining()))
+                    .header("X-QrGen-Limit", String.valueOf(rateLimitInfo.limit()))
+                    .body(qrImage);
+        } catch (Exception exception) {
+            log.error("❌ [ERROR] QR 코드 생성 실패: {}", exception.getMessage(), exception);
             return ResponseEntity.internalServerError().build();
         }
     }
 
     /**
-     * QR 코드 다운로드 API
+     * QR 코드 다운로드 API다.
+     *
+     * @param request QR 생성 요청
+     * @return 파일 다운로드 응답
      */
     @PostMapping("/download")
     @ResponseBody
     public ResponseEntity<byte[]> downloadQrCode(@RequestBody QrGenRequest request) {
         try {
             byte[] qrImage = generatorService.generateQrCode(request);
-
             String filename = "qrcode_" + System.currentTimeMillis() + ".png";
 
             return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_PNG)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                .body(qrImage);
-
-        } catch (Exception e) {
-            log.error("❌ [ERROR] QR 코드 다운로드 실패: {}", e.getMessage(), e);
+                    .contentType(MediaType.IMAGE_PNG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(qrImage);
+        } catch (Exception exception) {
+            log.error("❌ [ERROR] QR 코드 다운로드 실패: {}", exception.getMessage(), exception);
             return ResponseEntity.internalServerError().build();
         }
     }
 
     /**
-     * QR 생성 Rate Limit 체크 (로그인/비로그인 분기)
-     * @return 제한 초과 시 429 응답, 정상이면 null
+     * QR 생성 제한을 확인한다.
+     *
+     * @param httpRequest 현재 요청
+     * @return 제한 응답 또는 null
      */
     private ResponseEntity<?> checkQrGenGenerateRateLimit(HttpServletRequest httpRequest) {
         QrGenRateLimitCheckResult result;
 
         if (isAuthenticated()) {
             QrGenUser user = getCurrentQrGenUser();
-            if (user == null) return null;
+            if (user == null) {
+                return null;
+            }
             result = rateLimitService.checkQrGenAuthenticatedRateLimit(user.getQrGenUserId());
         } else {
             String ipAddress = rateLimitService.getClientIpAddress(httpRequest);
@@ -201,7 +214,10 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * 현재 사용자의 Rate Limit 정보 조회 (로그인/비로그인 분기)
+     * 현재 요청 기준 QR 생성 제한 정보를 조회한다.
+     *
+     * @param httpRequest 현재 요청
+     * @return 제한 확인 결과
      */
     private QrGenRateLimitCheckResult getQrGenRateLimitInfo(HttpServletRequest httpRequest) {
         if (isAuthenticated()) {
@@ -215,17 +231,21 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * 인증 여부 확인
+     * 로그인 여부를 확인한다.
+     *
+     * @return 로그인 여부
      */
     private boolean isAuthenticated() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return auth != null
-            && auth.isAuthenticated()
-            && !"anonymousUser".equals(auth.getPrincipal());
+                && auth.isAuthenticated()
+                && !"anonymousUser".equals(auth.getPrincipal());
     }
 
     /**
-     * 현재 로그인 사용자 조회
+     * 현재 로그인한 QRgen 사용자를 조회한다.
+     *
+     * @return 로그인 사용자 또는 null
      */
     private QrGenUser getCurrentQrGenUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
