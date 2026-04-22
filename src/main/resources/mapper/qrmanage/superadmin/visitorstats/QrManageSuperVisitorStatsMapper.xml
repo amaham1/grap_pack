@@ -4,7 +4,7 @@
 <mapper namespace="co.grap.pack.qrmanage.superadmin.visitorstats.mapper.QrManageSuperVisitorStatsMapper">
 
     <sql id="nonBotFilter">
-        (device_type IS NULL OR device_type <> 'BOT')
+        (device_type IS NULL OR device_type != 'BOT')
     </sql>
 
     <sql id="visitorDateRangeFilter">
