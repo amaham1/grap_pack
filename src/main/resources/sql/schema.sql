@@ -338,6 +338,62 @@ CREATE TABLE IF NOT EXISTS gas_prices (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='제주도 주유소 가격 정보 (외부 API)';
 
+-- 5-6. 제주 부동산 실거래 통합 테이블
+CREATE TABLE IF NOT EXISTS real_estate_transactions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '실거래 ID',
+    external_row_key VARCHAR(255) NOT NULL COMMENT '외부 원본 행 식별키',
+    property_match_key VARCHAR(500) NOT NULL COMMENT '동일 매물 식별키',
+    dataset_id VARCHAR(50) NOT NULL COMMENT '데이터셋 ID',
+    property_category VARCHAR(50) NOT NULL COMMENT '매물 유형',
+    transaction_type VARCHAR(20) NOT NULL COMMENT '거래 유형',
+    lawd_code VARCHAR(10) NOT NULL COMMENT '법정동 코드 앞5자리',
+    sgg_name VARCHAR(100) COMMENT '시군구명',
+    umd_name VARCHAR(100) COMMENT '읍면동명',
+    jibun VARCHAR(100) COMMENT '지번',
+    address VARCHAR(500) COMMENT '표시 주소',
+    display_name VARCHAR(255) NOT NULL COMMENT '표시 매물명',
+    name_source VARCHAR(20) NOT NULL COMMENT '매물명 생성 출처',
+    area_m2 DECIMAL(12, 2) DEFAULT 0 COMMENT '전용면적 제곱미터',
+    area_pyeong DECIMAL(12, 2) DEFAULT 0 COMMENT '전용면적 평',
+    floor INT DEFAULT 0 COMMENT '층수',
+    build_year INT DEFAULT 0 COMMENT '준공연도',
+    deal_date DATE COMMENT '계약일',
+    deal_year_month CHAR(6) NOT NULL COMMENT '계약년월',
+    trade_amount_manwon INT DEFAULT 0 COMMENT '매매가(만원)',
+    deposit_amount_manwon INT DEFAULT 0 COMMENT '보증금(만원)',
+    monthly_rent_manwon INT DEFAULT 0 COMMENT '월세(만원)',
+    latitude DECIMAL(10, 7) COMMENT '위도',
+    longitude DECIMAL(10, 7) COMMENT '경도',
+    raw_json JSON COMMENT '공공데이터 원본 JSON',
+    fetched_at DATETIME NOT NULL COMMENT '외부 수집시각',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '갱신시각',
+
+    UNIQUE KEY uk_real_estate_external_row_key (external_row_key),
+    INDEX idx_real_estate_match_key (property_match_key),
+    INDEX idx_real_estate_month (deal_year_month),
+    INDEX idx_real_estate_date (deal_date),
+    INDEX idx_real_estate_name (display_name),
+    INDEX idx_real_estate_category (property_category, transaction_type),
+    INDEX idx_real_estate_location (lawd_code, sgg_name, umd_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='제주 부동산 실거래 통합 데이터';
+
+-- 5-7. 제주 부동산 전체 적재 체크포인트
+CREATE TABLE IF NOT EXISTS real_estate_sync_checkpoint (
+    dataset_id VARCHAR(50) NOT NULL COMMENT '데이터셋 ID',
+    lawd_code VARCHAR(10) NOT NULL COMMENT '법정동 코드 앞5자리',
+    bootstrap_started_at DATETIME COMMENT '전체 적재 시작시각',
+    last_synced_year_month CHAR(6) COMMENT '마지막 적재 완료 년월',
+    bootstrap_completed_at DATETIME COMMENT '전체 적재 완료시각',
+    last_result_message VARCHAR(1000) COMMENT '마지막 동기화 메시지',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정시각',
+
+    PRIMARY KEY (dataset_id, lawd_code),
+    INDEX idx_real_estate_sync_last_month (last_synced_year_month),
+    INDEX idx_real_estate_sync_updated_at (updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='제주 부동산 실거래 전체 적재 체크포인트';
+
 -- ============================================
 -- 6. 사용자 등록 요청 이미지 테이블
 -- ============================================

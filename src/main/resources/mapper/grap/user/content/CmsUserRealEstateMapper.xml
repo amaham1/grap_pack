@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.user.content.mapper.CmsUserRealEstateMapper">
+
+    <select id="selectLatestDealYearMonth" resultType="string">
+        SELECT MAX(deal_year_month)
+        FROM real_estate_transactions
+    </select>
+
+    <select id="selectAvailableDealYearMonths" resultType="string">
+        SELECT DISTINCT deal_year_month
+        FROM real_estate_transactions
+        ORDER BY deal_year_month DESC
+    </select>
+
+    <select id="selectRealEstateCount" resultType="int">
+        SELECT COUNT(*)
+        FROM real_estate_transactions
+        WHERE deal_year_month = #{dealYearMonth}
+        <if test="keyword != null and keyword != ''">
+            AND (
+                display_name LIKE CONCAT('%', #{keyword}, '%')
+                OR address LIKE CONCAT('%', #{keyword}, '%')
+                OR umd_name LIKE CONCAT('%', #{keyword}, '%')
+                OR sgg_name LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+    </select>
+
+    <select id="selectRealEstateList" resultType="map">
+        SELECT
+            id,
+            dataset_id AS datasetId,
+            property_category AS propertyCategory,
+            transaction_type AS transactionType,
+            lawd_code AS lawdCode,
+            sgg_name AS sggName,
+            umd_name AS umdName,
+            jibun,
+            address,
+            display_name AS displayName,
+            area_m2 AS areaM2,
+            area_pyeong AS areaPyeong,
+            floor,
+            build_year AS buildYear,
+            deal_date AS dealDate,
+            deal_year_month AS dealYearMonth,
+            trade_amount_manwon AS tradeAmountManwon,
+            deposit_amount_manwon AS depositAmountManwon,
+            monthly_rent_manwon AS monthlyRentManwon,
+            CASE
+                WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                ELSE deposit_amount_manwon
+            END AS displayAmount
+        FROM real_estate_transactions
+        WHERE deal_year_month = #{dealYearMonth}
+        <if test="keyword != null and keyword != ''">
+            AND (
+                display_name LIKE CONCAT('%', #{keyword}, '%')
+                OR address LIKE CONCAT('%', #{keyword}, '%')
+                OR umd_name LIKE CONCAT('%', #{keyword}, '%')
+                OR sgg_name LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sort == 'amountDesc'">
+                CASE
+                    WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                    ELSE deposit_amount_manwon
+                END DESC,
+                deal_date DESC,
+                display_name ASC
+            </when>
+            <when test="sort == 'amountAsc'">
+                CASE
+                    WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                    ELSE deposit_amount_manwon
+                END ASC,
+                deal_date DESC,
+                display_name ASC
+            </when>
+            <when test="sort == 'nameAsc'">
+                display_name ASC,
+                deal_date DESC
+            </when>
+            <otherwise>
+                deal_date DESC,
+                CASE
+                    WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                    ELSE deposit_amount_manwon
+                END DESC,
+                display_name ASC
+            </otherwise>
+        </choose>
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="selectRealEstateById" resultType="map">
+        SELECT
+            id,
+            property_match_key AS propertyMatchKey,
+            dataset_id AS datasetId,
+            property_category AS propertyCategory,
+            transaction_type AS transactionType,
+            lawd_code AS lawdCode,
+            sgg_name AS sggName,
+            umd_name AS umdName,
+            jibun,
+            address,
+            display_name AS displayName,
+            area_m2 AS areaM2,
+            area_pyeong AS areaPyeong,
+            floor,
+            build_year AS buildYear,
+            deal_date AS dealDate,
+            deal_year_month AS dealYearMonth,
+            trade_amount_manwon AS tradeAmountManwon,
+            deposit_amount_manwon AS depositAmountManwon,
+            monthly_rent_manwon AS monthlyRentManwon,
+            latitude,
+            longitude
+        FROM real_estate_transactions
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectPropertyAvailableYears" resultType="int">
+        SELECT DISTINCT YEAR(deal_date) AS dealYear
+        FROM real_estate_transactions
+        WHERE property_match_key = #{propertyMatchKey}
+          AND deal_date IS NOT NULL
+        ORDER BY YEAR(deal_date) DESC
+    </select>
+
+    <select id="selectPropertyMonthlyAverageHistory" resultType="map">
+        SELECT
+            MONTH(deal_date) AS dealMonth,
+            ROUND(AVG(
+                <choose>
+                    <when test="metricType == 'rent'">deposit_amount_manwon</when>
+                    <otherwise>trade_amount_manwon</otherwise>
+                </choose>
+            ), 0) AS averageAmount
+        FROM real_estate_transactions
+        WHERE property_match_key = #{propertyMatchKey}
+          AND YEAR(deal_date) = #{year}
+        GROUP BY MONTH(deal_date)
+        ORDER BY MONTH(deal_date)
+    </select>
+
+</mapper>

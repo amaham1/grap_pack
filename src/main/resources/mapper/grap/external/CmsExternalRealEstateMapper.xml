@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.external.api.mapper.CmsExternalRealEstateMapper">
+
+    <insert id="upsertRealEstateTransaction" parameterType="co.grap.pack.grap.realestate.model.RealEstateTransactionRecord">
+        INSERT INTO real_estate_transactions (
+            external_row_key,
+            property_match_key,
+            dataset_id,
+            property_category,
+            transaction_type,
+            lawd_code,
+            sgg_name,
+            umd_name,
+            jibun,
+            address,
+            display_name,
+            name_source,
+            area_m2,
+            area_pyeong,
+            floor,
+            build_year,
+            deal_date,
+            deal_year_month,
+            trade_amount_manwon,
+            deposit_amount_manwon,
+            monthly_rent_manwon,
+            latitude,
+            longitude,
+            raw_json,
+            fetched_at,
+            updated_at
+        ) VALUES (
+            #{externalRowKey},
+            #{propertyMatchKey},
+            #{datasetId},
+            #{propertyCategory},
+            #{transactionType},
+            #{lawdCode},
+            #{sggName},
+            #{umdName},
+            #{jibun},
+            #{address},
+            #{displayName},
+            #{nameSource},
+            #{areaM2},
+            #{areaPyeong},
+            #{floor},
+            #{buildYear},
+            #{dealDate},
+            #{dealYearMonth},
+            #{tradeAmountManwon},
+            #{depositAmountManwon},
+            #{monthlyRentManwon},
+            #{latitude},
+            #{longitude},
+            #{rawJson},
+            #{fetchedAt},
+            #{updatedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            property_match_key = VALUES(property_match_key),
+            dataset_id = VALUES(dataset_id),
+            property_category = VALUES(property_category),
+            transaction_type = VALUES(transaction_type),
+            lawd_code = VALUES(lawd_code),
+            sgg_name = VALUES(sgg_name),
+            umd_name = VALUES(umd_name),
+            jibun = VALUES(jibun),
+            address = VALUES(address),
+            display_name = VALUES(display_name),
+            name_source = VALUES(name_source),
+            area_m2 = VALUES(area_m2),
+            area_pyeong = VALUES(area_pyeong),
+            floor = VALUES(floor),
+            build_year = VALUES(build_year),
+            deal_date = VALUES(deal_date),
+            deal_year_month = VALUES(deal_year_month),
+            trade_amount_manwon = VALUES(trade_amount_manwon),
+            deposit_amount_manwon = VALUES(deposit_amount_manwon),
+            monthly_rent_manwon = VALUES(monthly_rent_manwon),
+            latitude = VALUES(latitude),
+            longitude = VALUES(longitude),
+            raw_json = VALUES(raw_json),
+            fetched_at = VALUES(fetched_at),
+            updated_at = VALUES(updated_at)
+    </insert>
+
+    <select id="selectSyncCheckpoint" resultType="co.grap.pack.grap.realestate.model.RealEstateSyncCheckpoint">
+        SELECT
+            dataset_id AS datasetId,
+            lawd_code AS lawdCode,
+            bootstrap_started_at AS bootstrapStartedAt,
+            last_synced_year_month AS lastSyncedYearMonth,
+            bootstrap_completed_at AS bootstrapCompletedAt,
+            last_result_message AS lastResultMessage,
+            updated_at AS updatedAt
+        FROM real_estate_sync_checkpoint
+        WHERE dataset_id = #{datasetId}
+          AND lawd_code = #{lawdCode}
+    </select>
+
+    <insert id="startCheckpoint">
+        INSERT INTO real_estate_sync_checkpoint (
+            dataset_id,
+            lawd_code,
+            bootstrap_started_at,
+            last_result_message,
+            updated_at
+        ) VALUES (
+            #{datasetId},
+            #{lawdCode},
+            #{startedAt},
+            #{message},
+            #{updatedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            bootstrap_started_at = COALESCE(bootstrap_started_at, VALUES(bootstrap_started_at)),
+            last_result_message = VALUES(last_result_message),
+            updated_at = VALUES(updated_at)
+    </insert>
+
+    <insert id="updateCheckpointProgress">
+        INSERT INTO real_estate_sync_checkpoint (
+            dataset_id,
+            lawd_code,
+            last_synced_year_month,
+            last_result_message,
+            updated_at
+        ) VALUES (
+            #{datasetId},
+            #{lawdCode},
+            #{lastSyncedYearMonth},
+            #{message},
+            #{updatedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            last_synced_year_month = VALUES(last_synced_year_month),
+            last_result_message = VALUES(last_result_message),
+            updated_at = VALUES(updated_at)
+    </insert>
+
+    <insert id="completeCheckpoint">
+        INSERT INTO real_estate_sync_checkpoint (
+            dataset_id,
+            lawd_code,
+            last_synced_year_month,
+            bootstrap_completed_at,
+            last_result_message,
+            updated_at
+        ) VALUES (
+            #{datasetId},
+            #{lawdCode},
+            #{lastSyncedYearMonth},
+            #{completedAt},
+            #{message},
+            #{updatedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            last_synced_year_month = VALUES(last_synced_year_month),
+            bootstrap_completed_at = VALUES(bootstrap_completed_at),
+            last_result_message = VALUES(last_result_message),
+            updated_at = VALUES(updated_at)
+    </insert>
+
+</mapper>

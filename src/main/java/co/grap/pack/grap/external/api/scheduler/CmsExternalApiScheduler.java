@@ -3,9 +3,11 @@ package co.grap.pack.grap.external.api.scheduler;
 import co.grap.pack.grap.external.api.service.CmsJejuExhibitionApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuFestivalApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuGasPriceApiService;
+import co.grap.pack.grap.external.api.service.CmsJejuRealEstateApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuWelfareApiService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +23,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "external-api.scheduler", name = "enabled", havingValue = "true", matchIfMissing = true)
 public class CmsExternalApiScheduler {
 
     private final CmsJejuFestivalApiService festivalService;
     private final CmsJejuExhibitionApiService exhibitionService;
     private final CmsJejuWelfareApiService welfareService;
     private final CmsJejuGasPriceApiService gasPriceService;
+    private final CmsJejuRealEstateApiService realEstateService;
 
     // 중복 실행 방지용 플래그
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
@@ -57,12 +61,13 @@ public class CmsExternalApiScheduler {
             SyncResult exhibitionResult = syncExhibitions();
             SyncResult welfareResult = syncWelfareServices();
             SyncResult gasPriceResult = syncGasPrices();
+            SyncResult realEstateResult = syncRealEstate();
 
             long endMillis = System.currentTimeMillis();
             long durationSeconds = (endMillis - startMillis) / 1000;
 
             // 결과 요약 로깅
-            logSyncSummary(festivalResult, exhibitionResult, welfareResult, gasPriceResult, durationSeconds);
+            logSyncSummary(festivalResult, exhibitionResult, welfareResult, gasPriceResult, realEstateResult, durationSeconds);
 
             String endTime = getCurrentTimeString();
             log.info("========================================");
@@ -165,10 +170,31 @@ public class CmsExternalApiScheduler {
     }
 
     /**
+     * 부동산 실거래 최근월 동기화
+     */
+    private SyncResult syncRealEstate() {
+        String serviceName = "부동산 실거래";
+        try {
+            log.info("--- {} 데이터 동기화 시작 ---", serviceName);
+            long startMillis = System.currentTimeMillis();
+
+            realEstateService.syncRecentMonths();
+
+            long duration = (System.currentTimeMillis() - startMillis) / 1000;
+            log.info("--- {} 데이터 동기화 완료 ({}초) ---", serviceName, duration);
+
+            return SyncResult.success(serviceName, duration);
+        } catch (Exception e) {
+            log.error("--- {} 데이터 동기화 실패 ---", serviceName, e);
+            return SyncResult.failure(serviceName, e.getMessage());
+        }
+    }
+
+    /**
      * 동기화 결과 요약을 로깅합니다.
      */
     private void logSyncSummary(SyncResult festival, SyncResult exhibition,
-                                SyncResult welfare, SyncResult gasPrice,
+                                SyncResult welfare, SyncResult gasPrice, SyncResult realEstate,
                                 long totalDuration) {
         log.info("");
         log.info("========================================");
@@ -179,12 +205,13 @@ public class CmsExternalApiScheduler {
         logSyncResultDetail(exhibition);
         logSyncResultDetail(welfare);
         logSyncResultDetail(gasPrice);
+        logSyncResultDetail(realEstate);
 
         log.info("----------------------------------------");
         log.info("전체 소요 시간: {}초", totalDuration);
 
-        long successCount = countSuccess(festival, exhibition, welfare, gasPrice);
-        long failureCount = 4 - successCount;
+        long successCount = countSuccess(festival, exhibition, welfare, gasPrice, realEstate);
+        long failureCount = 5 - successCount;
 
         log.info("성공: {} / 실패: {}", successCount, failureCount);
         log.info("========================================");

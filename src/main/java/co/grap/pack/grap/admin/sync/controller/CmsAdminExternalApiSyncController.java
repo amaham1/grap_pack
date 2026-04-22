@@ -4,6 +4,7 @@ import co.grap.pack.grap.admin.sync.service.CmsSyncManager;
 import co.grap.pack.grap.external.api.service.CmsJejuExhibitionApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuFestivalApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuGasPriceApiService;
+import co.grap.pack.grap.external.api.service.CmsJejuRealEstateApiService;
 import co.grap.pack.grap.external.api.service.CmsJejuWelfareApiService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class CmsAdminExternalApiSyncController {
     private final CmsJejuExhibitionApiService exhibitionService;
     private final CmsJejuWelfareApiService welfareService;
     private final CmsJejuGasPriceApiService gasPriceService;
+    private final CmsJejuRealEstateApiService realEstateService;
     private final CmsSyncManager syncManager;
 
     /**
@@ -106,6 +108,47 @@ public class CmsAdminExternalApiSyncController {
     }
 
     /**
+     * 부동산 실거래 최근월 동기화
+     */
+    @PostMapping("/real-estate")
+    public String syncRealEstate(RedirectAttributes redirectAttributes) {
+        try {
+            log.info("관리자 요청: 부동산 실거래 최근월 동기화 시작");
+            realEstateService.syncRecentMonths();
+            redirectAttributes.addFlashAttribute("message", "부동산 실거래 최근월 동기화가 완료되었습니다.");
+        } catch (Exception e) {
+            log.error("부동산 실거래 동기화 실패", e);
+            redirectAttributes.addFlashAttribute("error", "부동산 실거래 동기화 실패: " + e.getMessage());
+        }
+        return "redirect:/grap/admin/sync";
+    }
+
+    /**
+     * 부동산 실거래 전체 이력 bootstrap
+     */
+    @PostMapping("/real-estate/bootstrap")
+    public String bootstrapRealEstate(HttpSession session, RedirectAttributes redirectAttributes) {
+        String sessionId = session.getId();
+
+        try {
+            log.info("관리자 요청: 부동산 실거래 전체 이력 적재 시작 - 세션ID: {}", sessionId);
+            syncManager.startSync(sessionId);
+            realEstateService.bootstrapAllHistory(sessionId, syncManager);
+            syncManager.completeSync(sessionId);
+            redirectAttributes.addFlashAttribute("message", "부동산 실거래 전체 이력 적재가 완료되었습니다.");
+        } catch (CmsSyncManager.SyncCancelledException e) {
+            log.info("부동산 실거래 전체 이력 적재 중단됨 - 세션ID: {}", sessionId);
+            syncManager.completeSync(sessionId);
+            redirectAttributes.addFlashAttribute("error", "부동산 실거래 전체 이력 적재가 중단되었습니다.");
+        } catch (Exception e) {
+            log.error("부동산 실거래 전체 이력 적재 실패", e);
+            syncManager.completeSync(sessionId);
+            redirectAttributes.addFlashAttribute("error", "부동산 실거래 전체 이력 적재 실패: " + e.getMessage());
+        }
+        return "redirect:/grap/admin/sync";
+    }
+
+    /**
      * 전체 데이터 수동 동기화
      */
     @PostMapping("/all")
@@ -129,6 +172,9 @@ public class CmsAdminExternalApiSyncController {
             syncManager.checkCancellation(sessionId);
 
             gasPriceService.syncGasPricesFromExternalApi(sessionId, syncManager);
+            syncManager.checkCancellation(sessionId);
+
+            realEstateService.syncRecentMonths(sessionId, syncManager);
 
             // 동기화 완료
             syncManager.completeSync(sessionId);

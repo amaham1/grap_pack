@@ -36,3 +36,7 @@ external-api:
   scheduler:
     enabled: true
     cron: "0 5 2,8,14,20 * * *"
+  real-estate:
+    base-url: ${GRAP_PUBLIC_DATA_BASE_URL:https://apis.data.go.kr/1613000}
+    service-key: ${GRAP_PUBLIC_DATA_SERVICE_KEY:LtXmZ8ILA115JsYkYujTf%2F34o5FvNXJVGy%2FXgmUR5RekNLwM46cKLBSbkYI9lIyoamXSlplQj4x0095Ga7rYRQ%3D%3D}
+    recent-months: ${GRAP_REAL_ESTATE_RECENT_MONTHS:3}
