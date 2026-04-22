@@ -331,8 +331,22 @@ textarea {
     margin-bottom: 18px;
 }
 
+.admin-section-head-tight {
+    margin-bottom: 14px;
+}
+
 .admin-section-head h2 {
     margin: 0;
+}
+
+.admin-list-summary {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    color: var(--admin-subtle);
+    font-size: 13px;
+    white-space: nowrap;
 }
 
 .admin-mini-chart {
@@ -407,6 +421,20 @@ textarea {
     flex-wrap: wrap;
     gap: 10px;
     align-items: end;
+}
+
+.admin-check-field {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 8px 14px 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.admin-check-field input {
+    width: auto;
+    margin: 0;
 }
 
 .admin-toolbar-actions {

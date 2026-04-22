@@ -4,6 +4,8 @@ import co.grap.pack.qrmanage.superadmin.visitorstats.mapper.QrManageSuperVisitor
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLogPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +17,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -124,5 +128,87 @@ class QrManageSuperVisitorStatsServiceTest {
                 .singleElement()
                 .extracting(QrManageSuperVisitorDeviceStats::getRatio)
                 .isEqualTo(40.0);
+    }
+
+    @Test
+    void returnsPaginatedIpAccessLogsWithoutBotsByDefault() {
+        when(visitorStatsMapper.selectRecentIpAccessLogCount(anyString(), anyString(), isNull(), isNull(), eq(false)))
+                .thenReturn(120L);
+        when(visitorStatsMapper.selectRecentIpAccessLogs(anyString(), anyString(), isNull(), isNull(), eq(false), eq(50), eq(50)))
+                .thenReturn(List.of(
+                        QrManageSuperVisitorIpAccessLog.builder()
+                                .visitedAt("2026-04-22 10:00:00")
+                                .ipAddress("127.0.0.1")
+                                .serviceCode("GRAP")
+                                .menuCode("GRAP_FESTIVAL_LIST")
+                                .routeKey("/grap/user/content/festivals")
+                                .deviceType("MOBILE")
+                                .build()
+                ));
+
+        QrManageSuperVisitorIpAccessLogPage result = visitorStatsService.getIpAccessLogPage(
+                LocalDate.of(2026, 4, 1),
+                LocalDate.of(2026, 4, 22),
+                null,
+                null,
+                2,
+                50,
+                false
+        );
+
+        assertThat(result.getTotalCount()).isEqualTo(120L);
+        assertThat(result.getCurrentPage()).isEqualTo(2);
+        assertThat(result.getPageSize()).isEqualTo(50);
+        assertThat(result.getTotalPages()).isEqualTo(3);
+        assertThat(result.getStartPage()).isEqualTo(1);
+        assertThat(result.getEndPage()).isEqualTo(3);
+        assertThat(result.isIncludeBots()).isFalse();
+        assertThat(result.getItems()).singleElement()
+                .satisfies(item -> {
+                    assertThat(item.getVisitorTypeDisplayName()).isEqualTo("일반");
+                    assertThat(item.getServiceDisplayName()).isNotBlank();
+                    assertThat(item.getMenuDisplayName()).isNotBlank();
+                    assertThat(item.getDeviceDisplayName()).isNotBlank();
+                });
+
+        verify(visitorStatsMapper).selectRecentIpAccessLogCount(anyString(), anyString(), isNull(), isNull(), eq(false));
+        verify(visitorStatsMapper).selectRecentIpAccessLogs(anyString(), anyString(), isNull(), isNull(), eq(false), eq(50), eq(50));
+    }
+
+    @Test
+    void clampsIpAccessLogPageAndCanIncludeBots() {
+        when(visitorStatsMapper.selectRecentIpAccessLogCount(anyString(), anyString(), isNull(), isNull(), eq(true)))
+                .thenReturn(10L);
+        when(visitorStatsMapper.selectRecentIpAccessLogs(anyString(), anyString(), isNull(), isNull(), eq(true), eq(0), eq(200)))
+                .thenReturn(List.of(
+                        QrManageSuperVisitorIpAccessLog.builder()
+                                .visitedAt("2026-04-22 11:00:00")
+                                .ipAddress("66.249.66.1")
+                                .serviceCode("QRGEN")
+                                .menuCode("QRGEN_HOME")
+                                .routeKey("/qrgen")
+                                .deviceType("BOT")
+                                .build()
+                ));
+
+        QrManageSuperVisitorIpAccessLogPage result = visitorStatsService.getIpAccessLogPage(
+                LocalDate.of(2026, 4, 1),
+                LocalDate.of(2026, 4, 22),
+                null,
+                null,
+                999,
+                999,
+                true
+        );
+
+        assertThat(result.getCurrentPage()).isEqualTo(1);
+        assertThat(result.getPageSize()).isEqualTo(200);
+        assertThat(result.getTotalPages()).isEqualTo(1);
+        assertThat(result.isIncludeBots()).isTrue();
+        assertThat(result.getItems()).singleElement()
+                .satisfies(item -> assertThat(item.getVisitorTypeDisplayName()).isEqualTo("BOT"));
+
+        verify(visitorStatsMapper).selectRecentIpAccessLogCount(anyString(), anyString(), isNull(), isNull(), eq(true));
+        verify(visitorStatsMapper).selectRecentIpAccessLogs(anyString(), anyString(), isNull(), isNull(), eq(true), eq(0), eq(200));
     }
 }

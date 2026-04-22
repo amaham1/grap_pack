@@ -27,6 +27,12 @@
         </if>
     </sql>
 
+    <sql id="ipAccessLogBotFilter">
+        <if test="includeBots == false">
+            AND <include refid="nonBotFilter"/>
+        </if>
+    </sql>
+
     <select id="selectDashboardStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats">
         SELECT
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS totalPv,
@@ -109,6 +115,13 @@
         ORDER BY FIELD(device_type, 'DESKTOP', 'MOBILE', 'TABLET', 'UNKNOWN')
     </select>
 
+    <select id="selectRecentIpAccessLogCount" resultType="long">
+        SELECT COUNT(*)
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+        <include refid="ipAccessLogBotFilter"/>
+    </select>
+
     <select id="selectRecentIpAccessLogs" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog">
         SELECT
             DATE_FORMAT(visited_at, '%Y-%m-%d %H:%i:%s') AS visitedAt,
@@ -119,8 +132,9 @@
             device_type AS deviceType
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
+        <include refid="ipAccessLogBotFilter"/>
         ORDER BY visited_at DESC, id DESC
-        LIMIT 200
+        LIMIT #{offset}, #{pageSize}
     </select>
 
 </mapper>

@@ -7,7 +7,7 @@
     <div class="admin-card">
         <p class="admin-card-note" style="margin: 0 0 16px; line-height: 1.6;">
             방문 수와 중복 제외 방문자 수는 BOT을 제외한 실제 방문 기준입니다.
-            BOT 요청은 아래 카드와 최근 접속 기록 표에서 따로 확인할 수 있습니다.
+            BOT 요청은 아래 카드에서 따로 보이고, IP 접속 기록은 체크박스를 켰을 때만 BOT 기록이 함께 보입니다.
         </p>
         <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
             <label class="admin-field">
@@ -38,6 +38,11 @@
                             th:text="${item.displayName}">메뉴</option>
                 </select>
             </label>
+            <label class="admin-check-field">
+                <input type="checkbox" name="includeBots" value="true" th:checked="${includeBots}">
+                <span>BOT 표시</span>
+            </label>
+            <input type="hidden" name="logSize" th:value="${selectedLogSize}">
             <button type="submit" class="admin-secondary-button">조회</button>
         </form>
     </div>
@@ -180,11 +185,19 @@
     </div>
 
     <section class="admin-card">
-        <p class="admin-card-label">IP별 최근 접속 기록</p>
-        <p class="admin-table-note">
-            현재 필터 조건에 맞는 최근 200건의 접속 기록입니다.
-            접속 시각과 IP, BOT 여부, 서비스, 메뉴, 상세 경로를 함께 확인할 수 있습니다.
-        </p>
+        <div class="admin-section-head admin-section-head-tight">
+            <div>
+                <p class="admin-card-label">IP별 접속 기록</p>
+                <p class="admin-table-note">
+                    현재 필터 조건에 맞는 전체 접속 기록을 페이지 단위로 확인할 수 있습니다.
+                    BOT 기록은 <strong>BOT 표시</strong>를 체크했을 때만 함께 노출됩니다.
+                </p>
+            </div>
+            <div class="admin-list-summary" th:if="${ipAccessLogPage.totalCount > 0}">
+                <span th:text="${'전체 ' + ipAccessLogPage.totalCount + '건'}">전체 0건</span>
+                <span th:text="${ipAccessLogPage.currentPage + ' / ' + ipAccessLogPage.totalPages + ' 페이지'}">1 / 1 페이지</span>
+            </div>
+        </div>
         <div class="admin-table-wrap">
             <table class="admin-table">
                 <thead>
@@ -199,7 +212,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="item : ${ipAccessLogs}">
+                <tr th:each="item : ${ipAccessLogPage.items}">
                     <td th:text="${item.visitedAt}">2026-04-22 18:10:00</td>
                     <td class="admin-monospace" th:text="${item.ipAddress}">127.0.0.1</td>
                     <td>
@@ -212,11 +225,54 @@
                     <td class="admin-break-text admin-monospace" th:text="${item.routeKey}">/grap/user/content/festivals</td>
                     <td th:text="${item.deviceDisplayName}">모바일</td>
                 </tr>
-                <tr th:if="${#lists.isEmpty(ipAccessLogs)}">
+                <tr th:if="${#lists.isEmpty(ipAccessLogPage.items)}">
                     <td colspan="7">조건에 맞는 IP 접속 기록이 없습니다.</td>
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="admin-pagination" th:if="${ipAccessLogPage.totalPages > 1}">
+            <a th:if="${ipAccessLogPage.currentPage > 1}"
+               th:href="@{/admin/analytics/visitors(
+                    startDate=${selectedStartDate},
+                    endDate=${selectedEndDate},
+                    serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                    menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                    includeBots=${includeBots},
+                    logSize=${selectedLogSize},
+                    logPage=${ipAccessLogPage.currentPage - 1}
+               )}">이전</a>
+            <span th:if="${ipAccessLogPage.currentPage <= 1}">이전</span>
+
+            <th:block th:each="pageNumber : ${#numbers.sequence(ipAccessLogPage.startPage, ipAccessLogPage.endPage)}">
+                <a th:if="${pageNumber != ipAccessLogPage.currentPage}"
+                   th:href="@{/admin/analytics/visitors(
+                        startDate=${selectedStartDate},
+                        endDate=${selectedEndDate},
+                        serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                        menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                        includeBots=${includeBots},
+                        logSize=${selectedLogSize},
+                        logPage=${pageNumber}
+                   )}"
+                   th:text="${pageNumber}">1</a>
+                <span th:if="${pageNumber == ipAccessLogPage.currentPage}"
+                      class="active"
+                      th:text="${pageNumber}">1</span>
+            </th:block>
+
+            <a th:if="${ipAccessLogPage.currentPage < ipAccessLogPage.totalPages}"
+               th:href="@{/admin/analytics/visitors(
+                    startDate=${selectedStartDate},
+                    endDate=${selectedEndDate},
+                    serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                    menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                    includeBots=${includeBots},
+                    logSize=${selectedLogSize},
+                    logPage=${ipAccessLogPage.currentPage + 1}
+               )}">다음</a>
+            <span th:if="${ipAccessLogPage.currentPage >= ipAccessLogPage.totalPages}">다음</span>
         </div>
     </section>
 </section>

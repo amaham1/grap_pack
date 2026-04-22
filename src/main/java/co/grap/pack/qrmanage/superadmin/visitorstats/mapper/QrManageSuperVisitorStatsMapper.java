@@ -12,7 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 슈퍼 관리자 방문자 통계 Mapper 다.
+ * 슈퍼 관리자 방문자 통계 Mapper 인터페이스다.
  */
 @Mapper
 public interface QrManageSuperVisitorStatsMapper {
@@ -47,7 +47,7 @@ public interface QrManageSuperVisitorStatsMapper {
     );
 
     /**
-     * 서비스/메뉴별 요약 통계를 조회한다.
+     * 서비스와 메뉴별 요약 통계를 조회한다.
      */
     List<QrManageSuperVisitorMenuStats> selectMenuStats(
             @Param("startDate") String startDate,
@@ -57,7 +57,7 @@ public interface QrManageSuperVisitorStatsMapper {
     );
 
     /**
-     * 라우트 상세 통계를 조회한다.
+     * 상세 경로별 통계를 조회한다.
      */
     List<QrManageSuperVisitorRouteStats> selectRouteStats(
             @Param("startDate") String startDate,
@@ -77,12 +77,26 @@ public interface QrManageSuperVisitorStatsMapper {
     );
 
     /**
-     * 최근 IP 접속 기록을 조회한다.
+     * 조건에 맞는 IP 접속 기록 전체 수를 조회한다.
+     */
+    Long selectRecentIpAccessLogCount(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode,
+            @Param("includeBots") boolean includeBots
+    );
+
+    /**
+     * 최근 IP 접속 기록을 페이지 단위로 조회한다.
      */
     List<QrManageSuperVisitorIpAccessLog> selectRecentIpAccessLogs(
             @Param("startDate") String startDate,
             @Param("endDate") String endDate,
             @Param("serviceCode") String serviceCode,
-            @Param("menuCode") String menuCode
+            @Param("menuCode") String menuCode,
+            @Param("includeBots") boolean includeBots,
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize
     );
 }

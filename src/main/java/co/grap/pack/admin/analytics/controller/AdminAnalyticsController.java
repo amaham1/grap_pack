@@ -2,6 +2,7 @@ package co.grap.pack.admin.analytics.controller;
 
 import co.grap.pack.common.visitor.model.PackVisitorMenuCode;
 import co.grap.pack.common.visitor.model.PackVisitorServiceCode;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLogPage;
 import co.grap.pack.qrmanage.superadmin.visitorstats.service.QrManageSuperVisitorStatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,19 +29,15 @@ public class AdminAnalyticsController {
 
     /**
      * 방문자 통계 페이지를 보여준다.
-     *
-     * @param startDate 시작일
-     * @param endDate 종료일
-     * @param serviceCode 서비스 코드
-     * @param menuCode 메뉴 코드
-     * @param model 화면 모델
-     * @return 템플릿 경로
      */
     @GetMapping("/visitors")
     public String visitorStats(@RequestParam(value = "startDate", required = false) String startDate,
                                @RequestParam(value = "endDate", required = false) String endDate,
                                @RequestParam(value = "serviceCode", required = false) String serviceCode,
                                @RequestParam(value = "menuCode", required = false) String menuCode,
+                               @RequestParam(value = "logPage", required = false) Integer logPage,
+                               @RequestParam(value = "logSize", required = false) Integer logSize,
+                               @RequestParam(value = "includeBots", required = false) Boolean includeBots,
                                Model model) {
         LocalDate today = LocalDate.now(KOREA_ZONE_ID);
         LocalDate selectedEndDate = parseDate(endDate, today);
@@ -54,6 +51,7 @@ public class AdminAnalyticsController {
 
         PackVisitorServiceCode selectedServiceCode = PackVisitorServiceCode.fromCode(serviceCode);
         PackVisitorMenuCode selectedMenuCode = PackVisitorMenuCode.fromCode(menuCode);
+        boolean shouldIncludeBots = Boolean.TRUE.equals(includeBots);
 
         if (selectedMenuCode != null && selectedServiceCode == null) {
             selectedServiceCode = selectedMenuCode.getServiceCode();
@@ -64,12 +62,23 @@ public class AdminAnalyticsController {
         }
 
         List<PackVisitorMenuCode> availableMenuCodes = PackVisitorMenuCode.findByServiceCode(selectedServiceCode);
+        QrManageSuperVisitorIpAccessLogPage ipAccessLogPage = qrManageSuperVisitorStatsService.getIpAccessLogPage(
+                selectedStartDate,
+                selectedEndDate,
+                selectedServiceCode,
+                selectedMenuCode,
+                logPage,
+                logSize,
+                shouldIncludeBots
+        );
 
         model.addAttribute("title", "방문자 통계");
         model.addAttribute("selectedStartDate", selectedStartDate);
         model.addAttribute("selectedEndDate", selectedEndDate);
         model.addAttribute("selectedServiceCode", selectedServiceCode);
         model.addAttribute("selectedMenuCode", selectedMenuCode);
+        model.addAttribute("selectedLogSize", ipAccessLogPage.getPageSize());
+        model.addAttribute("includeBots", shouldIncludeBots);
         model.addAttribute("serviceCodes", PackVisitorServiceCode.values());
         model.addAttribute("availableMenuCodes", availableMenuCodes);
         model.addAttribute("dashboardStats", qrManageSuperVisitorStatsService.getDashboardStats(
@@ -82,8 +91,7 @@ public class AdminAnalyticsController {
                 selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
         model.addAttribute("deviceStats", qrManageSuperVisitorStatsService.getDeviceStats(
                 selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
-        model.addAttribute("ipAccessLogs", qrManageSuperVisitorStatsService.getRecentIpAccessLogs(
-                selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
+        model.addAttribute("ipAccessLogPage", ipAccessLogPage);
         model.addAttribute("showRouteBreakdown", selectedMenuCode != null);
         return "admin/analytics/admin-visitor-stats";
     }

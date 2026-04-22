@@ -8,10 +8,10 @@ import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorD
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLogPage;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorRouteStats;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,11 +31,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class QrManageSuperVisitorStatsService {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE;
     private static final ZoneId KOREA_ZONE_ID = ZoneId.of("Asia/Seoul");
+    private static final int DEFAULT_IP_ACCESS_LOG_PAGE_SIZE = 50;
+    private static final int MAX_IP_ACCESS_LOG_PAGE_SIZE = 200;
+    private static final int PAGE_LINK_COUNT = 5;
 
     private final QrManageSuperVisitorStatsMapper visitorStatsMapper;
 
@@ -121,7 +123,7 @@ public class QrManageSuperVisitorStatsService {
     }
 
     /**
-     * 서비스/메뉴 요약 통계를 조회한다.
+     * 서비스와 메뉴 요약 통계를 조회한다.
      */
     public List<QrManageSuperVisitorMenuStats> getMenuStats(
             LocalDate startDate,
@@ -147,7 +149,7 @@ public class QrManageSuperVisitorStatsService {
     }
 
     /**
-     * 라우트 상세 통계를 조회한다.
+     * 상세 경로 통계를 조회한다.
      */
     public List<QrManageSuperVisitorRouteStats> getRouteStats(
             LocalDate startDate,
@@ -224,30 +226,80 @@ public class QrManageSuperVisitorStatsService {
     }
 
     /**
-     * 최근 IP 접속 기록을 조회한다.
+     * IP 접속 기록을 페이지 단위로 조회한다.
      */
-    public List<QrManageSuperVisitorIpAccessLog> getRecentIpAccessLogs(
+    public QrManageSuperVisitorIpAccessLogPage getIpAccessLogPage(
             LocalDate startDate,
             LocalDate endDate,
             PackVisitorServiceCode serviceCode,
-            PackVisitorMenuCode menuCode
+            PackVisitorMenuCode menuCode,
+            Integer page,
+            Integer pageSize,
+            boolean includeBots
     ) {
-        return visitorStatsMapper.selectRecentIpAccessLogs(
-                        formatDate(startDate),
-                        formatDate(endDate),
-                        codeOf(serviceCode),
-                        codeOf(menuCode)
-                ).stream()
-                .peek(logEntry -> {
-                    logEntry.setIpAddress(hasText(logEntry.getIpAddress()) ? logEntry.getIpAddress() : "-");
-                    logEntry.setServiceDisplayName(defaultDisplayName(resolveServiceDisplayName(logEntry.getServiceCode())));
-                    logEntry.setMenuDisplayName(defaultDisplayName(resolveMenuDisplayName(logEntry.getMenuCode())));
-                    logEntry.setRouteKey(hasText(logEntry.getRouteKey()) ? logEntry.getRouteKey() : "-");
-                    PackVisitorDeviceType deviceType = parseDeviceType(logEntry.getDeviceType());
-                    logEntry.setDeviceDisplayName(deviceType.getDisplayName());
-                    logEntry.setVisitorTypeDisplayName(deviceType == PackVisitorDeviceType.BOT ? "BOT" : "일반");
-                })
-                .toList();
+        int normalizedPageSize = normalizePageSize(pageSize);
+        long totalCount = orZero(visitorStatsMapper.selectRecentIpAccessLogCount(
+                formatDate(startDate),
+                formatDate(endDate),
+                codeOf(serviceCode),
+                codeOf(menuCode),
+                includeBots
+        ));
+
+        int totalPages = totalCount > 0 ? (int) Math.ceil(totalCount / (double) normalizedPageSize) : 1;
+        int currentPage = normalizePageNumber(page, totalPages);
+        int offset = (currentPage - 1) * normalizedPageSize;
+
+        List<QrManageSuperVisitorIpAccessLog> items = totalCount > 0
+                ? visitorStatsMapper.selectRecentIpAccessLogs(
+                formatDate(startDate),
+                formatDate(endDate),
+                codeOf(serviceCode),
+                codeOf(menuCode),
+                includeBots,
+                offset,
+                normalizedPageSize
+        ).stream()
+                .peek(this::populateIpAccessLogDisplayValues)
+                .toList()
+                : List.of();
+
+        int endPage = Math.min(totalPages, Math.max(PAGE_LINK_COUNT, currentPage + 2));
+        int startPage = Math.max(1, endPage - PAGE_LINK_COUNT + 1);
+        endPage = Math.min(totalPages, startPage + PAGE_LINK_COUNT - 1);
+
+        return QrManageSuperVisitorIpAccessLogPage.builder()
+                .items(items)
+                .totalCount(totalCount)
+                .currentPage(currentPage)
+                .pageSize(normalizedPageSize)
+                .totalPages(totalPages)
+                .startPage(startPage)
+                .endPage(endPage)
+                .includeBots(includeBots)
+                .build();
+    }
+
+    private void populateIpAccessLogDisplayValues(QrManageSuperVisitorIpAccessLog logEntry) {
+        logEntry.setIpAddress(hasText(logEntry.getIpAddress()) ? logEntry.getIpAddress() : "-");
+        logEntry.setServiceDisplayName(defaultDisplayName(resolveServiceDisplayName(logEntry.getServiceCode())));
+        logEntry.setMenuDisplayName(defaultDisplayName(resolveMenuDisplayName(logEntry.getMenuCode())));
+        logEntry.setRouteKey(hasText(logEntry.getRouteKey()) ? logEntry.getRouteKey() : "-");
+        PackVisitorDeviceType deviceType = parseDeviceType(logEntry.getDeviceType());
+        logEntry.setDeviceDisplayName(deviceType.getDisplayName());
+        logEntry.setVisitorTypeDisplayName(deviceType == PackVisitorDeviceType.BOT ? "BOT" : "일반");
+    }
+
+    private int normalizePageSize(Integer pageSize) {
+        if (pageSize == null || pageSize < 1) {
+            return DEFAULT_IP_ACCESS_LOG_PAGE_SIZE;
+        }
+        return Math.min(pageSize, MAX_IP_ACCESS_LOG_PAGE_SIZE);
+    }
+
+    private int normalizePageNumber(Integer page, int totalPages) {
+        int normalizedPage = page == null || page < 1 ? 1 : page;
+        return Math.min(normalizedPage, totalPages);
     }
 
     private String formatDate(LocalDate date) {
