@@ -3,6 +3,7 @@ package co.grap.pack.qrmanage.superadmin.visitorstats.mapper;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorRouteStats;
 import org.apache.ibatis.annotations.Mapper;
@@ -69,6 +70,16 @@ public interface QrManageSuperVisitorStatsMapper {
      * 디바이스 유형별 통계를 조회한다.
      */
     List<QrManageSuperVisitorDeviceStats> selectDeviceStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 최근 IP 접속 기록을 조회한다.
+     */
+    List<QrManageSuperVisitorIpAccessLog> selectRecentIpAccessLogs(
             @Param("startDate") String startDate,
             @Param("endDate") String endDate,
             @Param("serviceCode") String serviceCode,

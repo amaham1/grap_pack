@@ -7,6 +7,7 @@ import co.grap.pack.qrmanage.superadmin.visitorstats.mapper.QrManageSuperVisitor
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats;
 import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorRouteStats;
 import lombok.RequiredArgsConstructor;
@@ -222,6 +223,33 @@ public class QrManageSuperVisitorStatsService {
         return result;
     }
 
+    /**
+     * 최근 IP 접속 기록을 조회한다.
+     */
+    public List<QrManageSuperVisitorIpAccessLog> getRecentIpAccessLogs(
+            LocalDate startDate,
+            LocalDate endDate,
+            PackVisitorServiceCode serviceCode,
+            PackVisitorMenuCode menuCode
+    ) {
+        return visitorStatsMapper.selectRecentIpAccessLogs(
+                        formatDate(startDate),
+                        formatDate(endDate),
+                        codeOf(serviceCode),
+                        codeOf(menuCode)
+                ).stream()
+                .peek(logEntry -> {
+                    logEntry.setIpAddress(hasText(logEntry.getIpAddress()) ? logEntry.getIpAddress() : "-");
+                    logEntry.setServiceDisplayName(defaultDisplayName(resolveServiceDisplayName(logEntry.getServiceCode())));
+                    logEntry.setMenuDisplayName(defaultDisplayName(resolveMenuDisplayName(logEntry.getMenuCode())));
+                    logEntry.setRouteKey(hasText(logEntry.getRouteKey()) ? logEntry.getRouteKey() : "-");
+                    PackVisitorDeviceType deviceType = parseDeviceType(logEntry.getDeviceType());
+                    logEntry.setDeviceDisplayName(deviceType.getDisplayName());
+                    logEntry.setVisitorTypeDisplayName(deviceType == PackVisitorDeviceType.BOT ? "BOT" : "일반");
+                })
+                .toList();
+    }
+
     private String formatDate(LocalDate date) {
         return date.format(DATE_FORMATTER);
     }
@@ -254,5 +282,13 @@ public class QrManageSuperVisitorStatsService {
         } catch (Exception exception) {
             return PackVisitorDeviceType.UNKNOWN;
         }
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
+    }
+
+    private String defaultDisplayName(String value) {
+        return hasText(value) ? value : "-";
     }
 }

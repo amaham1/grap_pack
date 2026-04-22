@@ -109,4 +109,18 @@
         ORDER BY FIELD(device_type, 'DESKTOP', 'MOBILE', 'TABLET', 'UNKNOWN')
     </select>
 
+    <select id="selectRecentIpAccessLogs" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog">
+        SELECT
+            DATE_FORMAT(visited_at, '%Y-%m-%d %H:%i:%s') AS visitedAt,
+            ip_address AS ipAddress,
+            service_code AS serviceCode,
+            menu_code AS menuCode,
+            COALESCE(route_key, page_url) AS routeKey,
+            device_type AS deviceType
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+        ORDER BY visited_at DESC, id DESC
+        LIMIT 200
+    </select>
+
 </mapper>

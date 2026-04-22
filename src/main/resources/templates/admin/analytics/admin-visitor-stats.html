@@ -7,7 +7,7 @@
     <div class="admin-card">
         <p class="admin-card-note" style="margin: 0 0 16px; line-height: 1.6;">
             방문 수와 중복 제외 방문자 수는 BOT을 제외한 실제 방문 기준입니다.
-            BOT 요청은 아래 별도 카드에서 따로 확인할 수 있습니다.
+            BOT 요청은 아래 카드와 최근 접속 기록 표에서 따로 확인할 수 있습니다.
         </p>
         <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
             <label class="admin-field">
@@ -82,7 +82,7 @@
 
     <div class="admin-card-grid admin-card-grid-2">
         <section class="admin-card">
-            <p class="admin-card-label">일별 방문 현황</p>
+            <p class="admin-card-label">일별 방문 추이</p>
             <div class="admin-mini-chart">
                 <div class="admin-mini-chart-row" th:each="item : ${dailyStats}">
                     <span class="admin-mini-chart-label" th:text="${item.date}">2026-04-22</span>
@@ -112,6 +112,9 @@
                         <td th:text="${item.pv}">0</td>
                         <td th:text="${item.ratio} + '%'">0%</td>
                     </tr>
+                    <tr th:if="${#lists.isEmpty(deviceStats)}">
+                        <td colspan="3">집계 데이터가 없습니다.</td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -134,8 +137,8 @@
                     </thead>
                     <tbody>
                     <tr th:each="item : ${menuStats}">
-                        <td th:text="${item.serviceDisplayName}">서비스</td>
-                        <td th:text="${item.menuDisplayName}">메뉴</td>
+                        <td th:text="${item.serviceDisplayName}">Grap CMS</td>
+                        <td th:text="${item.menuDisplayName}">축제 목록</td>
                         <td th:text="${item.pv}">0</td>
                         <td th:text="${item.uv}">0</td>
                         <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
@@ -162,7 +165,7 @@
                     </thead>
                     <tbody>
                     <tr th:each="item : ${routeStats}">
-                        <td th:text="${item.routeKey}">/grap/user/...</td>
+                        <td class="admin-break-text admin-monospace" th:text="${item.routeKey}">/grap/user/...</td>
                         <td th:text="${item.pv}">0</td>
                         <td th:text="${item.uv}">0</td>
                         <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
@@ -175,6 +178,47 @@
             </div>
         </section>
     </div>
+
+    <section class="admin-card">
+        <p class="admin-card-label">IP별 최근 접속 기록</p>
+        <p class="admin-table-note">
+            현재 필터 조건에 맞는 최근 200건의 접속 기록입니다.
+            접속 시각과 IP, BOT 여부, 서비스, 메뉴, 상세 경로를 함께 확인할 수 있습니다.
+        </p>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>접속 시각</th>
+                    <th>IP</th>
+                    <th>구분</th>
+                    <th>서비스</th>
+                    <th>메뉴</th>
+                    <th>상세 경로</th>
+                    <th>기기</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${ipAccessLogs}">
+                    <td th:text="${item.visitedAt}">2026-04-22 18:10:00</td>
+                    <td class="admin-monospace" th:text="${item.ipAddress}">127.0.0.1</td>
+                    <td>
+                        <span class="admin-chip"
+                              th:classappend="${item.visitorTypeDisplayName == 'BOT'} ? ' admin-chip-warn' : ' admin-chip-muted'"
+                              th:text="${item.visitorTypeDisplayName}">일반</span>
+                    </td>
+                    <td th:text="${item.serviceDisplayName}">Grap CMS</td>
+                    <td th:text="${item.menuDisplayName}">축제 목록</td>
+                    <td class="admin-break-text admin-monospace" th:text="${item.routeKey}">/grap/user/content/festivals</td>
+                    <td th:text="${item.deviceDisplayName}">모바일</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ipAccessLogs)}">
+                    <td colspan="7">조건에 맞는 IP 접속 기록이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </section>
 </body>
 </html>

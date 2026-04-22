@@ -437,6 +437,22 @@ textarea {
     color: var(--admin-subtle);
 }
 
+.admin-table-note {
+    margin: 0 0 14px;
+    color: var(--admin-subtle);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.admin-monospace {
+    font-family: "Consolas", "Courier New", monospace;
+    font-size: 13px;
+}
+
+.admin-break-text {
+    word-break: break-all;
+}
+
 .admin-chip {
     display: inline-flex;
     align-items: center;

@@ -15,7 +15,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 /**
- * ?듯빀 ?댁쁺 ?ы꽭 ?듦퀎 而⑦듃濡ㅻ윭??
+ * 관리자 방문자 통계 컨트롤러다.
  */
 @Controller
 @RequestMapping("/admin/analytics")
@@ -26,14 +26,22 @@ public class AdminAnalyticsController {
 
     private final QrManageSuperVisitorStatsService qrManageSuperVisitorStatsService;
 
+    /**
+     * 방문자 통계 페이지를 보여준다.
+     *
+     * @param startDate 시작일
+     * @param endDate 종료일
+     * @param serviceCode 서비스 코드
+     * @param menuCode 메뉴 코드
+     * @param model 화면 모델
+     * @return 템플릿 경로
+     */
     @GetMapping("/visitors")
-    public String visitorStats(
-            @RequestParam(value = "startDate", required = false) String startDate,
-            @RequestParam(value = "endDate", required = false) String endDate,
-            @RequestParam(value = "serviceCode", required = false) String serviceCode,
-            @RequestParam(value = "menuCode", required = false) String menuCode,
-            Model model
-    ) {
+    public String visitorStats(@RequestParam(value = "startDate", required = false) String startDate,
+                               @RequestParam(value = "endDate", required = false) String endDate,
+                               @RequestParam(value = "serviceCode", required = false) String serviceCode,
+                               @RequestParam(value = "menuCode", required = false) String menuCode,
+                               Model model) {
         LocalDate today = LocalDate.now(KOREA_ZONE_ID);
         LocalDate selectedEndDate = parseDate(endDate, today);
         LocalDate selectedStartDate = parseDate(startDate, selectedEndDate.minusDays(29));
@@ -57,7 +65,7 @@ public class AdminAnalyticsController {
 
         List<PackVisitorMenuCode> availableMenuCodes = PackVisitorMenuCode.findByServiceCode(selectedServiceCode);
 
-        model.addAttribute("title", "諛⑸Ц???듦퀎");
+        model.addAttribute("title", "방문자 통계");
         model.addAttribute("selectedStartDate", selectedStartDate);
         model.addAttribute("selectedEndDate", selectedEndDate);
         model.addAttribute("selectedServiceCode", selectedServiceCode);
@@ -73,6 +81,8 @@ public class AdminAnalyticsController {
         model.addAttribute("routeStats", qrManageSuperVisitorStatsService.getRouteStats(
                 selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
         model.addAttribute("deviceStats", qrManageSuperVisitorStatsService.getDeviceStats(
+                selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
+        model.addAttribute("ipAccessLogs", qrManageSuperVisitorStatsService.getRecentIpAccessLogs(
                 selectedStartDate, selectedEndDate, selectedServiceCode, selectedMenuCode));
         model.addAttribute("showRouteBreakdown", selectedMenuCode != null);
         return "admin/analytics/admin-visitor-stats";
