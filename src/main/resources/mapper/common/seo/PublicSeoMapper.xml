@@ -53,15 +53,6 @@
                 'daily' AS change_frequency,
                 '0.7' AS priority
             FROM gas_stations
-
-            UNION ALL
-
-            SELECT
-                CONCAT('/grap/user/content/real-estate/', id) AS path,
-                DATE_FORMAT(deal_date, '%Y-%m-%d') AS last_modified,
-                'daily' AS change_frequency,
-                '0.7' AS priority
-            FROM real_estate_transactions
         ) sitemap_urls
         WHERE path IS NOT NULL
           AND last_modified IS NOT NULL
