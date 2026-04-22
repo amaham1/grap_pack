@@ -42,13 +42,13 @@
 
     <select id="selectDailyStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats">
         SELECT
-            DATE_FORMAT(DATE(visited_at), '%Y-%m-%d') AS date,
+            DATE_FORMAT(MIN(visited_at), '%Y-%m-%d') AS date,
             COALESCE(COUNT(*), 0) AS pv,
             COALESCE(COUNT(DISTINCT session_id), 0) AS uv
         FROM grap_pack_visitor
         WHERE <include refid="visitorDateRangeFilter"/>
         GROUP BY DATE(visited_at)
-        ORDER BY date ASC
+        ORDER BY DATE(visited_at) ASC
     </select>
 
     <select id="selectMenuStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats">

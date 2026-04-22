@@ -252,5 +252,5 @@ CREATE TABLE IF NOT EXISTS qr_manage_activity_log (
 
 -- 최고관리자 기본 계정 (비밀번호: admin123)
 INSERT INTO qr_manage_super_admin (username, password, name, email)
-VALUES ('superadmin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iAt6Z5EH', '최고관리자', 'super@qrmanage.com')
+VALUES ('superadmin', '$2a$10$VMWYfui1GrQa3eI/yFRBkuL8L/nzcj93EGu.w4wvNK9CTXi/ZTEwq', '최고관리자', 'super@qrmanage.com')
 ON DUPLICATE KEY UPDATE username = username;
