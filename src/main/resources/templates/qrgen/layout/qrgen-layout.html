@@ -7,13 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title layout:title-pattern="$CONTENT_TITLE - Grap QR">Grap QR</title>
 
-    <!-- SEO 메타 태그 -->
     <meta name="description" th:if="${seoDescription}" th:content="${seoDescription}">
-    <meta name="description" th:unless="${seoDescription}" content="무료 QR 코드 생성기. URL, 텍스트, 연락처 등 다양한 QR 코드를 간편하게 만들어보세요.">
+    <meta name="description" th:unless="${seoDescription}" content="무료 QR 코드 생성기입니다. URL, 텍스트, 연락처 등 다양한 정보를 간편하게 QR 코드로 만들 수 있습니다.">
     <meta name="robots" th:if="${seoRobots}" th:content="${seoRobots}">
     <link rel="canonical" th:if="${seoCanonical}" th:href="${seoCanonical}">
 
-    <!-- Open Graph -->
     <meta property="og:title" th:if="${seoTitle}" th:content="${seoTitle + ' - Grap QR'}">
     <meta property="og:description" th:if="${seoDescription}" th:content="${seoDescription}">
     <meta property="og:url" th:if="${seoCanonical}" th:content="${seoCanonical}">
@@ -22,37 +20,20 @@
     <meta property="og:locale" content="ko_KR">
     <meta property="og:site_name" th:if="${seoSiteName}" th:content="${seoSiteName}">
 
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" th:if="${seoTitle}" th:content="${seoTitle + ' - Grap QR'}">
     <meta name="twitter:description" th:if="${seoDescription}" th:content="${seoDescription}">
     <meta name="twitter:image" th:if="${seoOgImage}" th:content="${seoOgImage}">
 
-    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" th:href="@{/qrgen/images/favicon.svg}">
 
     <link rel="stylesheet" th:href="@{/common/css/base.css}">
+    <link rel="stylesheet" th:href="@{/common/css/site-header.css}">
     <link rel="stylesheet" th:href="@{/qrgen/css/qrgen.css}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 </head>
 <body>
-    <header class="qrgen-header">
-        <div class="qrgen-header-container">
-            <a th:href="@{/qrgen/}" class="qrgen-logo">Grap</a>
-            <nav class="qrgen-nav">
-                <th:block th:if="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/qrgen/user/history}" class="qrgen-nav-link">내 히스토리</a>
-                    <form th:action="@{/qrgen/auth/logout}" method="post" class="qrgen-logout-form">
-                        <button type="submit" class="qrgen-nav-link qrgen-logout-btn">로그아웃</button>
-                    </form>
-                </th:block>
-                <th:block th:unless="${#authorization.expression('isAuthenticated()')}">
-                    <a th:href="@{/qrgen/auth/login}" class="qrgen-nav-link">로그인</a>
-                    <a th:href="@{/qrgen/auth/register}" class="qrgen-nav-link qrgen-btn-primary">회원가입</a>
-                </th:block>
-            </nav>
-        </div>
-    </header>
+    <div th:replace="~{common/fragments/cms-header :: user-header}"></div>
 
     <main class="qrgen-main">
         <div layout:fragment="content"></div>
@@ -63,11 +44,9 @@
         <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
     </footer>
 
-    <!-- 구조화 데이터 (JSON-LD) 프래그먼트 -->
     <th:block layout:fragment="structured-data"></th:block>
 
     <script th:src="@{/qrgen/js/qrgen.js}"></script>
-    <!-- 방문자 추적 -->
     <script th:if="${qrGenVisitorId != null}">
         window.QRGEN_VISITOR_ID = [[${qrGenVisitorId}]];
     </script>
