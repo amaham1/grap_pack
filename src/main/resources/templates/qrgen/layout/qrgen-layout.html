@@ -34,23 +34,23 @@
     <th:block th:replace="~{common/fragments/adsense-script :: adsense-script}"></th:block>
 </head>
 <body>
-    <div th:replace="~{common/fragments/cms-header :: user-header}"></div>
+<div th:replace="~{common/fragments/cms-header :: user-header}"></div>
 
-    <main class="qrgen-main">
-        <div layout:fragment="content"></div>
-    </main>
+<main class="qrgen-main">
+    <div layout:fragment="content"></div>
+</main>
 
-    <footer class="qrgen-footer">
-        <p>Grap - QR Code Generator</p>
-        <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
-    </footer>
+<footer class="qrgen-footer">
+    <p>Grap - QR Code Generator</p>
+    <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
+</footer>
 
-    <th:block layout:fragment="structured-data"></th:block>
+<th:block layout:fragment="structured-data"></th:block>
 
-    <script th:src="@{/qrgen/js/qrgen.js}"></script>
-    <script th:if="${packVisitorId != null}">
-        window.PACK_VISITOR_ID = [[${packVisitorId}]];
-    </script>
-    <script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
+<script th:src="@{/qrgen/js/qrgen.js}"></script>
+<script th:if="${packVisitorId != null}">
+    window.PACK_VISITOR_ID = [[${packVisitorId}]];
+</script>
+<script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
 </body>
 </html>

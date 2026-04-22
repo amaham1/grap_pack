@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * QR 관리 서비스 최고관리자 대시보드 컨트롤러
+ * QR 관리 최고관리자 대시보드 컨트롤러다.
  */
 @Slf4j
 @Controller
@@ -17,15 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class QrManageSuperDashboardController {
 
     /**
-     * 대시보드 페이지
+     * 대시보드 페이지를 조회한다.
      */
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
         log.info("✅ [CHECK] 최고관리자 대시보드 페이지 요청");
 
         model.addAttribute("title", "대시보드");
-
-        // TODO: 통계 데이터 추가
         model.addAttribute("totalShopAdmins", 0);
         model.addAttribute("pendingShopAdmins", 0);
         model.addAttribute("totalShops", 0);

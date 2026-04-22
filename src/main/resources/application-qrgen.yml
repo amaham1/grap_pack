@@ -3,12 +3,12 @@ spring:
   application:
     name: qr-gen
 
-  # 데이터소스 설정 (qr_gen DB 사용)
+  # 공통 저장소는 grap_cms 를 사용한다.
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
-    username: jursi  
-    password: Qnflck2##$
+    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
 
 # MyBatis 설정
 mybatis:
@@ -25,7 +25,7 @@ pagehelper:
   support-methods-arguments: true
   params: count=countSql
 
-# QR Generator 전용 데이터소스 (멀티 데이터소스)
+# QR Generator 전용 데이터소스는 레거시 qr_gen DB 를 유지한다.
 qrgen:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -34,12 +34,8 @@ qrgen:
     password: Qnflck2##$
 
   qr-image:
-    # Windows 개발 환경
     save-path: ${user.dir}/uploads/qrgen/images
   qr-code:
-    # QR 이미지 기본 크기 (픽셀)
     default-size: 300
-    # 최대 크기
     max-size: 1000
-    # 최소 크기
     min-size: 100

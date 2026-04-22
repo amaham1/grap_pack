@@ -12,19 +12,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * QR Generator 서비스 Spring Security 설정
- * 익명 사용자와 로그인 사용자 모두 QR 생성 가능
- * 로그인 사용자만 히스토리 조회 가능
+ * QR Generator 서비스 보안 설정이다.
  */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class QrGenSecurityConfig {
-    
+
     private final PasswordEncoder passwordEncoder;
 
     /**
-     * QR Generator 사용자 인증 제공자
+     * QR Generator 사용자 인증 공급자를 등록한다.
      */
     @Bean
     public DaoAuthenticationProvider qrGenUserAuthProvider(QrGenAuthService authService) {
@@ -35,88 +33,81 @@ public class QrGenSecurityConfig {
     }
 
     /**
-     * 인증 필요 영역 Security 필터 체인 (/qrgen/user/**)
-     * 히스토리 조회 등 로그인 필요 기능
+     * 인증이 필요한 QRgen 사용자 영역 보안 체인이다.
      */
     @Bean
     @Order(4)
-    public SecurityFilterChain qrGenAuthenticatedFilterChain(HttpSecurity http,
-            DaoAuthenticationProvider qrGenUserAuthProvider) throws Exception {
+    public SecurityFilterChain qrGenAuthenticatedFilterChain(
+            HttpSecurity http,
+            DaoAuthenticationProvider qrGenUserAuthProvider
+    ) throws Exception {
         http
-            .securityMatcher("/qrgen/user/**")
-            .authenticationProvider(qrGenUserAuthProvider)
-            // CSRF 설정
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/qrgen/user/api/**")
-            )
-            // 인가 설정
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().hasRole("QRGEN_USER")
-            )
-            // 로그인 설정
-            .formLogin(form -> form
-                .loginPage("/qrgen/auth/login")
-                .loginProcessingUrl("/qrgen/auth/login")
-                .defaultSuccessUrl("/qrgen/user/history", true)
-                .failureUrl("/qrgen/auth/login?error=true")
-                .usernameParameter("loginId")
-                .passwordParameter("password")
-                .permitAll()
-            )
-            // 로그아웃 설정
-            .logout(logout -> logout
-                .logoutUrl("/qrgen/auth/logout")
-                .logoutSuccessUrl("/qrgen/?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            )
-            // 세션 설정
-            .sessionManagement(session -> session
-                .maximumSessions(1)
-                .maxSessionsPreventsLogin(false)
-            );
+                .securityMatcher("/qrgen/user/**")
+                .authenticationProvider(qrGenUserAuthProvider)
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/qrgen/user/api/**")
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().hasRole("QRGEN_USER")
+                )
+                .formLogin(form -> form
+                        .loginPage("/qrgen/auth/login")
+                        .loginProcessingUrl("/qrgen/auth/login")
+                        .defaultSuccessUrl("/qrgen/user/history", true)
+                        .failureUrl("/qrgen/auth/login?error=true")
+                        .usernameParameter("loginId")
+                        .passwordParameter("password")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/qrgen/auth/logout")
+                        .logoutSuccessUrl("/qrgen/?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                )
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                );
 
         return http.build();
     }
 
     /**
-     * 공개 영역 Security 필터 체인 (/qrgen/**)
-     * 익명 사용자도 접근 가능, 로그인 사용자 정보는 선택적으로 획득
+     * 공개 QRgen 영역 보안 체인이다.
      */
     @Bean
     @Order(5)
-    public SecurityFilterChain qrGenPublicFilterChain(HttpSecurity http,
-            DaoAuthenticationProvider qrGenUserAuthProvider) throws Exception {
+    public SecurityFilterChain qrGenPublicFilterChain(
+            HttpSecurity http,
+            DaoAuthenticationProvider qrGenUserAuthProvider
+    ) throws Exception {
         http
-            .securityMatcher("/qrgen/**")
-            .authenticationProvider(qrGenUserAuthProvider)
-            // CSRF 설정 - generate API와 visitor API는 예외
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/visitor/**", "/qrgen/data/verify")
-            )
-            // 모든 요청 허용 (익명 + 로그인 모두)
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll()
-            )
-            // 로그인 설정 (공개 영역에서도 로그인 처리 가능하도록)
-            .formLogin(form -> form
-                .loginPage("/qrgen/auth/login")
-                .loginProcessingUrl("/qrgen/auth/login")
-                .defaultSuccessUrl("/qrgen/", false)
-                .failureUrl("/qrgen/auth/login?error=true")
-                .usernameParameter("loginId")
-                .passwordParameter("password")
-                .permitAll()
-            )
-            // 로그아웃 설정
-            .logout(logout -> logout
-                .logoutUrl("/qrgen/auth/logout")
-                .logoutSuccessUrl("/qrgen/?logout=true")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-            );
+                .securityMatcher("/qrgen/**")
+                .authenticationProvider(qrGenUserAuthProvider)
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/data/verify")
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll()
+                )
+                .formLogin(form -> form
+                        .loginPage("/qrgen/auth/login")
+                        .loginProcessingUrl("/qrgen/auth/login")
+                        .defaultSuccessUrl("/qrgen/", false)
+                        .failureUrl("/qrgen/auth/login?error=true")
+                        .usernameParameter("loginId")
+                        .passwordParameter("password")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/qrgen/auth/logout")
+                        .logoutSuccessUrl("/qrgen/?logout=true")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .permitAll()
+                );
 
         return http.build();
     }

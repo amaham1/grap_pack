@@ -6,19 +6,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * QRgen SEO 컨트롤러
- * robots.txt, sitemap.xml 엔드포인트 제공
+ * QRgen SEO 컨트롤러다.
  */
 @Controller
 public class QrGenSeoController {
 
     private static final String DOMAIN = "https://grap.co.kr";
-
-    /** 콘텐츠가 실제 변경된 날짜 (배포 시 갱신) */
     private static final String LAST_MODIFIED = "2026-02-19";
 
     /**
-     * robots.txt 제공
+     * robots.txt 를 제공한다.
      */
     @GetMapping(value = "/robots.txt", produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseBody
@@ -33,7 +30,6 @@ public class QrGenSeoController {
                 Disallow: /qrgen/generate
                 Disallow: /qrgen/preview
                 Disallow: /qrgen/download
-                Disallow: /qrgen/visitor/
                 Disallow: /qrgen/auth/logout
                 Disallow: /grap/
                 Disallow: /qr-manage/
@@ -43,7 +39,7 @@ public class QrGenSeoController {
     }
 
     /**
-     * sitemap.xml 제공
+     * sitemap.xml 을 제공한다.
      */
     @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody

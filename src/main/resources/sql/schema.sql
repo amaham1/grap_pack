@@ -10,6 +10,42 @@ CREATE DATABASE IF NOT EXISTS grap_cms
 USE grap_cms;
 
 -- ============================================
+-- 공통 방문자 통계 테이블
+-- ============================================
+CREATE TABLE IF NOT EXISTS grap_pack_visitor (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '방문 ID',
+    session_id VARCHAR(100) NOT NULL COMMENT '세션 ID',
+    auth_scope VARCHAR(30) NOT NULL DEFAULT 'ANONYMOUS' COMMENT '인증 범위',
+    auth_user_id BIGINT NULL COMMENT '인증 사용자 ID',
+    service_code VARCHAR(30) NOT NULL COMMENT '서비스 코드',
+    menu_code VARCHAR(50) NOT NULL COMMENT '메뉴 코드',
+    route_key VARCHAR(255) NOT NULL COMMENT '정규화 라우트 키',
+    page_url VARCHAR(500) NOT NULL COMMENT '실제 방문 URL',
+    referrer VARCHAR(500) NULL COMMENT '리퍼러',
+    ip_address VARCHAR(45) NOT NULL COMMENT 'IP 주소',
+    user_agent TEXT NULL COMMENT 'User-Agent',
+    browser_name VARCHAR(50) NULL COMMENT '브라우저명',
+    browser_version VARCHAR(30) NULL COMMENT '브라우저 버전',
+    os_name VARCHAR(50) NULL COMMENT 'OS명',
+    os_version VARCHAR(30) NULL COMMENT 'OS 버전',
+    device_type VARCHAR(20) NOT NULL DEFAULT 'UNKNOWN' COMMENT '디바이스 유형',
+    screen_resolution VARCHAR(20) NULL COMMENT '화면 해상도',
+    language VARCHAR(10) NULL COMMENT '브라우저 언어',
+    visited_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '방문 시각',
+    duration_seconds INT NULL COMMENT '체류시간(초)',
+    legacy_source VARCHAR(50) NULL COMMENT '레거시 소스',
+    legacy_source_id BIGINT NULL COMMENT '레거시 소스 ID',
+
+    INDEX idx_grap_pack_visitor_session_id (session_id),
+    INDEX idx_grap_pack_visitor_service_code (service_code),
+    INDEX idx_grap_pack_visitor_menu_code (menu_code),
+    INDEX idx_grap_pack_visitor_route_key (route_key),
+    INDEX idx_grap_pack_visitor_visited_at (visited_at),
+    INDEX idx_grap_pack_visitor_device_type (device_type),
+    UNIQUE KEY uk_grap_pack_visitor_legacy (legacy_source, legacy_source_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='grap_pack 공통 방문자 추적';
+
+-- ============================================
 -- 1. 관리자 테이블 (admin)
 -- ============================================
 DROP TABLE IF EXISTS admin;

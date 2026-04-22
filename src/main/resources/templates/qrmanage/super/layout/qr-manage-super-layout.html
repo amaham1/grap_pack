@@ -10,63 +10,68 @@
     <link rel="stylesheet" th:href="@{/qrmanage/css/super.css}">
 </head>
 <body>
-    <!-- 헤더 -->
-    <header class="qr-manage-header">
-        <div class="qr-manage-container">
-            <div class="qr-manage-header-content">
-                <a th:href="@{/qr-manage/super/admin/dashboard}" class="qr-manage-logo">
-                    QR 관리 시스템
+<header class="qr-manage-header">
+    <div class="qr-manage-container">
+        <div class="qr-manage-header-content">
+            <a th:href="@{/qr-manage/super/admin/dashboard}" class="qr-manage-logo">QR 관리 서비스</a>
+            <nav class="qr-manage-nav">
+                <a th:href="@{/qr-manage/super/admin/dashboard}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath == '/qr-manage/super/admin/dashboard'} ? ' active'">대시보드</a>
+                <a th:href="@{/qr-manage/super/admin/visitor-stats}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/qr-manage/super/admin/visitor-stats')} ? ' active'">방문자 통계</a>
+                <a th:href="@{/qr-manage/super/admin/shop-admin/list}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/qr-manage/super/admin/shop-admin')} ? ' active'">상점관리자</a>
+                <a th:href="@{/qr-manage/super/admin/shop/list}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/qr-manage/super/admin/shop')} ? ' active'">상점관리</a>
+                <a th:href="@{/qr-manage/super/admin/qrcode/list}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/qr-manage/super/admin/qrcode')} ? ' active'">QR코드</a>
+                <a th:href="@{/qr-manage/super/admin/log}"
+                   class="qr-manage-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/qr-manage/super/admin/log')} ? ' active'">활동로그</a>
+            </nav>
+            <div class="qr-manage-header-right">
+                <a th:href="@{/qr-manage/super/admin/notification}" class="qr-manage-notification-bell">
+                    <span class="qr-manage-bell-icon">알림</span>
+                    <span th:if="${unreadNotificationCount > 0}"
+                          class="qr-manage-notification-badge"
+                          th:text="${unreadNotificationCount}">0</span>
                 </a>
-                <nav class="qr-manage-nav">
-                    <a th:href="@{/qr-manage/super/admin/dashboard}" class="qr-manage-nav-link">대시보드</a>
-                    <a th:href="@{/qr-manage/super/admin/shop-admin/list}" class="qr-manage-nav-link">상점관리자</a>
-                    <a th:href="@{/qr-manage/super/admin/shop/list}" class="qr-manage-nav-link">상점관리</a>
-                    <a th:href="@{/qr-manage/super/admin/qrcode/list}" class="qr-manage-nav-link">QR코드</a>
-                    <a th:href="@{/qr-manage/super/admin/log}" class="qr-manage-nav-link">활동로그</a>
-                </nav>
-                <div class="qr-manage-header-right">
-                    <!-- 알림 벨 -->
-                    <a th:href="@{/qr-manage/super/admin/notification}" class="qr-manage-notification-bell">
-                        <span class="qr-manage-bell-icon">🔔</span>
-                        <span th:if="${unreadNotificationCount > 0}"
-                              class="qr-manage-notification-badge"
-                              th:text="${unreadNotificationCount}">0</span>
-                    </a>
-                    <span class="qr-manage-user-name" th:text="${#authentication.name}">관리자</span>
-                    <a th:href="@{/qr-manage/super/auth/logout}" class="qr-manage-logout-link">로그아웃</a>
-                </div>
+                <span class="qr-manage-user-name" th:text="${#authentication.name}">관리자</span>
+                <a th:href="@{/qr-manage/super/auth/logout}" class="qr-manage-logout-link">로그아웃</a>
             </div>
         </div>
-    </header>
-
-    <!-- 메시지 알림 -->
-    <div th:if="${message}" class="qr-manage-alert qr-manage-alert-success">
-        <div class="qr-manage-container">
-            <p th:text="${message}"></p>
-        </div>
     </div>
+</header>
 
-    <div th:if="${error}" class="qr-manage-alert qr-manage-alert-error">
-        <div class="qr-manage-container">
-            <p th:text="${error}"></p>
-        </div>
+<div th:if="${message}" class="qr-manage-alert qr-manage-alert-success">
+    <div class="qr-manage-container">
+        <p th:text="${message}"></p>
     </div>
+</div>
 
-    <!-- 메인 컨텐츠 -->
-    <main class="qr-manage-main">
-        <div class="qr-manage-container">
-            <th:block layout:fragment="content"></th:block>
-        </div>
-    </main>
+<div th:if="${error}" class="qr-manage-alert qr-manage-alert-error">
+    <div class="qr-manage-container">
+        <p th:text="${error}"></p>
+    </div>
+</div>
 
-    <!-- 푸터 -->
-    <footer class="qr-manage-footer">
-        <div class="qr-manage-container">
-            <p>&copy; 2024 QR 관리 시스템. All rights reserved.</p>
-        </div>
-    </footer>
+<main class="qr-manage-main">
+    <div class="qr-manage-container">
+        <th:block layout:fragment="content"></th:block>
+    </div>
+</main>
 
-    <!-- 공통 JavaScript -->
-    <script th:src="@{/qrmanage/js/super.js}"></script>
+<footer class="qr-manage-footer">
+    <div class="qr-manage-container">
+        <p>&copy; 2026 QR 관리 서비스. All rights reserved.</p>
+    </div>
+</footer>
+
+<script th:src="@{/qrmanage/js/super.js}"></script>
 </body>
 </html>

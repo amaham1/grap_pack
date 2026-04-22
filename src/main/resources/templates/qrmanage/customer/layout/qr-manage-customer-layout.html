@@ -7,18 +7,18 @@
     <link rel="stylesheet" th:href="@{/qrmanage/css/customer.css}">
 </head>
 <body>
-    <main class="qr-manage-customer-main">
-        <div th:replace="${content}"></div>
-    </main>
+<main class="qr-manage-customer-main">
+    <div th:replace="${content}"></div>
+</main>
 
-    <footer class="qr-manage-customer-footer">
-        <p>Powered by QR 관리 서비스</p>
-    </footer>
+<footer class="qr-manage-customer-footer">
+    <p>Powered by QR 관리 서비스</p>
+</footer>
 
-    <script th:src="@{/qrmanage/js/customer.js}"></script>
-    <script th:if="${packVisitorId != null}">
-        window.PACK_VISITOR_ID = [[${packVisitorId}]];
-    </script>
-    <script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
+<script th:src="@{/qrmanage/js/customer.js}"></script>
+<script th:if="${packVisitorId != null}">
+    window.PACK_VISITOR_ID = [[${packVisitorId}]];
+</script>
+<script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
 </body>
 </html>

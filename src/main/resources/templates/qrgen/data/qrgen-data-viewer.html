@@ -3,13 +3,13 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{qrgen/layout/qrgen-layout}">
 <head>
-    <title>히스토리 데이터 열람</title>
+    <title>히스토리 데이터 뷰어</title>
 </head>
 <body>
 <div layout:fragment="content">
     <div class="qrgen-container" style="max-width: 1400px;">
-        <h1 class="qrgen-title">히스토리 데이터 열람</h1>
-        <p class="qrgen-description">방문자 통계는 공통 방문자 통계 화면으로 통합되었습니다.</p>
+        <h1 class="qrgen-title">히스토리 데이터 뷰어</h1>
+        <p class="qrgen-description">방문자 통계는 공통 방문자 통계 화면으로 통합되었으며, 이 화면은 QR 생성 히스토리만 제공합니다.</p>
 
         <div class="qrgen-history-info">
             총 <strong th:text="${totalCount}">0</strong>건
@@ -25,14 +25,14 @@
                 <tr>
                     <th>ID</th>
                     <th>사용자</th>
-                    <th>타입</th>
+                    <th>유형</th>
                     <th>제목</th>
                     <th>내용</th>
                     <th>크기</th>
                     <th>오류보정</th>
                     <th>전경색</th>
                     <th>배경색</th>
-                    <th>이미지경로</th>
+                    <th>이미지 경로</th>
                     <th>메모</th>
                     <th>생성일</th>
                 </tr>
