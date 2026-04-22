@@ -9,24 +9,20 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 /**
- * RestTemplate 설정
- * 외부 API 호출용
+ * 외부 API 호출용 RestTemplate 설정.
  */
 @Configuration
 public class RestTemplateConfig {
 
-    /**
-     * RestTemplate 빈 생성
-     */
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(30000); // 30초
-        factory.setReadTimeout(30000); // 30초
+        factory.setConnectTimeout(60000);
+        factory.setReadTimeout(120000);
 
         return builder
-                .setConnectTimeout(Duration.ofSeconds(30))
-                .setReadTimeout(Duration.ofSeconds(30))
+                .setConnectTimeout(Duration.ofSeconds(60))
+                .setReadTimeout(Duration.ofSeconds(120))
                 .requestFactory(() -> factory)
                 .build();
     }

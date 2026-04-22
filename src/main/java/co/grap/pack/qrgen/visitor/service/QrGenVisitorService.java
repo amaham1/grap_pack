@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(transactionManager = "qrGenTransactionManager", readOnly = true)
 @Slf4j
 public class QrGenVisitorService {
 
@@ -46,7 +46,7 @@ public class QrGenVisitorService {
      * @param userId 로그인 사용자 ID (null 가능)
      * @return 생성된 방문자 ID
      */
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public Long recordQrGenVisitor(HttpServletRequest request, String sessionId, Long userId) {
         String userAgent = request.getHeader("User-Agent");
         String ipAddress = getClientIpAddress(request);
@@ -89,7 +89,7 @@ public class QrGenVisitorService {
      * 체류시간 및 클라이언트 정보 업데이트
      * @param updateRequest 업데이트 요청
      */
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public void updateQrGenVisitorDuration(QrGenVisitorUpdateRequest updateRequest) {
         qrGenVisitorMapper.updateQrGenVisitorDuration(
                 updateRequest.getVisitorId(),

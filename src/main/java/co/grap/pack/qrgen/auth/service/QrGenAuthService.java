@@ -21,7 +21,7 @@ import java.util.Collections;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(transactionManager = "qrGenTransactionManager", readOnly = true)
 public class QrGenAuthService implements UserDetailsService {
 
     private final QrGenUserMapper userMapper;
@@ -31,7 +31,7 @@ public class QrGenAuthService implements UserDetailsService {
      * Spring Security UserDetailsService 구현
      */
     @Override
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         QrGenUser user = userMapper.findQrGenUserByLoginId(loginId);
 
@@ -72,7 +72,7 @@ public class QrGenAuthService implements UserDetailsService {
     /**
      * 회원가입
      */
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public QrGenUser registerQrGenUser(String loginId, String password, String nickname) {
         // 중복 확인
         if (userMapper.countQrGenUserByLoginId(loginId) > 0) {

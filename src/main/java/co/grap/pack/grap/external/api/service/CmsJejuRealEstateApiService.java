@@ -10,6 +10,7 @@ import co.grap.pack.grap.realestate.support.RealEstatePublicApiParser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -27,6 +28,8 @@ import java.util.List;
 public class CmsJejuRealEstateApiService {
 
     private static final int NUM_OF_ROWS = 500;
+    private static final int MAX_FETCH_ATTEMPTS = 3;
+    private static final long FETCH_RETRY_DELAY_MILLIS = 2000L;
     private static final DateTimeFormatter YEAR_MONTH_FORMAT = DateTimeFormatter.ofPattern("yyyyMM");
     private static final List<RealEstateRegion> JEJU_REGIONS = List.of(
             new RealEstateRegion("50110", "제주시"),
@@ -51,8 +54,13 @@ public class CmsJejuRealEstateApiService {
                 for (RealEstateDataset dataset : RealEstateDataset.values()) {
                     checkCancellation(sessionId, syncManager);
                     int syncedCount = syncMonth(dataset, region, yearMonth);
-                    log.info("부동산 최근월 동기화 완료: dataset={}, lawdCode={}, yearMonth={}, count={}",
-                            dataset.getDatasetId(), region.lawdCode(), yearMonth, syncedCount);
+                    log.info(
+                            "부동산 최근월 동기화 완료: dataset={}, lawdCode={}, yearMonth={}, count={}",
+                            dataset.getDatasetId(),
+                            region.lawdCode(),
+                            yearMonth,
+                            syncedCount
+                    );
                 }
             }
         }
@@ -153,12 +161,55 @@ public class CmsJejuRealEstateApiService {
         return savedCount;
     }
 
-    private RealEstatePublicApiParser.ParsedPage fetchPage(RealEstateDataset dataset, RealEstateRegion region, String yearMonth, int pageNo) {
-        String xml = restTemplate.getForObject(
-                apiProperties.buildUri(dataset, region.lawdCode(), yearMonth, pageNo, NUM_OF_ROWS),
-                String.class
-        );
+    private RealEstatePublicApiParser.ParsedPage fetchPage(
+            RealEstateDataset dataset,
+            RealEstateRegion region,
+            String yearMonth,
+            int pageNo
+    ) {
+        for (int attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
+            try {
+                String xml = restTemplate.getForObject(
+                        apiProperties.buildUri(dataset, region.lawdCode(), yearMonth, pageNo, NUM_OF_ROWS),
+                        String.class
+                );
+                return parseXml(xml, dataset, region);
+            } catch (ResourceAccessException exception) {
+                if (attempt >= MAX_FETCH_ATTEMPTS) {
+                    throw new IllegalStateException(
+                            String.format(
+                                    "공공데이터 API 호출에 실패했습니다. dataset=%s, lawdCode=%s, yearMonth=%s, pageNo=%d",
+                                    dataset.getDatasetId(),
+                                    region.lawdCode(),
+                                    yearMonth,
+                                    pageNo
+                            ),
+                            exception
+                    );
+                }
 
+                log.warn(
+                        "부동산 공공데이터 API 재시도: dataset={}, lawdCode={}, yearMonth={}, pageNo={}, attempt={}/{}",
+                        dataset.getDatasetId(),
+                        region.lawdCode(),
+                        yearMonth,
+                        pageNo,
+                        attempt,
+                        MAX_FETCH_ATTEMPTS,
+                        exception
+                );
+                sleepBeforeRetry();
+            }
+        }
+
+        throw new IllegalStateException("부동산 공공데이터 API 호출 중 예기치 않은 상태가 발생했습니다.");
+    }
+
+    private RealEstatePublicApiParser.ParsedPage parseXml(
+            String xml,
+            RealEstateDataset dataset,
+            RealEstateRegion region
+    ) {
         if (xml == null || xml.isBlank()) {
             throw new IllegalStateException("공공데이터 API 응답이 비어 있습니다.");
         }
@@ -168,7 +219,10 @@ public class CmsJejuRealEstateApiService {
             sanitizedXml = sanitizedXml.substring(1);
         }
         if (!sanitizedXml.startsWith("<")) {
-            throw new IllegalStateException("공공데이터 XML 응답이 아닙니다: " + sanitizedXml.substring(0, Math.min(120, sanitizedXml.length())).replaceAll("\\s+", " "));
+            throw new IllegalStateException(
+                    "공공데이터 XML 응답이 아닙니다: "
+                            + sanitizedXml.substring(0, Math.min(120, sanitizedXml.length())).replaceAll("\\s+", " ")
+            );
         }
 
         return publicApiParser.parse(sanitizedXml, dataset, region.lawdCode(), region.sggName(), LocalDateTime.now());
@@ -245,6 +299,15 @@ public class CmsJejuRealEstateApiService {
 
     private String defaultString(String value) {
         return value == null ? "" : value;
+    }
+
+    private void sleepBeforeRetry() {
+        try {
+            Thread.sleep(FETCH_RETRY_DELAY_MILLIS);
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("부동산 공공데이터 API 재시도가 중단되었습니다.", exception);
+        }
     }
 
     private record RealEstateRegion(String lawdCode, String sggName) {

@@ -8,6 +8,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -21,10 +22,10 @@ public class QrGenMyBatisConfig {
     @Value("${qrgen.datasource.url:jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false}")
     private String url;
 
-    @Value("${qrgen.datasource.username:root}")
+    @Value("${qrgen.datasource.username:jursi}")
     private String username;
 
-    @Value("${qrgen.datasource.password:root}")
+    @Value("${qrgen.datasource.password:Qnflck2##$}")
     private String password;
 
     @Value("${qrgen.datasource.driver-class-name:com.mysql.cj.jdbc.Driver}")
@@ -68,5 +69,10 @@ public class QrGenMyBatisConfig {
         sessionFactory.setConfiguration(configuration);
 
         return sessionFactory.getObject();
+    }
+
+    @Bean(name = "qrGenTransactionManager")
+    public DataSourceTransactionManager qrGenTransactionManager() {
+        return new DataSourceTransactionManager(qrGenDataSource());
     }
 }

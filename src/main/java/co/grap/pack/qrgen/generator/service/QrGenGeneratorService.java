@@ -38,7 +38,7 @@ import javax.imageio.ImageIO;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional(transactionManager = "qrGenTransactionManager", readOnly = true)
 public class QrGenGeneratorService {
 
     private final QrGenHistoryMapper historyMapper;
@@ -122,7 +122,7 @@ public class QrGenGeneratorService {
     /**
      * 히스토리 저장
      */
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public QrGenHistory saveQrGenHistory(Long userId, QrGenRequest request, String imagePath) {
         log.info("✅ [CHECK] QR 생성 히스토리 저장: userId={}", userId);
 
@@ -173,7 +173,7 @@ public class QrGenGeneratorService {
     /**
      * 히스토리 삭제
      */
-    @Transactional
+    @Transactional(transactionManager = "qrGenTransactionManager")
     public void deleteQrGenHistory(Long id, Long userId) {
         QrGenHistory history = historyMapper.findQrGenHistoryById(id);
         if (history == null || !history.getQrGenHistoryUserId().equals(userId)) {

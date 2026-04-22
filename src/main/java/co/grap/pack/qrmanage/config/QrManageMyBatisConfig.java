@@ -4,6 +4,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
@@ -20,7 +21,7 @@ public class QrManageMyBatisConfig {
      * QR 관리 서비스용 SqlSessionFactory 빈 등록
      */
     @Bean(name = "qrManageSqlSessionFactory")
-    public SqlSessionFactory qrManageSqlSessionFactory(DataSource dataSource) throws Exception {
+    public SqlSessionFactory qrManageSqlSessionFactory(@Qualifier("grapDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
         sessionFactory.setDataSource(dataSource);
 
