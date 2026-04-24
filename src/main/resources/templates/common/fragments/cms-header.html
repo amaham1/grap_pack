@@ -1,25 +1,89 @@
 <!-- 관리자 헤더 (Grap CMS) -->
-<header th:fragment="admin-header" class="admin-header">
-    <div class="admin-container">
-        <h1><a th:href="@{/grap/admin/content/list}">Grap CMS 관리자</a></h1>
-        <nav>
-            <ul>
-                <li><a th:href="@{/grap/admin/content-type/list}">콘텐츠 종류 관리</a></li>
-                <li><a th:href="@{/grap/admin/content/list}">콘텐츠 관리</a></li>
-                <li><a th:href="@{/grap/admin/sync}">외부 API 동기화</a></li>
-                <li><a th:href="@{/grap/admin/external/festivals}">축제/행사 관리</a></li>
-                <li><a th:href="@{/grap/admin/external/exhibitions}">공연/전시 관리</a></li>
-                <li><a th:href="@{/grap/admin/external/welfare}">복지서비스 관리</a></li>
-                <li><a th:href="@{/grap/admin/external/gas-stations}">주유소 관리</a></li>
-                <li>
-                    <form th:action="@{/grap/auth/logout}" method="post" style="display: inline;">
-                        <button type="submit" class="admin-btn-link">로그아웃</button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
+<aside th:fragment="admin-header"
+       class="admin-sidebar"
+       th:with="requestUri=${currentPath != null ? currentPath : ''}">
+    <a class="admin-brand" th:href="@{/admin/dashboard}">
+        <span class="admin-brand-mark">G</span>
+        <span>
+            <span class="admin-brand-title">Grap CMS</span>
+            <span class="admin-brand-subtitle">관리 콘솔</span>
+        </span>
+    </a>
+
+    <nav class="admin-nav" aria-label="Grap CMS 관리자 메뉴">
+        <div class="admin-nav-group">
+            <p class="admin-nav-title">콘텐츠</p>
+            <a th:href="@{/admin/content/articles}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/admin/content/articles')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                콘텐츠 관리
+            </a>
+            <a th:href="@{/admin/content/types}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/admin/content/types')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                콘텐츠 타입
+            </a>
+            <a th:href="@{/admin/content/datasets/festivals}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/admin/content/datasets')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                외부 데이터셋
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <p class="admin-nav-title">데이터 동기화</p>
+            <a th:href="@{/grap/admin/sync}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/grap/admin/sync')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                API 동기화
+            </a>
+            <a th:href="@{/admin/content/sync-jobs}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/admin/content/sync-jobs')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                동기화 작업
+            </a>
+        </div>
+
+        <div class="admin-nav-group">
+            <p class="admin-nav-title">외부 콘텐츠 검수</p>
+            <a th:href="@{/grap/admin/external/festivals}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/grap/admin/external/festivals')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                축제/행사
+            </a>
+            <a th:href="@{/grap/admin/external/exhibitions}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/grap/admin/external/exhibitions')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                공연/전시
+            </a>
+            <a th:href="@{/grap/admin/external/welfare}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/grap/admin/external/welfare')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                복지서비스
+            </a>
+            <a th:href="@{/grap/admin/external/gas-stations}"
+               class="admin-nav-link"
+               th:classappend="${#strings.startsWith(requestUri, '/grap/admin/external/gas-stations')} ? ' active'">
+                <span class="admin-nav-indicator"></span>
+                주유소
+            </a>
+        </div>
+    </nav>
+
+    <div class="admin-sidebar-footer">
+        <form th:action="@{/grap/auth/logout}" method="post">
+            <button type="submit" class="admin-logout-button">로그아웃</button>
+        </form>
     </div>
-</header>
+</aside>
 
 <!-- 사용자 공통 헤더 -->
 <header

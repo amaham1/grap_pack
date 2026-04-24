@@ -8,30 +8,38 @@
     <title th:text="${title} + ' - Grap CMS 관리자'">Grap CMS 관리자</title>
     <link rel="stylesheet" th:href="@{/grap/css/admin.css}">
 </head>
-<body>
-    <!-- 헤더 -->
-    <div th:replace="~{common/fragments/cms-header :: admin-header}"></div>
+<body class="admin-app-shell">
+    <div class="admin-shell">
+        <!-- 헤더 -->
+        <div th:replace="~{common/fragments/cms-header :: admin-header}"></div>
 
-    <!-- 메시지 알림 -->
-    <div th:if="${message}" class="admin-alert admin-alert-success">
-        <div class="admin-container">
-            <p th:text="${message}"></p>
+        <div class="admin-main-shell">
+            <header class="admin-topbar">
+                <div>
+                    <p class="admin-eyebrow">Grap CMS Operations</p>
+                    <h1 class="admin-page-title" th:text="${title != null ? title : '관리자'}">관리자</h1>
+                </div>
+                <div class="admin-topbar-actions">
+                    <a class="admin-secondary-button" th:href="@{/grap/user/content/real-estate}" target="_blank">사용자 화면</a>
+                    <a class="admin-secondary-button" th:href="@{/admin/dashboard}">통합 관리자</a>
+                </div>
+            </header>
+
+            <main class="admin-content-shell">
+                <!-- 메시지 알림 -->
+                <div th:if="${message}" class="admin-alert admin-alert-success">
+                    <p th:text="${message}"></p>
+                </div>
+
+                <div th:if="${error}" class="admin-alert admin-alert-error">
+                    <p th:text="${error}"></p>
+                </div>
+
+                <!-- 메인 컨텐츠 -->
+                <div th:replace="${content}"></div>
+            </main>
         </div>
     </div>
-
-    <div th:if="${error}" class="admin-alert admin-alert-error">
-        <div class="admin-container">
-            <p th:text="${error}"></p>
-        </div>
-    </div>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="admin-container">
-        <div th:replace="${content}"></div>
-    </main>
-
-    <!-- 푸터 -->
-    <div th:replace="~{common/fragments/cms-footer :: admin-footer}"></div>
 
     <!-- 공통 JavaScript -->
     <script th:src="@{/common/js/common.js}"></script>
