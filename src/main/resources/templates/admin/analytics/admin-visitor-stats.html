@@ -85,21 +85,41 @@
         </section>
     </div>
 
-    <div class="admin-card-grid admin-card-grid-2">
-        <section class="admin-card">
-            <p class="admin-card-label">일별 방문 추이</p>
-            <div class="admin-mini-chart">
-                <div class="admin-mini-chart-row" th:each="item : ${dailyStats}">
-                    <span class="admin-mini-chart-label" th:text="${item.date}">2026-04-22</span>
-                    <div class="admin-mini-chart-bar-wrap">
-                        <div class="admin-mini-chart-bar" th:style="'width:' + (${item.pv} * 3 + 12) + 'px'"></div>
-                    </div>
-                    <span class="admin-mini-chart-value"
-                          th:text="${'방문 ' + item.pv + ' / 중복 제외 ' + item.uv + ' / BOT ' + item.botPv}">방문 0 / 중복 제외 0 / BOT 0</span>
-                </div>
+    <section class="admin-card admin-visitor-chart-card">
+        <div class="admin-section-head admin-section-head-tight">
+            <div>
+                <p class="admin-card-label">일별 접속량</p>
+                <p class="admin-table-note">
+                    선택한 기간의 일반 방문 수, 중복 제외 방문자 수, BOT 요청 수를 일자별로 확인합니다.
+                </p>
             </div>
-        </section>
+            <div class="admin-list-summary" th:if="${not #lists.isEmpty(dailyStats)}">
+                <span th:text="${selectedStartDate + ' ~ ' + selectedEndDate}">2026-04-01 ~ 2026-04-30</span>
+                <span th:text="${#lists.size(dailyStats) + '일'}">30일</span>
+            </div>
+        </div>
+        <div class="admin-chart-panel">
+            <canvas id="adminVisitorDailyChart"
+                    class="admin-visitor-daily-chart"
+                    role="img"
+                    aria-label="일별 접속량 차트"></canvas>
+            <p id="adminVisitorDailyChartFallback"
+               class="admin-empty-state"
+               th:hidden="${not #lists.isEmpty(dailyStats)}"
+               th:text="${#lists.isEmpty(dailyStats) ? '집계 데이터가 없습니다.' : ''}">집계 데이터가 없습니다.</p>
+        </div>
+        <div id="adminVisitorDailyChartData" hidden>
+            <span th:each="item : ${dailyStats}"
+                  data-admin-daily-stat
+                  th:data-date="${item.date}"
+                  th:data-pv="${item.pv != null ? item.pv : 0}"
+                  th:data-uv="${item.uv != null ? item.uv : 0}"
+                  th:data-bot-pv="${item.botPv != null ? item.botPv : 0}"
+                  th:data-bot-uv="${item.botUv != null ? item.botUv : 0}"></span>
+        </div>
+    </section>
 
+    <div class="admin-card-grid">
         <section class="admin-card">
             <p class="admin-card-label">일반 방문 기기 비율</p>
             <div class="admin-table-wrap">
@@ -275,6 +295,9 @@
             <span th:if="${ipAccessLogPage.currentPage >= ipAccessLogPage.totalPages}">다음</span>
         </div>
     </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+    <script th:src="@{/admin/js/admin-visitor-stats.js}"></script>
 </section>
 </body>
 </html>

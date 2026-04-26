@@ -482,6 +482,35 @@ textarea:focus {
     background: var(--admin-warning);
 }
 
+.admin-visitor-chart-card {
+    margin-top: 18px;
+}
+
+.admin-visitor-chart-card + .admin-card-grid {
+    margin-top: 18px;
+}
+
+.admin-chart-panel {
+    position: relative;
+    min-height: 360px;
+    padding: 10px 0 0;
+}
+
+.admin-visitor-daily-chart {
+    width: 100%;
+    height: 340px;
+}
+
+.admin-empty-state {
+    margin: 16px 0 0;
+    padding: 28px 16px;
+    border: 1px dashed var(--admin-line);
+    border-radius: var(--admin-radius);
+    background: var(--admin-surface-muted);
+    color: var(--admin-muted);
+    text-align: center;
+}
+
 .admin-badge {
     display: inline-flex;
     align-items: center;
@@ -714,5 +743,13 @@ textarea:focus {
 
     .admin-list-summary {
         align-items: flex-start;
+    }
+
+    .admin-chart-panel {
+        min-height: 300px;
+    }
+
+    .admin-visitor-daily-chart {
+        height: 280px;
     }
 }
