@@ -35,8 +35,6 @@ public class PublicSeoSitemapService {
                 User-agent: *
                 Allow: /
                 Disallow: /admin/
-                Disallow: /grap/auth/
-                Disallow: /grap/admin/
                 Disallow: /grap/user/content/festivals/request
                 Disallow: /grap/user/content/exhibitions/request
                 Disallow: /grap/user/content/welfare/request

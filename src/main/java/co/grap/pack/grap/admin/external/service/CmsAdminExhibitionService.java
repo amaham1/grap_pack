@@ -52,7 +52,7 @@ public class CmsAdminExhibitionService {
         result.put("size", size);
         result.put("keyword", keyword);
         result.put("pageInfo", pageInfo);
-        result.put("paginationBaseUrl", "/grap/admin/external/exhibitions");
+        result.put("paginationBaseUrl", "/admin/content/datasets/exhibitions");
 
         return result;
     }

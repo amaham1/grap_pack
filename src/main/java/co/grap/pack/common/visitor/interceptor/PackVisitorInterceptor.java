@@ -98,9 +98,7 @@ public class PackVisitorInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        if (uri.startsWith("/grap/admin/")
-                || uri.startsWith("/grap/auth/")
-                || uri.startsWith("/qrgen/auth/")
+        if (uri.startsWith("/qrgen/auth/")
                 || uri.startsWith("/qrgen/user/")
                 || uri.startsWith("/qrgen/data/")
                 || uri.startsWith("/qr-manage/shop/")

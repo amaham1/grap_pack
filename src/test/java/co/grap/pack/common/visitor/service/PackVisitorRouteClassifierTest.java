@@ -42,7 +42,7 @@ class PackVisitorRouteClassifierTest {
 
     @Test
     void unknownPathReturnsEmpty() {
-        var result = classifier.classify("/grap/auth/login");
+        var result = classifier.classify("/unknown/path");
 
         assertThat(result).isEmpty();
     }

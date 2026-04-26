@@ -52,7 +52,7 @@ public class CmsAdminWelfareService {
         result.put("size", size);
         result.put("keyword", keyword);
         result.put("pageInfo", pageInfo);
-        result.put("paginationBaseUrl", "/grap/admin/external/welfare");
+        result.put("paginationBaseUrl", "/admin/content/datasets/welfare");
 
         return result;
     }

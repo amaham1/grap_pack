@@ -52,7 +52,7 @@ public class CmsAdminFestivalService {
         result.put("size", size);
         result.put("keyword", keyword);
         result.put("pageInfo", pageInfo);
-        result.put("paginationBaseUrl", "/grap/admin/external/festivals");
+        result.put("paginationBaseUrl", "/admin/content/datasets/festivals");
 
         return result;
     }
