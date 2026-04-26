@@ -68,6 +68,12 @@ class CmsUserRealEstateServiceTest {
         Map<?, ?> property = (Map<?, ?>) ((List<?>) result.get("propertyList")).get(0);
         assertThat(property.get("formattedDisplayAmount")).isEqualTo("1억 1천만원");
         assertThat(property.get("formattedAreaLabel")).isEqualTo("84.92㎡ (25.69평)");
+        assertThat(property.get("kakaoMapSearchUrl"))
+                .asString()
+                .startsWith("https://map.kakao.com/link/search/")
+                .contains("%EC%A0%9C%EC%A3%BC%ED%8A%B9%EB%B3%84%EC%9E%90%EC%B9%98%EB%8F%84")
+                .contains("%20")
+                .doesNotContain(" ");
     }
 
     @Test
@@ -110,6 +116,32 @@ class CmsUserRealEstateServiceTest {
         assertThat(filters.get("maxBuildYear")).isEqualTo("2020");
         assertThat((List<?>) result.get("sggOptions")).hasSize(2);
         assertThat((List<?>) result.get("categoryOptions")).isNotEmpty();
+    }
+
+    @Test
+    void listBuildsKakaoMapSearchUrlWithAddressFallbacks() {
+        when(realEstateMapper.selectLatestDealYearMonth()).thenReturn("202604");
+        when(realEstateMapper.selectAvailableDealYearMonths()).thenReturn(List.of("202604"));
+        when(realEstateMapper.selectAvailableSggNames("202604")).thenReturn(List.of("제주시"));
+        when(realEstateMapper.selectAvailableUmdNames("202604", null)).thenReturn(List.of("아라일동"));
+        when(realEstateMapper.selectRealEstateCount(any(CmsUserRealEstateSearchParam.class))).thenReturn(3);
+        when(realEstateMapper.selectRealEstateList(any(CmsUserRealEstateSearchParam.class), eq(0), eq(12))).thenReturn(List.of(
+                createPropertyRow(1L, "제주특별자치도 제주시 아라일동 101-3", "주소 우선 아파트"),
+                createPropertyRow(2L, " ", "테스트 아파트"),
+                createPropertyRow(3L, " ", " ")
+        ));
+
+        Map<String, Object> result = service.getRealEstateList("", null, "latest", 1);
+
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> propertyList = (List<Map<String, Object>>) result.get("propertyList");
+        assertThat(propertyList.get(0).get("kakaoMapSearchUrl"))
+                .asString()
+                .contains("%EC%A0%9C%EC%A3%BC%ED%8A%B9%EB%B3%84%EC%9E%90%EC%B9%98%EB%8F%84")
+                .contains("%20101-3");
+        assertThat(propertyList.get(1).get("kakaoMapSearchUrl"))
+                .isEqualTo("https://map.kakao.com/link/search/%ED%85%8C%EC%8A%A4%ED%8A%B8%20%EC%95%84%ED%8C%8C%ED%8A%B8");
+        assertThat(propertyList.get(2).get("kakaoMapSearchUrl")).isEqualTo("");
     }
 
     @Test
@@ -197,5 +229,26 @@ class CmsUserRealEstateServiceTest {
         assertThat(mortgageScenario.get("buyerProfileLabel")).isEqualTo("무주택");
         assertThat(mortgageScenario.get("areaPolicyLabel")).isEqualTo("제주/지방 비규제지역");
         assertThat(result.get("purchaseCostScenario")).isNotNull();
+    }
+
+    private Map<String, Object> createPropertyRow(Long id, String address, String displayName) {
+        return new LinkedHashMap<>(Map.ofEntries(
+                Map.entry("id", id),
+                Map.entry("datasetId", "apt-trade"),
+                Map.entry("propertyCategory", "apartment"),
+                Map.entry("transactionType", "trade"),
+                Map.entry("sggName", "제주시"),
+                Map.entry("umdName", "아라일동"),
+                Map.entry("address", address),
+                Map.entry("displayName", displayName),
+                Map.entry("areaM2", new BigDecimal("84.92")),
+                Map.entry("dealDate", Date.valueOf(LocalDate.of(2026, 4, 20))),
+                Map.entry("floor", 2),
+                Map.entry("buildYear", 2018),
+                Map.entry("tradeAmountManwon", 11000),
+                Map.entry("depositAmountManwon", 0),
+                Map.entry("monthlyRentManwon", 0),
+                Map.entry("dealYearMonth", "202604")
+        ));
     }
 }

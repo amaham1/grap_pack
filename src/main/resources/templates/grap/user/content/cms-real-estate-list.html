@@ -216,6 +216,15 @@
                              data-property-deal-month=${property['dealYearMonth']}">
                 관심 등록
             </button>
+            <a th:if="${property['kakaoMapSearchUrl'] != null and property['kakaoMapSearchUrl'] != ''}"
+               th:href="${property['kakaoMapSearchUrl']}"
+               class="real-estate-map-link"
+               target="_blank"
+               rel="noopener noreferrer"
+               th:attr="title=|카카오맵에서 ${property['displayName']} 위치 보기|,
+                        aria-label=|카카오맵에서 ${property['displayName']} 위치 보기|">
+                <span class="real-estate-map-link-icon" aria-hidden="true"></span>
+            </a>
         </div>
     </article>
 </div>

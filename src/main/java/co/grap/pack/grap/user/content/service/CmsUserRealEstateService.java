@@ -11,8 +11,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriUtils;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ public class CmsUserRealEstateService {
 
     private static final int DEFAULT_PAGE_SIZE = 12;
     private static final int COMPARISON_LIMIT = 8;
+    private static final String KAKAO_MAP_SEARCH_BASE_URL = "https://map.kakao.com/link/search/";
     private static final Set<String> PROPERTY_CATEGORIES = Set.of(
             "apartment",
             "rowhouse",
@@ -331,6 +334,18 @@ public class CmsUserRealEstateService {
         property.put("formattedBuildYear", RealEstateDisplayUtils.formatBuildYearLabel(safeInt(property.get("buildYear"))));
         property.put("mortgageSupported", RealEstateMortgageCalculator.isSupportedProperty(propertyCategory, transactionType));
         property.put("purchaseCostSupported", RealEstatePurchaseCostCalculator.isSupportedProperty(propertyCategory, transactionType));
+        property.put("kakaoMapSearchUrl", buildKakaoMapSearchUrl(property));
+    }
+
+    private String buildKakaoMapSearchUrl(Map<String, Object> property) {
+        String searchKeyword = trimToNull(defaultString(property.get("address")));
+        if (searchKeyword == null) {
+            searchKeyword = trimToNull(defaultString(property.get("displayName")));
+        }
+        if (searchKeyword == null) {
+            return "";
+        }
+        return KAKAO_MAP_SEARCH_BASE_URL + UriUtils.encodePathSegment(searchKeyword, StandardCharsets.UTF_8);
     }
 
     private List<Map<String, String>> toMonthOptions(List<String> yearMonths) {
