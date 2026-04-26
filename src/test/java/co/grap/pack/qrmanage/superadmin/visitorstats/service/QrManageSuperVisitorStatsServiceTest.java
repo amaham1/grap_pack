@@ -41,6 +41,8 @@ class QrManageSuperVisitorStatsServiceTest {
                 .thenReturn(QrManageSuperVisitorDashboardStats.builder()
                         .totalPv(12L)
                         .totalUv(8L)
+                        .totalHumanVerifiedPv(6L)
+                        .totalHumanVerifiedUv(4L)
                         .totalBotPv(5L)
                         .totalBotUv(3L)
                         .averageDurationSeconds(48.2)
@@ -49,6 +51,8 @@ class QrManageSuperVisitorStatsServiceTest {
                 .thenReturn(QrManageSuperVisitorDashboardStats.builder()
                         .todayPv(3L)
                         .todayUv(2L)
+                        .todayHumanVerifiedPv(2L)
+                        .todayHumanVerifiedUv(1L)
                         .todayBotPv(4L)
                         .todayBotUv(2L)
                         .build());
@@ -62,10 +66,14 @@ class QrManageSuperVisitorStatsServiceTest {
 
         assertThat(result.getTotalPv()).isEqualTo(12L);
         assertThat(result.getTotalUv()).isEqualTo(8L);
+        assertThat(result.getTotalHumanVerifiedPv()).isEqualTo(6L);
+        assertThat(result.getTotalHumanVerifiedUv()).isEqualTo(4L);
         assertThat(result.getTotalBotPv()).isEqualTo(5L);
         assertThat(result.getTotalBotUv()).isEqualTo(3L);
         assertThat(result.getTodayPv()).isEqualTo(3L);
         assertThat(result.getTodayUv()).isEqualTo(2L);
+        assertThat(result.getTodayHumanVerifiedPv()).isEqualTo(2L);
+        assertThat(result.getTodayHumanVerifiedUv()).isEqualTo(1L);
         assertThat(result.getTodayBotPv()).isEqualTo(4L);
         assertThat(result.getTodayBotUv()).isEqualTo(2L);
         assertThat(result.getAverageDurationSeconds()).isEqualTo(48.2);
@@ -79,6 +87,8 @@ class QrManageSuperVisitorStatsServiceTest {
                                 .date("2026-04-20")
                                 .pv(7L)
                                 .uv(5L)
+                                .humanVerifiedPv(4L)
+                                .humanVerifiedUv(3L)
                                 .botPv(2L)
                                 .botUv(1L)
                                 .build()
@@ -93,11 +103,15 @@ class QrManageSuperVisitorStatsServiceTest {
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).getDate()).isEqualTo("2026-04-20");
+        assertThat(result.get(0).getHumanVerifiedPv()).isEqualTo(4L);
+        assertThat(result.get(0).getHumanVerifiedUv()).isEqualTo(3L);
         assertThat(result.get(0).getBotPv()).isEqualTo(2L);
         assertThat(result.get(0).getBotUv()).isEqualTo(1L);
         assertThat(result.get(1).getDate()).isEqualTo("2026-04-21");
         assertThat(result.get(1).getPv()).isZero();
         assertThat(result.get(1).getUv()).isZero();
+        assertThat(result.get(1).getHumanVerifiedPv()).isZero();
+        assertThat(result.get(1).getHumanVerifiedUv()).isZero();
         assertThat(result.get(1).getBotPv()).isZero();
         assertThat(result.get(1).getBotUv()).isZero();
     }

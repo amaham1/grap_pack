@@ -76,6 +76,21 @@ public class PackVisitor {
     /** 체류시간(초) */
     private Integer durationSeconds;
 
+    /** 화면이 실제로 보인 시간(초) */
+    private Integer visibleDurationSeconds;
+
+    /** 사용자 상호작용 횟수 */
+    private Integer interactionCount;
+
+    /** 첫 사용자 상호작용 시각 */
+    private LocalDateTime firstInteractionAt;
+
+    /** 사람 추정 방문 여부 */
+    private Boolean humanVerified;
+
+    /** 사람 추정 방문 확인 시각 */
+    private LocalDateTime humanVerifiedAt;
+
     /** 레거시 소스 */
     private String legacySource;
 

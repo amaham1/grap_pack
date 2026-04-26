@@ -97,19 +97,45 @@ public class PackVisitorService {
     @Transactional
     public void updatePackVisitorDuration(PackVisitorUpdateRequest updateRequest) {
         int durationSeconds = Math.max(0, updateRequest.getDurationSeconds() == null ? 0 : updateRequest.getDurationSeconds());
+        int visibleDurationSeconds = clamp(updateRequest.getVisibleDurationSeconds(), 0, durationSeconds);
+        int interactionCount = clamp(updateRequest.getInteractionCount(), 0, 999);
+        Integer firstInteractionElapsedSeconds = normalizeFirstInteractionElapsedSeconds(
+                updateRequest.getFirstInteractionElapsedSeconds(),
+                durationSeconds,
+                interactionCount
+        );
 
         packVisitorMapper.updatePackVisitorDuration(
                 updateRequest.getVisitorId(),
                 durationSeconds,
+                visibleDurationSeconds,
+                interactionCount,
+                firstInteractionElapsedSeconds,
                 normalizeNullable(updateRequest.getScreenResolution()),
                 normalizeNullable(updateRequest.getLanguage())
         );
 
         log.info(
-                "✅ [CHECK] 공통 방문자 체류시간 업데이트: visitorId={}, durationSeconds={}",
+                "✅ [CHECK] 공통 방문자 체류시간 업데이트: visitorId={}, durationSeconds={}, visibleDurationSeconds={}, interactionCount={}",
                 updateRequest.getVisitorId(),
-                durationSeconds
+                durationSeconds,
+                visibleDurationSeconds,
+                interactionCount
         );
+    }
+
+    private int clamp(Integer value, int min, int max) {
+        int normalizedValue = value == null ? min : value;
+        return Math.min(Math.max(normalizedValue, min), max);
+    }
+
+    private Integer normalizeFirstInteractionElapsedSeconds(Integer firstInteractionElapsedSeconds,
+                                                            int durationSeconds,
+                                                            int interactionCount) {
+        if (interactionCount <= 0 || firstInteractionElapsedSeconds == null) {
+            return null;
+        }
+        return clamp(firstInteractionElapsedSeconds, 0, Math.max(durationSeconds, 0));
     }
 
     private String buildPageUrl(HttpServletRequest request) {

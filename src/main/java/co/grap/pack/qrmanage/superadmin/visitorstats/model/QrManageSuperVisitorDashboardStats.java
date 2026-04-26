@@ -26,6 +26,18 @@ public class QrManageSuperVisitorDashboardStats {
     /** 오늘 중복 제외 방문자 수(BOT 제외) */
     private Long todayUv;
 
+    /** 기간 기준 사람 추정 방문 수 */
+    private Long totalHumanVerifiedPv;
+
+    /** 기간 기준 사람 추정 세션 수 */
+    private Long totalHumanVerifiedUv;
+
+    /** 오늘 사람 추정 방문 수 */
+    private Long todayHumanVerifiedPv;
+
+    /** 오늘 사람 추정 세션 수 */
+    private Long todayHumanVerifiedUv;
+
     /** 기간 기준 전체 BOT 요청 수 */
     private Long totalBotPv;
 

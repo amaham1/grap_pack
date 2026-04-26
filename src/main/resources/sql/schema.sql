@@ -33,6 +33,11 @@ CREATE TABLE IF NOT EXISTS grap_pack_visitor (
     language VARCHAR(10) NULL COMMENT '브라우저 언어',
     visited_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '방문 시각',
     duration_seconds INT NULL COMMENT '체류시간(초)',
+    visible_duration_seconds INT NOT NULL DEFAULT 0 COMMENT '화면이 실제로 보인 시간(초)',
+    interaction_count INT NOT NULL DEFAULT 0 COMMENT '사용자 상호작용 횟수',
+    first_interaction_at DATETIME NULL COMMENT '첫 사용자 상호작용 시각',
+    human_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT '사람 추정 방문 여부',
+    human_verified_at DATETIME NULL COMMENT '사람 추정 방문 확인 시각',
     legacy_source VARCHAR(50) NULL COMMENT '레거시 소스',
     legacy_source_id BIGINT NULL COMMENT '레거시 소스 ID',
 
@@ -42,6 +47,7 @@ CREATE TABLE IF NOT EXISTS grap_pack_visitor (
     INDEX idx_grap_pack_visitor_route_key (route_key),
     INDEX idx_grap_pack_visitor_visited_at (visited_at),
     INDEX idx_grap_pack_visitor_device_type (device_type),
+    INDEX idx_grap_pack_visitor_human_verified_at (human_verified, visited_at),
     UNIQUE KEY uk_grap_pack_visitor_legacy (legacy_source, legacy_source_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='grap_pack 공통 방문자 추적';
 

@@ -68,6 +68,10 @@ public class QrManageSuperVisitorStatsService {
                 .totalUv(orZero(periodStats != null ? periodStats.getTotalUv() : null))
                 .todayPv(orZero(todayStats != null ? todayStats.getTodayPv() : null))
                 .todayUv(orZero(todayStats != null ? todayStats.getTodayUv() : null))
+                .totalHumanVerifiedPv(orZero(periodStats != null ? periodStats.getTotalHumanVerifiedPv() : null))
+                .totalHumanVerifiedUv(orZero(periodStats != null ? periodStats.getTotalHumanVerifiedUv() : null))
+                .todayHumanVerifiedPv(orZero(todayStats != null ? todayStats.getTodayHumanVerifiedPv() : null))
+                .todayHumanVerifiedUv(orZero(todayStats != null ? todayStats.getTodayHumanVerifiedUv() : null))
                 .totalBotPv(orZero(periodStats != null ? periodStats.getTotalBotPv() : null))
                 .totalBotUv(orZero(periodStats != null ? periodStats.getTotalBotUv() : null))
                 .todayBotPv(orZero(todayStats != null ? todayStats.getTodayBotPv() : null))
@@ -105,12 +109,16 @@ public class QrManageSuperVisitorStatsService {
                         .date(date)
                         .pv(0L)
                         .uv(0L)
+                        .humanVerifiedPv(0L)
+                        .humanVerifiedUv(0L)
                         .botPv(0L)
                         .botUv(0L)
                         .build();
             } else {
                 stat.setPv(orZero(stat.getPv()));
                 stat.setUv(orZero(stat.getUv()));
+                stat.setHumanVerifiedPv(orZero(stat.getHumanVerifiedPv()));
+                stat.setHumanVerifiedUv(orZero(stat.getHumanVerifiedUv()));
                 stat.setBotPv(orZero(stat.getBotPv()));
                 stat.setBotUv(orZero(stat.getBotUv()));
             }

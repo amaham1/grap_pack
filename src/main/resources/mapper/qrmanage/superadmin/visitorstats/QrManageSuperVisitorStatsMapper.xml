@@ -37,6 +37,8 @@
         SELECT
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS totalPv,
             COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS totalUv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS totalHumanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN session_id END), 0) AS totalHumanVerifiedUv,
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS totalBotPv,
             COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS totalBotUv,
             ROUND(
@@ -51,6 +53,8 @@
         SELECT
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS todayPv,
             COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS todayUv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS todayHumanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN session_id END), 0) AS todayHumanVerifiedUv,
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS todayBotPv,
             COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS todayBotUv
         FROM grap_pack_visitor
@@ -62,6 +66,8 @@
             DATE_FORMAT(MIN(visited_at), '%Y-%m-%d') AS date,
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS pv,
             COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN session_id END), 0) AS uv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS humanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN session_id END), 0) AS humanVerifiedUv,
             COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS botPv,
             COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN session_id END), 0) AS botUv
         FROM grap_pack_visitor

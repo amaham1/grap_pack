@@ -72,6 +72,11 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                     language VARCHAR(10) NULL COMMENT '브라우저 언어',
                     visited_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '방문 시각',
                     duration_seconds INT NULL COMMENT '체류시간(초)',
+                    visible_duration_seconds INT NOT NULL DEFAULT 0 COMMENT '화면이 실제로 보인 시간(초)',
+                    interaction_count INT NOT NULL DEFAULT 0 COMMENT '사용자 상호작용 횟수',
+                    first_interaction_at DATETIME NULL COMMENT '첫 사용자 상호작용 시각',
+                    human_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT '사람 추정 방문 여부',
+                    human_verified_at DATETIME NULL COMMENT '사람 추정 방문 확인 시각',
                     legacy_source VARCHAR(50) NULL COMMENT '레거시 소스',
                     legacy_source_id BIGINT NULL COMMENT '레거시 소스 ID',
                     INDEX idx_grap_pack_visitor_session_id (session_id),
@@ -80,9 +85,23 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                     INDEX idx_grap_pack_visitor_route_key (route_key),
                     INDEX idx_grap_pack_visitor_visited_at (visited_at),
                     INDEX idx_grap_pack_visitor_device_type (device_type),
+                    INDEX idx_grap_pack_visitor_human_verified_at (human_verified, visited_at),
                     UNIQUE KEY uk_grap_pack_visitor_legacy (legacy_source, legacy_source_id)
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='grap_pack 공통 방문자 추적'
                 """);
+
+        ensureColumn(jdbcTemplate, "visible_duration_seconds",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN visible_duration_seconds INT NOT NULL DEFAULT 0 COMMENT '화면이 실제로 보인 시간(초)' AFTER duration_seconds");
+        ensureColumn(jdbcTemplate, "interaction_count",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN interaction_count INT NOT NULL DEFAULT 0 COMMENT '사용자 상호작용 횟수' AFTER visible_duration_seconds");
+        ensureColumn(jdbcTemplate, "first_interaction_at",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN first_interaction_at DATETIME NULL COMMENT '첫 사용자 상호작용 시각' AFTER interaction_count");
+        ensureColumn(jdbcTemplate, "human_verified",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN human_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT '사람 추정 방문 여부' AFTER first_interaction_at");
+        ensureColumn(jdbcTemplate, "human_verified_at",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN human_verified_at DATETIME NULL COMMENT '사람 추정 방문 확인 시각' AFTER human_verified");
+        ensureIndex(jdbcTemplate, "idx_grap_pack_visitor_human_verified_at",
+                "CREATE INDEX idx_grap_pack_visitor_human_verified_at ON grap_pack_visitor (human_verified, visited_at)");
 
         log.info("✅ [CHECK] 공통 방문자 테이블 준비 완료");
     }
@@ -151,9 +170,14 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                                 language,
                                 visited_at,
                                 duration_seconds,
+                                visible_duration_seconds,
+                                interaction_count,
+                                first_interaction_at,
+                                human_verified,
+                                human_verified_at,
                                 legacy_source,
                                 legacy_source_id
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             ON DUPLICATE KEY UPDATE
                                 auth_scope = VALUES(auth_scope),
                                 auth_user_id = VALUES(auth_user_id),
@@ -172,7 +196,9 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                                 screen_resolution = VALUES(screen_resolution),
                                 language = VALUES(language),
                                 visited_at = VALUES(visited_at),
-                                duration_seconds = VALUES(duration_seconds)
+                                duration_seconds = VALUES(duration_seconds),
+                                visible_duration_seconds = GREATEST(COALESCE(visible_duration_seconds, 0), VALUES(visible_duration_seconds)),
+                                interaction_count = GREATEST(COALESCE(interaction_count, 0), VALUES(interaction_count))
                             """,
                     stringValue(legacyVisitor.get("qr_gen_visitor_session_id")),
                     resolveAuthScope(legacyVisitor.get("qr_gen_visitor_user_id")).name(),
@@ -193,6 +219,11 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                     stringValue(legacyVisitor.get("qr_gen_visitor_language")),
                     timestampToLocalDateTime(legacyVisitor.get("qr_gen_visitor_visited_at")),
                     integerValue(legacyVisitor.get("qr_gen_visitor_duration_seconds")),
+                    0,
+                    0,
+                    null,
+                    false,
+                    null,
                     LEGACY_SOURCE,
                     longValue(legacyVisitor.get("qr_gen_visitor_id"))
             );
@@ -216,6 +247,44 @@ public class PackVisitorMigrationService implements ApplicationRunner {
         );
 
         return count != null && count > 0;
+    }
+
+    private void ensureColumn(JdbcTemplate jdbcTemplate, String columnName, String alterSql) {
+        Integer count = jdbcTemplate.queryForObject(
+                """
+                        SELECT COUNT(*)
+                        FROM information_schema.columns
+                        WHERE table_schema = DATABASE()
+                          AND table_name = 'grap_pack_visitor'
+                          AND column_name = ?
+                        """,
+                Integer.class,
+                columnName
+        );
+
+        if (count == null || count == 0) {
+            jdbcTemplate.execute(alterSql);
+            log.info("✅ [CHECK] 공통 방문자 컬럼 추가 완료: column={}", columnName);
+        }
+    }
+
+    private void ensureIndex(JdbcTemplate jdbcTemplate, String indexName, String createIndexSql) {
+        Integer count = jdbcTemplate.queryForObject(
+                """
+                        SELECT COUNT(*)
+                        FROM information_schema.statistics
+                        WHERE table_schema = DATABASE()
+                          AND table_name = 'grap_pack_visitor'
+                          AND index_name = ?
+                        """,
+                Integer.class,
+                indexName
+        );
+
+        if (count == null || count == 0) {
+            jdbcTemplate.execute(createIndexSql);
+            log.info("✅ [CHECK] 공통 방문자 인덱스 추가 완료: index={}", indexName);
+        }
     }
 
     private PackVisitorAuthScope resolveAuthScope(Object authUserId) {

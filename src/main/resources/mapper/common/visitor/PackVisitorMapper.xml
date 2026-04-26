@@ -25,6 +25,11 @@
             language,
             visited_at,
             duration_seconds,
+            visible_duration_seconds,
+            interaction_count,
+            first_interaction_at,
+            human_verified,
+            human_verified_at,
             legacy_source,
             legacy_source_id
         ) VALUES (
@@ -47,6 +52,11 @@
             #{language},
             COALESCE(#{visitedAt}, NOW()),
             #{durationSeconds},
+            COALESCE(#{visibleDurationSeconds}, 0),
+            COALESCE(#{interactionCount}, 0),
+            #{firstInteractionAt},
+            COALESCE(#{humanVerified}, FALSE),
+            #{humanVerifiedAt},
             #{legacySource},
             #{legacySourceId}
         )
@@ -56,6 +66,30 @@
     <update id="updatePackVisitorDuration">
         UPDATE grap_pack_visitor
         SET duration_seconds = #{durationSeconds}
+            , visible_duration_seconds = GREATEST(COALESCE(visible_duration_seconds, 0), COALESCE(#{visibleDurationSeconds}, 0))
+            , interaction_count = GREATEST(COALESCE(interaction_count, 0), COALESCE(#{interactionCount}, 0))
+            <if test="firstInteractionElapsedSeconds != null">
+                , first_interaction_at = CASE
+                    WHEN first_interaction_at IS NULL
+                    THEN DATE_ADD(visited_at, INTERVAL #{firstInteractionElapsedSeconds} SECOND)
+                    ELSE first_interaction_at
+                  END
+            </if>
+            , human_verified_at = CASE
+                WHEN human_verified = FALSE
+                     AND (device_type IS NULL OR device_type != 'BOT')
+                     AND GREATEST(COALESCE(visible_duration_seconds, 0), COALESCE(#{visibleDurationSeconds}, 0)) >= 3
+                     AND GREATEST(COALESCE(interaction_count, 0), COALESCE(#{interactionCount}, 0)) > 0
+                THEN NOW()
+                ELSE human_verified_at
+              END
+            , human_verified = CASE
+                WHEN (device_type IS NULL OR device_type != 'BOT')
+                     AND GREATEST(COALESCE(visible_duration_seconds, 0), COALESCE(#{visibleDurationSeconds}, 0)) >= 3
+                     AND GREATEST(COALESCE(interaction_count, 0), COALESCE(#{interactionCount}, 0)) > 0
+                THEN TRUE
+                ELSE human_verified
+              END
             <if test="screenResolution != null">
                 , screen_resolution = #{screenResolution}
             </if>

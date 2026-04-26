@@ -23,6 +23,12 @@ public class QrManageSuperVisitorDailyStats {
     /** 중복 제외 방문자 수(BOT 제외) */
     private Long uv;
 
+    /** 사람 추정 방문 수 */
+    private Long humanVerifiedPv;
+
+    /** 사람 추정 세션 수 */
+    private Long humanVerifiedUv;
+
     /** BOT 요청 수 */
     private Long botPv;
 

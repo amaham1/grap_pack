@@ -21,6 +21,9 @@ public interface PackVisitorMapper {
     void updatePackVisitorDuration(
             @Param("visitorId") Long visitorId,
             @Param("durationSeconds") Integer durationSeconds,
+            @Param("visibleDurationSeconds") Integer visibleDurationSeconds,
+            @Param("interactionCount") Integer interactionCount,
+            @Param("firstInteractionElapsedSeconds") Integer firstInteractionElapsedSeconds,
             @Param("screenResolution") String screenResolution,
             @Param("language") String language
     );

@@ -20,6 +20,15 @@ public class PackVisitorUpdateRequest {
     /** 체류시간(초) */
     private Integer durationSeconds;
 
+    /** 화면이 실제로 보인 시간(초) */
+    private Integer visibleDurationSeconds;
+
+    /** 사용자 상호작용 횟수 */
+    private Integer interactionCount;
+
+    /** 페이지 진입 후 첫 사용자 상호작용까지 걸린 시간(초) */
+    private Integer firstInteractionElapsedSeconds;
+
     /** 화면 해상도 */
     private String screenResolution;
 

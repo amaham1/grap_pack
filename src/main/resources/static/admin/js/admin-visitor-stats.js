@@ -9,6 +9,8 @@
             date: element.dataset.date || "",
             pv: toNumber(element.dataset.pv),
             uv: toNumber(element.dataset.uv),
+            humanPv: toNumber(element.dataset.humanPv),
+            humanUv: toNumber(element.dataset.humanUv),
             botPv: toNumber(element.dataset.botPv),
             botUv: toNumber(element.dataset.botUv)
         }));
@@ -56,7 +58,7 @@
                 datasets: [
                     {
                         type: "bar",
-                        label: "방문 수",
+                        label: "일반 브라우저 요청 수",
                         data: dailyStats.map((item) => item.pv),
                         borderColor: "#2364aa",
                         backgroundColor: "rgba(35, 100, 170, 0.22)",
@@ -66,13 +68,25 @@
                     },
                     {
                         type: "line",
-                        label: "중복 제외 방문자 수",
-                        data: dailyStats.map((item) => item.uv),
+                        label: "사람 추정 방문 수",
+                        data: dailyStats.map((item) => item.humanPv),
                         borderColor: "#178a4d",
-                        backgroundColor: "rgba(23, 138, 77, 0.12)",
+                        backgroundColor: "rgba(23, 138, 77, 0.14)",
                         borderWidth: 2,
-                        pointRadius: 3,
-                        pointHoverRadius: 5,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        tension: 0.28,
+                        fill: false
+                    },
+                    {
+                        type: "line",
+                        label: "일반 브라우저 세션 수",
+                        data: dailyStats.map((item) => item.uv),
+                        borderColor: "#667085",
+                        backgroundColor: "rgba(102, 112, 133, 0.10)",
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
                         tension: 0.28,
                         fill: false
                     },
