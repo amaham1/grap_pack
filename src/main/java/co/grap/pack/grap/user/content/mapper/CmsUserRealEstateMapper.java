@@ -1,5 +1,6 @@
 package co.grap.pack.grap.user.content.mapper;
 
+import co.grap.pack.grap.user.content.model.CmsUserRealEstateSearchParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,12 +17,14 @@ public interface CmsUserRealEstateMapper {
 
     List<String> selectAvailableDealYearMonths();
 
-    int selectRealEstateCount(@Param("keyword") String keyword,
-                              @Param("dealYearMonth") String dealYearMonth);
+    List<String> selectAvailableSggNames(@Param("dealYearMonth") String dealYearMonth);
 
-    List<Map<String, Object>> selectRealEstateList(@Param("keyword") String keyword,
-                                                   @Param("dealYearMonth") String dealYearMonth,
-                                                   @Param("sort") String sort,
+    List<String> selectAvailableUmdNames(@Param("dealYearMonth") String dealYearMonth,
+                                         @Param("sggName") String sggName);
+
+    int selectRealEstateCount(@Param("searchParam") CmsUserRealEstateSearchParam searchParam);
+
+    List<Map<String, Object>> selectRealEstateList(@Param("searchParam") CmsUserRealEstateSearchParam searchParam,
                                                    @Param("offset") int offset,
                                                    @Param("size") int size);
 
@@ -32,4 +35,11 @@ public interface CmsUserRealEstateMapper {
     List<Map<String, Object>> selectPropertyMonthlyAverageHistory(@Param("propertyMatchKey") String propertyMatchKey,
                                                                   @Param("year") Integer year,
                                                                   @Param("metricType") String metricType);
+
+    List<Map<String, Object>> selectSamePropertyRecentTransactions(@Param("propertyMatchKey") String propertyMatchKey,
+                                                                   @Param("excludeId") Long excludeId,
+                                                                   @Param("limit") int limit);
+
+    List<Map<String, Object>> selectSimilarConditionTransactions(@Param("property") Map<String, Object> property,
+                                                                 @Param("limit") int limit);
 }

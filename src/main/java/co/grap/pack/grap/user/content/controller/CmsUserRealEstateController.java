@@ -1,11 +1,13 @@
 package co.grap.pack.grap.user.content.controller;
 
 import co.grap.pack.grap.seo.CmsPublicSeoService;
+import co.grap.pack.grap.user.content.model.CmsUserRealEstateSearchParam;
 import co.grap.pack.grap.user.content.service.CmsUserRealEstateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,27 +29,21 @@ public class CmsUserRealEstateController {
     /**
      * 부동산 목록 페이지를 보여준다.
      *
-     * @param keyword 검색어
-     * @param dealYearMonth 조회 월
-     * @param sort 정렬 조건
-     * @param page 페이지 번호
+     * @param searchParam 검색 조건
      * @param model 화면 모델
      * @return 레이아웃 템플릿
      */
     @GetMapping
-    public String realEstateList(@RequestParam(value = "keyword", required = false) String keyword,
-                                 @RequestParam(value = "dealYearMonth", required = false) String dealYearMonth,
-                                 @RequestParam(value = "sort", required = false) String sort,
-                                 @RequestParam(value = "page", required = false) Integer page,
+    public String realEstateList(@ModelAttribute CmsUserRealEstateSearchParam searchParam,
                                  Model model) {
-        Map<String, Object> result = realEstateService.getRealEstateList(keyword, dealYearMonth, sort, page);
+        Map<String, Object> result = realEstateService.getRealEstateList(searchParam);
         model.addAllAttributes(result);
         cmsPublicSeoService.applyRealEstateListSeo(
                 model,
-                keyword,
-                dealYearMonth,
-                sort,
-                page,
+                searchParam.getKeyword(),
+                searchParam.getDealYearMonth(),
+                searchParam.getSort(),
+                searchParam.getPage(),
                 (String) result.get("currentPropertyMonth")
         );
         model.addAttribute("content", "grap/user/content/cms-real-estate-list");

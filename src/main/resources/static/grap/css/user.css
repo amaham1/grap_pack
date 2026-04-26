@@ -958,6 +958,20 @@ body {
     gap: 12px;
 }
 
+.real-estate-advanced-filter-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.real-estate-filter-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
 .real-estate-select {
     min-width: 0;
 }
@@ -986,6 +1000,76 @@ body {
     margin: -20px 0 30px;
     color: #666666;
     font-size: 14px;
+}
+
+.real-estate-saved-panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: -8px 0 28px;
+}
+
+.real-estate-saved-card {
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-saved-card .real-estate-section-header {
+    margin-bottom: 14px;
+}
+
+.real-estate-saved-card h3 {
+    font-size: 17px;
+}
+
+.real-estate-storage-list {
+    display: grid;
+    gap: 10px;
+}
+
+.real-estate-storage-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #f0f1f3;
+    border-radius: 10px;
+    background: #fafbfc;
+}
+
+.real-estate-storage-link {
+    display: grid;
+    gap: 4px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.real-estate-storage-link strong {
+    overflow: hidden;
+    color: #1f2937;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.real-estate-storage-link span,
+.real-estate-storage-empty {
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.real-estate-storage-remove {
+    min-height: 34px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 0 10px;
+    background: #ffffff;
+    color: #555555;
+    cursor: pointer;
 }
 
 .real-estate-card-grid {
@@ -1077,6 +1161,12 @@ body {
     justify-content: flex-start;
 }
 
+.real-estate-favorite-button.is-active {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #edf4ff;
+}
+
 .real-estate-empty-message {
     border: 1px dashed #d8dce2;
     border-radius: 12px;
@@ -1102,6 +1192,11 @@ body {
     background: linear-gradient(135deg, #f4f8ff 0%, #f8fbff 100%);
 }
 
+.real-estate-detail-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
 .real-estate-meta-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1112,7 +1207,9 @@ body {
 .real-estate-summary-card,
 .real-estate-detail-card,
 .real-estate-chart-card,
-.real-estate-mortgage-card {
+.real-estate-mortgage-card,
+.real-estate-comparison-card,
+.real-estate-purchase-cost-card {
     border: 1px solid #eeeeee;
     border-radius: 12px;
     background: #ffffff;
@@ -1138,7 +1235,9 @@ body {
 }
 
 .real-estate-chart-card,
-.real-estate-mortgage-card {
+.real-estate-mortgage-card,
+.real-estate-comparison-card,
+.real-estate-purchase-cost-card {
     padding: 24px;
 }
 
@@ -1178,6 +1277,73 @@ body {
 .real-estate-chart-surface {
     position: relative;
     min-height: 340px;
+}
+
+.real-estate-trend-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.real-estate-summary-card em {
+    color: #666666;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1.5;
+}
+
+.real-estate-summary-card.is-up strong {
+    color: #dc2626;
+}
+
+.real-estate-summary-card.is-down strong {
+    color: #2563eb;
+}
+
+.real-estate-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.real-estate-transaction-list {
+    display: grid;
+    gap: 10px;
+}
+
+.real-estate-transaction-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f2f2f2;
+    color: inherit;
+    text-decoration: none;
+}
+
+.real-estate-transaction-row:last-child {
+    border-bottom: none;
+}
+
+.real-estate-transaction-row span {
+    overflow: hidden;
+    color: #444444;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.real-estate-transaction-row strong {
+    color: #1f2937;
+}
+
+.real-estate-transaction-row em {
+    grid-column: 1 / -1;
+    color: #666666;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1.5;
 }
 
 .real-estate-inline-empty {
@@ -1356,7 +1522,8 @@ body {
 
 @media (max-width: 1024px) {
     .real-estate-meta-grid,
-    .real-estate-mortgage-summary {
+    .real-estate-mortgage-summary,
+    .real-estate-trend-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
@@ -1367,12 +1534,20 @@ body {
 
 @media (max-width: 720px) {
     .real-estate-search-form,
+    .real-estate-advanced-filter-grid,
+    .real-estate-saved-panel,
     .real-estate-mortgage-form,
     .real-estate-mortgage-detail-grid,
+    .real-estate-comparison-grid,
     .real-estate-meta-grid,
     .real-estate-mortgage-summary,
+    .real-estate-trend-grid,
     .real-estate-meta-list {
         grid-template-columns: 1fr;
+    }
+
+    .real-estate-filter-actions {
+        flex-direction: column;
     }
 
     .real-estate-section-header {

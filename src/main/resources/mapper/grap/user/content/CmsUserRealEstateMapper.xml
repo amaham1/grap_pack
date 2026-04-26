@@ -4,6 +4,80 @@
 
 <mapper namespace="co.grap.pack.grap.user.content.mapper.CmsUserRealEstateMapper">
 
+    <sql id="realEstateListColumns">
+        id,
+        dataset_id AS datasetId,
+        property_category AS propertyCategory,
+        transaction_type AS transactionType,
+        lawd_code AS lawdCode,
+        sgg_name AS sggName,
+        umd_name AS umdName,
+        jibun,
+        address,
+        display_name AS displayName,
+        area_m2 AS areaM2,
+        area_pyeong AS areaPyeong,
+        floor,
+        build_year AS buildYear,
+        deal_date AS dealDate,
+        deal_year_month AS dealYearMonth,
+        trade_amount_manwon AS tradeAmountManwon,
+        deposit_amount_manwon AS depositAmountManwon,
+        monthly_rent_manwon AS monthlyRentManwon,
+        CASE
+            WHEN transaction_type = 'trade' THEN trade_amount_manwon
+            ELSE deposit_amount_manwon
+        END AS displayAmount
+    </sql>
+
+    <sql id="realEstateSearchConditions">
+        WHERE deal_year_month = #{searchParam.dealYearMonth}
+        <if test="searchParam.keyword != null and searchParam.keyword != ''">
+            AND (
+                display_name LIKE CONCAT('%', #{searchParam.keyword}, '%')
+                OR address LIKE CONCAT('%', #{searchParam.keyword}, '%')
+                OR umd_name LIKE CONCAT('%', #{searchParam.keyword}, '%')
+                OR sgg_name LIKE CONCAT('%', #{searchParam.keyword}, '%')
+            )
+        </if>
+        <if test="searchParam.sggName != null and searchParam.sggName != ''">
+            AND sgg_name = #{searchParam.sggName}
+        </if>
+        <if test="searchParam.umdName != null and searchParam.umdName != ''">
+            AND umd_name = #{searchParam.umdName}
+        </if>
+        <if test="searchParam.propertyCategory != null and searchParam.propertyCategory != ''">
+            AND property_category = #{searchParam.propertyCategory}
+        </if>
+        <if test="searchParam.transactionType != null and searchParam.transactionType != ''">
+            AND transaction_type = #{searchParam.transactionType}
+        </if>
+        <if test="searchParam.minAmount != null">
+            AND (CASE
+                WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                ELSE deposit_amount_manwon
+            END) &gt;= #{searchParam.minAmount}
+        </if>
+        <if test="searchParam.maxAmount != null">
+            AND (CASE
+                WHEN transaction_type = 'trade' THEN trade_amount_manwon
+                ELSE deposit_amount_manwon
+            END) &lt;= #{searchParam.maxAmount}
+        </if>
+        <if test="searchParam.minAreaPyeong != null">
+            AND area_pyeong &gt;= #{searchParam.minAreaPyeong}
+        </if>
+        <if test="searchParam.maxAreaPyeong != null">
+            AND area_pyeong &lt;= #{searchParam.maxAreaPyeong}
+        </if>
+        <if test="searchParam.minBuildYear != null">
+            AND build_year &gt;= #{searchParam.minBuildYear}
+        </if>
+        <if test="searchParam.maxBuildYear != null">
+            AND build_year &lt;= #{searchParam.maxBuildYear}
+        </if>
+    </sql>
+
     <select id="selectLatestDealYearMonth" resultType="string">
         SELECT MAX(deal_year_month)
         FROM real_estate_transactions
@@ -15,58 +89,41 @@
         ORDER BY deal_year_month DESC
     </select>
 
+    <select id="selectAvailableSggNames" resultType="string">
+        SELECT DISTINCT sgg_name
+        FROM real_estate_transactions
+        WHERE deal_year_month = #{dealYearMonth}
+          AND sgg_name IS NOT NULL
+          AND sgg_name != ''
+        ORDER BY sgg_name ASC
+    </select>
+
+    <select id="selectAvailableUmdNames" resultType="string">
+        SELECT DISTINCT umd_name
+        FROM real_estate_transactions
+        WHERE deal_year_month = #{dealYearMonth}
+          AND umd_name IS NOT NULL
+          AND umd_name != ''
+        <if test="sggName != null and sggName != ''">
+          AND sgg_name = #{sggName}
+        </if>
+        ORDER BY umd_name ASC
+    </select>
+
     <select id="selectRealEstateCount" resultType="int">
         SELECT COUNT(*)
         FROM real_estate_transactions
-        WHERE deal_year_month = #{dealYearMonth}
-        <if test="keyword != null and keyword != ''">
-            AND (
-                display_name LIKE CONCAT('%', #{keyword}, '%')
-                OR address LIKE CONCAT('%', #{keyword}, '%')
-                OR umd_name LIKE CONCAT('%', #{keyword}, '%')
-                OR sgg_name LIKE CONCAT('%', #{keyword}, '%')
-            )
-        </if>
+        <include refid="realEstateSearchConditions"/>
     </select>
 
     <select id="selectRealEstateList" resultType="map">
         SELECT
-            id,
-            dataset_id AS datasetId,
-            property_category AS propertyCategory,
-            transaction_type AS transactionType,
-            lawd_code AS lawdCode,
-            sgg_name AS sggName,
-            umd_name AS umdName,
-            jibun,
-            address,
-            display_name AS displayName,
-            area_m2 AS areaM2,
-            area_pyeong AS areaPyeong,
-            floor,
-            build_year AS buildYear,
-            deal_date AS dealDate,
-            deal_year_month AS dealYearMonth,
-            trade_amount_manwon AS tradeAmountManwon,
-            deposit_amount_manwon AS depositAmountManwon,
-            monthly_rent_manwon AS monthlyRentManwon,
-            CASE
-                WHEN transaction_type = 'trade' THEN trade_amount_manwon
-                ELSE deposit_amount_manwon
-            END AS displayAmount
+            <include refid="realEstateListColumns"/>
         FROM real_estate_transactions
-        WHERE deal_year_month = #{dealYearMonth}
-        <if test="keyword != null and keyword != ''">
-            AND (
-                display_name LIKE CONCAT('%', #{keyword}, '%')
-                OR address LIKE CONCAT('%', #{keyword}, '%')
-                OR umd_name LIKE CONCAT('%', #{keyword}, '%')
-                OR sgg_name LIKE CONCAT('%', #{keyword}, '%')
-            )
-        </if>
+        <include refid="realEstateSearchConditions"/>
         ORDER BY
         <choose>
-            <when test="sort == 'amountDesc'">
+            <when test="searchParam.sort == 'amountDesc'">
                 CASE
                     WHEN transaction_type = 'trade' THEN trade_amount_manwon
                     ELSE deposit_amount_manwon
@@ -74,7 +131,7 @@
                 deal_date DESC,
                 display_name ASC
             </when>
-            <when test="sort == 'amountAsc'">
+            <when test="searchParam.sort == 'amountAsc'">
                 CASE
                     WHEN transaction_type = 'trade' THEN trade_amount_manwon
                     ELSE deposit_amount_manwon
@@ -82,7 +139,7 @@
                 deal_date DESC,
                 display_name ASC
             </when>
-            <when test="sort == 'nameAsc'">
+            <when test="searchParam.sort == 'nameAsc'">
                 display_name ASC,
                 deal_date DESC
             </when>
@@ -142,12 +199,62 @@
                     <when test="metricType == 'rent'">deposit_amount_manwon</when>
                     <otherwise>trade_amount_manwon</otherwise>
                 </choose>
-            ), 0) AS averageAmount
+            ), 0) AS averageAmount,
+            MIN(
+                <choose>
+                    <when test="metricType == 'rent'">deposit_amount_manwon</when>
+                    <otherwise>trade_amount_manwon</otherwise>
+                </choose>
+            ) AS minAmount,
+            MAX(
+                <choose>
+                    <when test="metricType == 'rent'">deposit_amount_manwon</when>
+                    <otherwise>trade_amount_manwon</otherwise>
+                </choose>
+            ) AS maxAmount,
+            COUNT(*) AS transactionCount
         FROM real_estate_transactions
         WHERE property_match_key = #{propertyMatchKey}
           AND YEAR(deal_date) = #{year}
+          AND (
+            <choose>
+                <when test="metricType == 'rent'">deposit_amount_manwon</when>
+                <otherwise>trade_amount_manwon</otherwise>
+            </choose>
+          ) &gt; 0
         GROUP BY MONTH(deal_date)
         ORDER BY MONTH(deal_date)
+    </select>
+
+    <select id="selectSamePropertyRecentTransactions" resultType="map">
+        SELECT
+            <include refid="realEstateListColumns"/>
+        FROM real_estate_transactions
+        WHERE property_match_key = #{propertyMatchKey}
+          AND id != #{excludeId}
+        ORDER BY deal_date DESC, id DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectSimilarConditionTransactions" resultType="map">
+        SELECT
+            <include refid="realEstateListColumns"/>
+        FROM real_estate_transactions
+        WHERE id != #{property.id}
+          AND property_match_key != #{property.propertyMatchKey}
+          AND sgg_name = #{property.sggName}
+          AND umd_name = #{property.umdName}
+          AND property_category = #{property.propertyCategory}
+          AND transaction_type = #{property.transactionType}
+        <if test="property.areaM2 != null">
+          AND area_m2 &gt; 0
+          AND area_m2 BETWEEN #{property.areaM2} * 0.85 AND #{property.areaM2} * 1.15
+        </if>
+        <if test="property.buildYear != null and property.buildYear > 0">
+          AND build_year BETWEEN #{property.buildYear} - 10 AND #{property.buildYear} + 10
+        </if>
+        ORDER BY deal_date DESC, id DESC
+        LIMIT #{limit}
     </select>
 
 </mapper>

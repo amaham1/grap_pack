@@ -96,6 +96,46 @@
         return 20000;
     }
 
+    function getSimpleAcquisitionTaxRate(propertyPrice) {
+        if (propertyPrice <= 60000) {
+            return 0.01;
+        }
+        if (propertyPrice <= 90000) {
+            return 0.02;
+        }
+        return 0.03;
+    }
+
+    function calculateBrokerageFee(propertyPrice) {
+        if (propertyPrice < 5000) {
+            return createBrokerageFee(propertyPrice, 0.006, 25);
+        }
+        if (propertyPrice < 20000) {
+            return createBrokerageFee(propertyPrice, 0.005, 80);
+        }
+        if (propertyPrice < 90000) {
+            return createBrokerageFee(propertyPrice, 0.004, 0);
+        }
+        if (propertyPrice < 120000) {
+            return createBrokerageFee(propertyPrice, 0.005, 0);
+        }
+        if (propertyPrice < 150000) {
+            return createBrokerageFee(propertyPrice, 0.006, 0);
+        }
+        return createBrokerageFee(propertyPrice, 0.007, 0);
+    }
+
+    function createBrokerageFee(propertyPrice, rate, capAmount) {
+        var amount = Math.round(propertyPrice * rate);
+        if (capAmount > 0) {
+            amount = Math.min(amount, capAmount);
+        }
+        return {
+            amount: amount,
+            rate: rate
+        };
+    }
+
     function selectedLabel(selectElement) {
         var option = selectElement.options[selectElement.selectedIndex];
         return option ? option.text : '';
@@ -239,6 +279,64 @@
         update();
     }
 
+    function calculatePurchaseCostScenario(formElement) {
+        var propertyPrice = Math.max(0, safeNumber(formElement.dataset.propertyPrice));
+        var legalServiceAmount = Math.max(0, safeNumber(formElement.elements.legalServiceAmount.value));
+        var otherCostAmount = Math.max(0, safeNumber(formElement.elements.otherCostAmount.value));
+        var acquisitionTaxRate = getSimpleAcquisitionTaxRate(propertyPrice);
+        var acquisitionTaxAmount = Math.round(propertyPrice * acquisitionTaxRate);
+        var brokerageFee = calculateBrokerageFee(propertyPrice);
+        var totalExtraCostAmount = acquisitionTaxAmount + brokerageFee.amount + legalServiceAmount + otherCostAmount;
+
+        return {
+            propertyPrice: propertyPrice,
+            acquisitionTaxRate: acquisitionTaxRate * 100,
+            acquisitionTaxAmount: acquisitionTaxAmount,
+            brokerageFeeRate: brokerageFee.rate * 100,
+            brokerageFeeAmount: brokerageFee.amount,
+            legalServiceAmount: legalServiceAmount,
+            otherCostAmount: otherCostAmount,
+            totalExtraCostAmount: totalExtraCostAmount,
+            totalRequiredCashAmount: propertyPrice + totalExtraCostAmount
+        };
+    }
+
+    function renderPurchaseCostScenario(scenario) {
+        var outputs = {
+            propertyPrice: formatPriceLabel(scenario.propertyPrice),
+            acquisitionTaxAmount: formatPriceLabel(scenario.acquisitionTaxAmount),
+            acquisitionTaxRate: formatPercent(scenario.acquisitionTaxRate),
+            brokerageFeeAmount: formatPriceLabel(scenario.brokerageFeeAmount),
+            brokerageFeeRate: formatPercent(scenario.brokerageFeeRate),
+            legalServiceAmount: formatPriceLabel(scenario.legalServiceAmount),
+            otherCostAmount: formatPriceLabel(scenario.otherCostAmount),
+            totalExtraCostAmount: formatPriceLabel(scenario.totalExtraCostAmount),
+            totalRequiredCashAmount: formatPriceLabel(scenario.totalRequiredCashAmount)
+        };
+
+        Object.keys(outputs).forEach(function (key) {
+            var element = document.querySelector('[data-purchase-cost-output="' + key + '"]');
+            if (element) {
+                element.textContent = outputs[key];
+            }
+        });
+    }
+
+    function initPurchaseCostCalculator() {
+        var formElement = document.getElementById('purchase-cost-form');
+        if (!formElement) {
+            return;
+        }
+
+        function update() {
+            renderPurchaseCostScenario(calculatePurchaseCostScenario(formElement));
+        }
+
+        formElement.addEventListener('input', update);
+        formElement.addEventListener('change', update);
+        update();
+    }
+
     function initPriceChart() {
         var canvas = document.getElementById('real-estate-price-chart');
         var scriptElement = document.getElementById('real-estate-price-series');
@@ -266,30 +364,61 @@
             type: 'line',
             data: {
                 labels: priceSeries.map(function (item) { return item.label; }),
-                datasets: [{
-                    label: '월별 평균 시세',
-                    data: priceSeries.map(function (item) { return item.value; }),
-                    borderColor: '#3182f6',
-                    backgroundColor: gradient,
-                    fill: true,
-                    tension: 0.35,
-                    borderWidth: 3,
-                    pointRadius: 3,
-                    pointHoverRadius: 5,
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#3182f6',
-                    pointBorderWidth: 2
-                }]
+                datasets: [
+                    {
+                        label: '월별 평균 시세',
+                        data: priceSeries.map(function (item) { return item.value; }),
+                        borderColor: '#3182f6',
+                        backgroundColor: gradient,
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3182f6',
+                        pointBorderWidth: 2
+                    },
+                    {
+                        label: '월별 최저가',
+                        data: priceSeries.map(function (item) { return item.minAmount; }),
+                        borderColor: '#16a34a',
+                        backgroundColor: 'transparent',
+                        borderDash: [6, 6],
+                        tension: 0.25,
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    },
+                    {
+                        label: '월별 최고가',
+                        data: priceSeries.map(function (item) { return item.maxAmount; }),
+                        borderColor: '#f97316',
+                        backgroundColor: 'transparent',
+                        borderDash: [4, 4],
+                        tension: 0.25,
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 4
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { display: false },
+                    legend: { display: true },
                     tooltip: {
                         callbacks: {
                             label: function (contextValue) {
-                                return formatPriceLabel(contextValue.parsed.y);
+                                return contextValue.dataset.label + ': ' + formatPriceLabel(contextValue.parsed.y);
+                            },
+                            afterBody: function (items) {
+                                if (!items.length) {
+                                    return '';
+                                }
+                                var item = priceSeries[items[0].dataIndex];
+                                return '거래 ' + formatNumber(item.transactionCount || 0, 0) + '건';
                             }
                         }
                     }
@@ -316,5 +445,6 @@
     document.addEventListener('DOMContentLoaded', function () {
         initPriceChart();
         initMortgageCalculator();
+        initPurchaseCostCalculator();
     });
 }());
