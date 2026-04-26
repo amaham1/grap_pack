@@ -22,6 +22,9 @@ public class PackVisitor {
     /** 세션 ID */
     private String sessionId;
 
+    /** 방문자 고유 쿠키 ID */
+    private String visitorUid;
+
     /** 인증 범위 */
     private PackVisitorAuthScope authScope;
 

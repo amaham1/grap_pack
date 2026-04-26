@@ -68,8 +68,8 @@
                     },
                     {
                         type: "line",
-                        label: "사람 추정 방문 수",
-                        data: dailyStats.map((item) => item.humanPv),
+                        label: "사람 추정 고유 방문자 수",
+                        data: dailyStats.map((item) => item.humanUv),
                         borderColor: "#178a4d",
                         backgroundColor: "rgba(23, 138, 77, 0.14)",
                         borderWidth: 2,
@@ -80,7 +80,7 @@
                     },
                     {
                         type: "line",
-                        label: "일반 브라우저 세션 수",
+                        label: "일반 브라우저 고유 방문자 수",
                         data: dailyStats.map((item) => item.uv),
                         borderColor: "#667085",
                         backgroundColor: "rgba(102, 112, 133, 0.10)",

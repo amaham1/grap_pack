@@ -46,6 +46,7 @@ public class PackVisitorService {
     public Long recordPackVisitor(
             HttpServletRequest request,
             String sessionId,
+            String visitorUid,
             PackVisitorClassification classification,
             PackVisitorAuthScope authScope,
             Long authUserId
@@ -61,6 +62,7 @@ public class PackVisitorService {
 
         PackVisitor visitor = PackVisitor.builder()
                 .sessionId(sessionId)
+                .visitorUid(visitorUid)
                 .authScope(authScope)
                 .authUserId(authUserId)
                 .serviceCode(classification.getServiceCode())

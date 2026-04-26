@@ -71,14 +71,15 @@ class PackVisitorInterceptorTest {
                 .build();
 
         when(packVisitorRouteClassifier.classify(request)).thenReturn(Optional.of(classification));
-        when(packVisitorService.recordPackVisitor(any(), anyString(), eq(classification), eq(PackVisitorAuthScope.ANONYMOUS), isNull()))
+        when(packVisitorService.recordPackVisitor(any(), anyString(), anyString(), eq(classification), eq(PackVisitorAuthScope.ANONYMOUS), isNull()))
                 .thenReturn(101L);
 
         boolean result = interceptor.preHandle(request, response, handlerMethod);
 
         assertThat(result).isTrue();
         assertThat(request.getAttribute(PackVisitorInterceptor.VISITOR_ID_ATTR)).isEqualTo(101L);
-        verify(packVisitorService).recordPackVisitor(any(), anyString(), eq(classification), eq(PackVisitorAuthScope.ANONYMOUS), isNull());
+        assertThat(response.getHeader("Set-Cookie")).contains(PackVisitorInterceptor.VISITOR_UID_COOKIE_NAME);
+        verify(packVisitorService).recordPackVisitor(any(), anyString(), anyString(), eq(classification), eq(PackVisitorAuthScope.ANONYMOUS), isNull());
         verify(qrGenAuthService, never()).findQrGenUserByLoginId(anyString());
     }
 
@@ -91,7 +92,7 @@ class PackVisitorInterceptorTest {
 
         assertThat(result).isTrue();
         verify(packVisitorRouteClassifier, never()).classify(any(MockHttpServletRequest.class));
-        verify(packVisitorService, never()).recordPackVisitor(any(), anyString(), any(), any(), any());
+        verify(packVisitorService, never()).recordPackVisitor(any(), anyString(), anyString(), any(), any(), any());
     }
 
     @Test
@@ -102,7 +103,7 @@ class PackVisitorInterceptorTest {
 
         assertThat(result).isTrue();
         verify(packVisitorRouteClassifier, never()).classify(any(MockHttpServletRequest.class));
-        verify(packVisitorService, never()).recordPackVisitor(any(), anyString(), any(), any(), any());
+        verify(packVisitorService, never()).recordPackVisitor(any(), anyString(), anyString(), any(), any(), any());
     }
 
     @Test
@@ -121,7 +122,7 @@ class PackVisitorInterceptorTest {
         when(packVisitorRouteClassifier.classify(request)).thenReturn(Optional.of(classification));
         when(qrGenAuthService.findQrGenUserByLoginId("qr-user"))
                 .thenReturn(QrGenUser.builder().qrGenUserId(7L).qrGenUserLoginId("qr-user").build());
-        when(packVisitorService.recordPackVisitor(any(), anyString(), eq(classification), eq(PackVisitorAuthScope.QRGEN_USER), eq(7L)))
+        when(packVisitorService.recordPackVisitor(any(), anyString(), anyString(), eq(classification), eq(PackVisitorAuthScope.QRGEN_USER), eq(7L)))
                 .thenReturn(202L);
 
         boolean result = interceptor.preHandle(request, response, handlerMethod);
@@ -129,7 +130,7 @@ class PackVisitorInterceptorTest {
         assertThat(result).isTrue();
         assertThat(request.getAttribute(PackVisitorInterceptor.VISITOR_ID_ATTR)).isEqualTo(202L);
         verify(qrGenAuthService).findQrGenUserByLoginId("qr-user");
-        verify(packVisitorService).recordPackVisitor(any(), anyString(), eq(classification), eq(PackVisitorAuthScope.QRGEN_USER), eq(7L));
+        verify(packVisitorService).recordPackVisitor(any(), anyString(), anyString(), eq(classification), eq(PackVisitorAuthScope.QRGEN_USER), eq(7L));
     }
 
     @SuppressWarnings("unused")

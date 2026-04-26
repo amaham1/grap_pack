@@ -15,6 +15,7 @@ USE grap_cms;
 CREATE TABLE IF NOT EXISTS grap_pack_visitor (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '방문 ID',
     session_id VARCHAR(100) NOT NULL COMMENT '세션 ID',
+    visitor_uid VARCHAR(100) NULL COMMENT '방문자 고유 쿠키 ID',
     auth_scope VARCHAR(30) NOT NULL DEFAULT 'ANONYMOUS' COMMENT '인증 범위',
     auth_user_id BIGINT NULL COMMENT '인증 사용자 ID',
     service_code VARCHAR(30) NOT NULL COMMENT '서비스 코드',
@@ -42,6 +43,7 @@ CREATE TABLE IF NOT EXISTS grap_pack_visitor (
     legacy_source_id BIGINT NULL COMMENT '레거시 소스 ID',
 
     INDEX idx_grap_pack_visitor_session_id (session_id),
+    INDEX idx_grap_pack_visitor_visitor_uid (visitor_uid),
     INDEX idx_grap_pack_visitor_service_code (service_code),
     INDEX idx_grap_pack_visitor_menu_code (menu_code),
     INDEX idx_grap_pack_visitor_route_key (route_key),

@@ -7,6 +7,7 @@
     <insert id="insertPackVisitor" parameterType="PackVisitor" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO grap_pack_visitor (
             session_id,
+            visitor_uid,
             auth_scope,
             auth_user_id,
             service_code,
@@ -34,6 +35,7 @@
             legacy_source_id
         ) VALUES (
             #{sessionId},
+            #{visitorUid},
             #{authScope},
             #{authUserId},
             #{serviceCode},

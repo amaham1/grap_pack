@@ -6,18 +6,24 @@ import co.grap.pack.common.visitor.service.PackVisitorRouteClassifier;
 import co.grap.pack.common.visitor.service.PackVisitorService;
 import co.grap.pack.qrgen.auth.model.QrGenUser;
 import co.grap.pack.qrgen.auth.service.QrGenAuthService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.time.Duration;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * 공개 페이지 공통 방문자 인터셉터다.
@@ -29,6 +35,11 @@ public class PackVisitorInterceptor implements HandlerInterceptor {
 
     /** 요청 속성 키 */
     public static final String VISITOR_ID_ATTR = "packVisitorId";
+    public static final String VISITOR_UID_COOKIE_NAME = "grap_pack_visitor_uid";
+    private static final Duration VISITOR_UID_COOKIE_MAX_AGE = Duration.ofDays(400);
+    private static final Pattern UUID_PATTERN = Pattern.compile(
+            "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    );
 
     private final PackVisitorService packVisitorService;
     private final PackVisitorRouteClassifier packVisitorRouteClassifier;
@@ -51,10 +62,12 @@ public class PackVisitorInterceptor implements HandlerInterceptor {
             }
 
             HttpSession session = request.getSession(true);
+            String visitorUid = resolveOrIssueVisitorUid(request, response);
             VisitorAuthInfo visitorAuthInfo = resolveVisitorAuthInfo(request);
             Long visitorId = packVisitorService.recordPackVisitor(
                     request,
                     session.getId(),
+                    visitorUid,
                     classification.get(),
                     visitorAuthInfo.authScope(),
                     visitorAuthInfo.authUserId()
@@ -66,6 +79,45 @@ public class PackVisitorInterceptor implements HandlerInterceptor {
         }
 
         return true;
+    }
+
+    private String resolveOrIssueVisitorUid(HttpServletRequest request, HttpServletResponse response) {
+        String visitorUid = findVisitorUidCookieValue(request);
+        if (visitorUid != null) {
+            return visitorUid;
+        }
+
+        String issuedVisitorUid = UUID.randomUUID().toString();
+        ResponseCookie visitorUidCookie = ResponseCookie.from(VISITOR_UID_COOKIE_NAME, issuedVisitorUid)
+                .path("/")
+                .maxAge(VISITOR_UID_COOKIE_MAX_AGE)
+                .httpOnly(true)
+                .secure(isSecureRequest(request))
+                .sameSite("Lax")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, visitorUidCookie.toString());
+        return issuedVisitorUid;
+    }
+
+    private String findVisitorUidCookieValue(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+
+        for (Cookie cookie : cookies) {
+            if (VISITOR_UID_COOKIE_NAME.equals(cookie.getName())
+                    && cookie.getValue() != null
+                    && UUID_PATTERN.matcher(cookie.getValue()).matches()) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private boolean isSecureRequest(HttpServletRequest request) {
+        return request.isSecure() || "https".equalsIgnoreCase(request.getHeader("X-Forwarded-Proto"));
     }
 
     private boolean shouldTrack(HttpServletRequest request) {

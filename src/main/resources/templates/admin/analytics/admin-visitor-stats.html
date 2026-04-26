@@ -7,7 +7,7 @@
     <div class="admin-card">
         <p class="admin-card-note" style="margin: 0 0 16px; line-height: 1.6;">
             일반 브라우저 요청 수는 BOT을 제외한 서버 요청 기준입니다.
-            사람 추정 방문 수는 페이지가 실제로 보인 상태에서 3초 이상 머물고 클릭, 스크롤, 터치, 키 입력 등 사용자 상호작용이 확인된 방문만 따로 집계합니다.
+            사람 추정 고유 방문자 수는 페이지가 실제로 보인 상태에서 3초 이상 머물고 클릭, 스크롤, 터치, 키 입력 등 사용자 상호작용이 확인된 방문을 로그인 사용자, 방문자 쿠키, 세션 순서로 중복 제거해 집계합니다.
             BOT 요청은 아래 카드에서 따로 보이고, IP 접속 기록은 체크박스를 켰을 때만 BOT 기록이 함께 보입니다.
         </p>
         <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
@@ -54,7 +54,7 @@
             <strong class="admin-card-value" th:text="${dashboardStats.totalPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">전체 일반 브라우저 세션 수</p>
+            <p class="admin-card-label">전체 일반 브라우저 고유 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalUv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
@@ -62,26 +62,26 @@
             <strong class="admin-card-value" th:text="${dashboardStats.todayPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 일반 브라우저 세션 수</p>
+            <p class="admin-card-label">오늘 일반 브라우저 고유 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayUv}">0</strong>
         </section>
     </div>
 
     <div class="admin-card-grid admin-card-grid-4">
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">전체 사람 추정 방문 수</p>
+            <p class="admin-card-label">전체 사람 추정 기록 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalHumanVerifiedPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">전체 사람 추정 세션 수</p>
+            <p class="admin-card-label">전체 사람 추정 고유 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalHumanVerifiedUv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 사람 추정 방문 수</p>
+            <p class="admin-card-label">오늘 사람 추정 기록 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayHumanVerifiedPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 사람 추정 세션 수</p>
+            <p class="admin-card-label">오늘 사람 추정 고유 방문자 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayHumanVerifiedUv}">0</strong>
         </section>
     </div>
@@ -92,7 +92,7 @@
             <strong class="admin-card-value" th:text="${dashboardStats.totalBotPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">전체 BOT 세션 수</p>
+            <p class="admin-card-label">전체 BOT 고유 식별 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.totalBotUv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
@@ -100,7 +100,7 @@
             <strong class="admin-card-value" th:text="${dashboardStats.todayBotPv}">0</strong>
         </section>
         <section class="admin-card admin-metric-card">
-            <p class="admin-card-label">오늘 BOT 세션 수</p>
+            <p class="admin-card-label">오늘 BOT 고유 식별 수</p>
             <strong class="admin-card-value" th:text="${dashboardStats.todayBotUv}">0</strong>
         </section>
     </div>
@@ -110,7 +110,7 @@
             <div>
                 <p class="admin-card-label">일별 접속량</p>
                 <p class="admin-table-note">
-                    선택한 기간의 일반 브라우저 요청 수, 사람 추정 방문 수, BOT 요청 수를 일자별로 확인합니다.
+                    선택한 기간의 일반 브라우저 요청 수, 사람 추정 고유 방문자 수, BOT 요청 수를 일자별로 확인합니다.
                 </p>
             </div>
             <div class="admin-list-summary" th:if="${not #lists.isEmpty(dailyStats)}">

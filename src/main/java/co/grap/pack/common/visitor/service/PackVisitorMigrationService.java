@@ -54,6 +54,7 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                 CREATE TABLE IF NOT EXISTS grap_pack_visitor (
                     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '방문 ID',
                     session_id VARCHAR(100) NOT NULL COMMENT '세션 ID',
+                    visitor_uid VARCHAR(100) NULL COMMENT '방문자 고유 쿠키 ID',
                     auth_scope VARCHAR(30) NOT NULL DEFAULT 'ANONYMOUS' COMMENT '인증 범위',
                     auth_user_id BIGINT NULL COMMENT '인증 사용자 ID',
                     service_code VARCHAR(30) NOT NULL COMMENT '서비스 코드',
@@ -80,6 +81,7 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                     legacy_source VARCHAR(50) NULL COMMENT '레거시 소스',
                     legacy_source_id BIGINT NULL COMMENT '레거시 소스 ID',
                     INDEX idx_grap_pack_visitor_session_id (session_id),
+                    INDEX idx_grap_pack_visitor_visitor_uid (visitor_uid),
                     INDEX idx_grap_pack_visitor_service_code (service_code),
                     INDEX idx_grap_pack_visitor_menu_code (menu_code),
                     INDEX idx_grap_pack_visitor_route_key (route_key),
@@ -90,6 +92,8 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='grap_pack 공통 방문자 추적'
                 """);
 
+        ensureColumn(jdbcTemplate, "visitor_uid",
+                "ALTER TABLE grap_pack_visitor ADD COLUMN visitor_uid VARCHAR(100) NULL COMMENT '방문자 고유 쿠키 ID' AFTER session_id");
         ensureColumn(jdbcTemplate, "visible_duration_seconds",
                 "ALTER TABLE grap_pack_visitor ADD COLUMN visible_duration_seconds INT NOT NULL DEFAULT 0 COMMENT '화면이 실제로 보인 시간(초)' AFTER duration_seconds");
         ensureColumn(jdbcTemplate, "interaction_count",
@@ -100,6 +104,8 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                 "ALTER TABLE grap_pack_visitor ADD COLUMN human_verified TINYINT(1) NOT NULL DEFAULT 0 COMMENT '사람 추정 방문 여부' AFTER first_interaction_at");
         ensureColumn(jdbcTemplate, "human_verified_at",
                 "ALTER TABLE grap_pack_visitor ADD COLUMN human_verified_at DATETIME NULL COMMENT '사람 추정 방문 확인 시각' AFTER human_verified");
+        ensureIndex(jdbcTemplate, "idx_grap_pack_visitor_visitor_uid",
+                "CREATE INDEX idx_grap_pack_visitor_visitor_uid ON grap_pack_visitor (visitor_uid)");
         ensureIndex(jdbcTemplate, "idx_grap_pack_visitor_human_verified_at",
                 "CREATE INDEX idx_grap_pack_visitor_human_verified_at ON grap_pack_visitor (human_verified, visited_at)");
 
@@ -152,6 +158,7 @@ public class PackVisitorMigrationService implements ApplicationRunner {
             targetJdbcTemplate.update("""
                             INSERT INTO grap_pack_visitor (
                                 session_id,
+                                visitor_uid,
                                 auth_scope,
                                 auth_user_id,
                                 service_code,
@@ -177,8 +184,9 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                                 human_verified_at,
                                 legacy_source,
                                 legacy_source_id
-                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                             ON DUPLICATE KEY UPDATE
+                                visitor_uid = COALESCE(visitor_uid, VALUES(visitor_uid)),
                                 auth_scope = VALUES(auth_scope),
                                 auth_user_id = VALUES(auth_user_id),
                                 service_code = VALUES(service_code),
@@ -200,6 +208,7 @@ public class PackVisitorMigrationService implements ApplicationRunner {
                                 visible_duration_seconds = GREATEST(COALESCE(visible_duration_seconds, 0), VALUES(visible_duration_seconds)),
                                 interaction_count = GREATEST(COALESCE(interaction_count, 0), VALUES(interaction_count))
                             """,
+                    stringValue(legacyVisitor.get("qr_gen_visitor_session_id")),
                     stringValue(legacyVisitor.get("qr_gen_visitor_session_id")),
                     resolveAuthScope(legacyVisitor.get("qr_gen_visitor_user_id")).name(),
                     longValue(legacyVisitor.get("qr_gen_visitor_user_id")),
