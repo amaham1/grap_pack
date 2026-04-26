@@ -18,14 +18,17 @@ import java.util.Map;
 @Service
 public class CmsPublicSeoService {
 
+    private static final String REAL_ESTATE_PATH = "/grap/user/content/real-estate";
+    private static final String REAL_ESTATE_KEYWORDS = "제주도 부동산, 제주도 부동산 실거래가, 제주 부동산, 제주 아파트 실거래가, 제주 전월세 실거래가";
+
     /**
      * 루트 랜딩 SEO를 적용한다.
      *
      * @param model 화면 모델
      */
     public void applyLandingSeo(Model model) {
-        String title = "제주 생활 정보와 QR 도구";
-        String description = "Grap에서 제주 부동산 실거래가, 축제, 전시, 복지, 주유소 정보와 QR 코드 생성 도구를 한 번에 확인하세요.";
+        String title = "제주도 부동산과 생활 정보";
+        String description = "Grap에서 제주도 부동산 실거래가, 전월세 시세, 축제, 전시, 복지, 주유소 정보와 QR 코드 생성 도구를 한 번에 확인하세요.";
 
         Map<String, Object> website = PublicSeoSupport.linkedData("WebSite");
         website.put("name", PublicSeoSupport.SITE_NAME);
@@ -466,17 +469,26 @@ public class CmsPublicSeoService {
                 ? currentPropertyMonth.substring(0, 4) + "년 " + currentPropertyMonth.substring(4) + "월 기준"
                 : "최신 기준";
 
-        applyListSeo(
-                model,
-                "/grap/user/content/real-estate",
-                "제주 부동산 실거래가",
-                monthLabel + " 제주 부동산 실거래가와 전월세 거래 정보를 확인하고 대출 계산까지 이어서 살펴보세요.",
-                indexable,
-                List.of(
-                        new PublicSeoBreadcrumbItem("홈", "/"),
-                        new PublicSeoBreadcrumbItem("부동산 실거래가", "/grap/user/content/real-estate")
-                )
-        );
+        String title = "제주도 부동산 실거래가";
+        String description = monthLabel + " 제주도 부동산 아파트, 연립·다세대, 오피스텔, 단독·다가구 매매와 전월세 실거래가를 확인하고 대출 계산까지 살펴보세요.";
+
+        applySeo(model, PublicSeoMeta.builder()
+                .title(title)
+                .description(description)
+                .canonicalUrl(PublicSeoSupport.absoluteUrl(REAL_ESTATE_PATH))
+                .robots(PublicSeoSupport.robots(indexable))
+                .ogType("website")
+                .siteName(PublicSeoSupport.SITE_NAME)
+                .locale(PublicSeoSupport.LOCALE)
+                .twitterCard("summary")
+                .structuredDataList(List.of(
+                        realEstateCollectionPageJson(title, description, REAL_ESTATE_PATH),
+                        PublicSeoSupport.breadcrumbJson(List.of(
+                                new PublicSeoBreadcrumbItem("홈", "/"),
+                                new PublicSeoBreadcrumbItem("제주도 부동산 실거래가", REAL_ESTATE_PATH)
+                        ))
+                ))
+                .build());
     }
 
     /**
@@ -487,15 +499,16 @@ public class CmsPublicSeoService {
      * @param requestedYear 조회 연도
      */
     public void applyRealEstateDetailSeo(Model model, Map<String, Object> property, Integer requestedYear) {
-        String path = "/grap/user/content/real-estate/" + property.get("id");
-        String title = stringValue(property.get("displayName"));
+        String path = REAL_ESTATE_PATH + "/" + property.get("id");
+        String title = realEstateDetailTitle(property);
         String description = firstNonBlank(
                 joinNonBlank(" · ",
+                        "제주도 부동산 실거래가",
                         stringValue(property.get("address")),
                         stringValue(property.get("formattedDisplayAmount")),
                         stringValue(property.get("formattedDealDate"))
                 ),
-                title + " 부동산 거래 상세 페이지입니다."
+                title + " 상세 페이지입니다."
         );
         String modifiedAt = PublicSeoSupport.toIsoDate(property.get("dealDate"));
         boolean indexable = requestedYear == null;
@@ -510,10 +523,10 @@ public class CmsPublicSeoService {
                 .locale(PublicSeoSupport.LOCALE)
                 .twitterCard("summary")
                 .structuredDataList(List.of(
-                        PublicSeoSupport.webPageJson(title, description, path, null, modifiedAt),
+                        realEstateWebPageJson(title, description, path, modifiedAt),
                         PublicSeoSupport.breadcrumbJson(List.of(
                                 new PublicSeoBreadcrumbItem("홈", "/"),
-                                new PublicSeoBreadcrumbItem("부동산 실거래가", "/grap/user/content/real-estate"),
+                                new PublicSeoBreadcrumbItem("제주도 부동산 실거래가", REAL_ESTATE_PATH),
                                 new PublicSeoBreadcrumbItem(title, path)
                         ))
                 ))
@@ -570,6 +583,53 @@ public class CmsPublicSeoService {
 
     private void applySeo(Model model, PublicSeoMeta seoMeta) {
         PublicSeoSupport.applySeo(model, seoMeta);
+    }
+
+    private String realEstateCollectionPageJson(String title, String description, String path) {
+        Map<String, Object> data = PublicSeoSupport.linkedData("CollectionPage");
+        data.put("name", title);
+        data.put("description", description);
+        data.put("url", PublicSeoSupport.absoluteUrl(path));
+        data.put("inLanguage", "ko-KR");
+        data.put("keywords", REAL_ESTATE_KEYWORDS);
+        data.put("about", List.of(
+                Map.of("@type", "AdministrativeArea", "name", "제주특별자치도"),
+                Map.of("@type", "Thing", "name", "제주도 부동산"),
+                Map.of("@type", "Thing", "name", "부동산 실거래가")
+        ));
+        data.put("spatialCoverage", Map.of(
+                "@type", "AdministrativeArea",
+                "name", "제주특별자치도"
+        ));
+        return PublicSeoSupport.toJson(data);
+    }
+
+    private String realEstateWebPageJson(String title, String description, String path, String modifiedAt) {
+        Map<String, Object> data = PublicSeoSupport.linkedData("WebPage");
+        data.put("name", title);
+        data.put("description", description);
+        data.put("url", PublicSeoSupport.absoluteUrl(path));
+        data.put("inLanguage", "ko-KR");
+        data.put("keywords", REAL_ESTATE_KEYWORDS);
+        data.put("about", List.of(
+                Map.of("@type", "AdministrativeArea", "name", "제주특별자치도"),
+                Map.of("@type", "Thing", "name", "제주도 부동산"),
+                Map.of("@type", "Thing", "name", "부동산 실거래가")
+        ));
+        if (PublicSeoSupport.hasText(modifiedAt)) {
+            data.put("dateModified", modifiedAt);
+        }
+        return PublicSeoSupport.toJson(data);
+    }
+
+    private String realEstateDetailTitle(Map<String, Object> property) {
+        return joinNonBlank(" ",
+                "제주도 부동산",
+                stringValue(property.get("sggName")),
+                stringValue(property.get("umdName")),
+                stringValue(property.get("displayName")),
+                "실거래가"
+        );
     }
 
     private String stringValue(Object value) {

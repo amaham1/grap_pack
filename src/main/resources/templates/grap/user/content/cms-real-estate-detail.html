@@ -5,8 +5,11 @@
             <span class="user-badge badge-real-estate-type" th:text="${property['categoryLabel'] + ' · ' + property['transactionLabel']}"></span>
         </div>
 
-        <h1 th:text="${property['displayName']}"></h1>
+        <h1 th:text="|제주도 부동산 ${property['displayName']} 실거래가|"></h1>
         <p class="real-estate-address" th:text="${property['address']}"></p>
+        <p class="real-estate-detail-summary"
+           th:text="|${property['sggName']} ${property['umdName']} 부동산 거래 사례를 계약일, 면적, 금액 기준으로 확인하세요.|">
+        </p>
 
         <div class="real-estate-hero-amount">
             <span class="real-estate-amount-label" th:text="${property['amountLabel']}"></span>

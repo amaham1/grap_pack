@@ -38,13 +38,21 @@ class PublicSeoSitemapServiceTest {
         dynamicUrl.setChangeFrequency("weekly");
         dynamicUrl.setPriority("0.8");
 
-        when(publicSeoMapper.selectDynamicSitemapUrls()).thenReturn(List.of(dynamicUrl));
+        PublicSeoSitemapUrl realEstateUrl = new PublicSeoSitemapUrl();
+        realEstateUrl.setPath("/grap/user/content/real-estate/120");
+        realEstateUrl.setLastModified("2026-04-24");
+        realEstateUrl.setChangeFrequency("monthly");
+        realEstateUrl.setPriority("0.8");
+
+        when(publicSeoMapper.selectDynamicSitemapUrls()).thenReturn(List.of(dynamicUrl, realEstateUrl));
 
         String sitemapXml = publicSeoSitemapService.buildSitemapXml();
 
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/</loc>");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/detail/99</loc>");
+        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/real-estate/120</loc>");
         assertThat(sitemapXml).contains("<changefreq>weekly</changefreq>");
+        assertThat(sitemapXml).contains("<changefreq>monthly</changefreq>");
     }
 
     /**
