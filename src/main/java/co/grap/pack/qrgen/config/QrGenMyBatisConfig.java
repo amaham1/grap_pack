@@ -19,13 +19,13 @@ import javax.sql.DataSource;
 @MapperScan(basePackages = "co.grap.pack.qrgen.**.mapper", sqlSessionFactoryRef = "qrGenSqlSessionFactory")
 public class QrGenMyBatisConfig {
 
-    @Value("${qrgen.datasource.url:jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false}")
+    @Value("${qrgen.datasource.url}")
     private String url;
 
-    @Value("${qrgen.datasource.username:jursi}")
+    @Value("${qrgen.datasource.username}")
     private String username;
 
-    @Value("${qrgen.datasource.password:Qnflck2##$}")
+    @Value("${qrgen.datasource.password}")
     private String password;
 
     @Value("${qrgen.datasource.driver-class-name:com.mysql.cj.jdbc.Driver}")

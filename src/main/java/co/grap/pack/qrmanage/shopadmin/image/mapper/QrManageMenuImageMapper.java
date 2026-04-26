@@ -23,6 +23,16 @@ public interface QrManageMenuImageMapper {
     QrManageMenuImage findById(@Param("id") Long id);
 
     /**
+     * 메뉴 ID와 이미지 ID로 이미지 조회
+     */
+    QrManageMenuImage findByIdAndMenuId(@Param("id") Long id, @Param("menuId") Long menuId);
+
+    /**
+     * 메뉴 ID와 이미지 ID로 이미지 존재 여부 확인
+     */
+    boolean existsByIdAndMenuId(@Param("id") Long id, @Param("menuId") Long menuId);
+
+    /**
      * 이미지 등록
      */
     void insert(QrManageMenuImage image);
@@ -33,6 +43,11 @@ public interface QrManageMenuImageMapper {
     void delete(@Param("id") Long id);
 
     /**
+     * 메뉴 ID와 이미지 ID가 일치할 때만 삭제
+     */
+    int deleteByIdAndMenuId(@Param("id") Long id, @Param("menuId") Long menuId);
+
+    /**
      * 메뉴의 모든 이미지 삭제
      */
     void deleteByMenuId(@Param("menuId") Long menuId);
@@ -41,6 +56,18 @@ public interface QrManageMenuImageMapper {
      * 정렬 순서 변경
      */
     void updateSortOrder(@Param("id") Long id, @Param("sortOrder") Integer sortOrder);
+
+    /**
+     * 메뉴 ID와 이미지 ID가 일치할 때만 정렬 순서 변경
+     */
+    void updateSortOrderForMenu(@Param("id") Long id,
+                                @Param("menuId") Long menuId,
+                                @Param("sortOrder") Integer sortOrder);
+
+    /**
+     * 메뉴 소유 이미지 개수 조회
+     */
+    int countByIdsAndMenuId(@Param("ids") List<Long> ids, @Param("menuId") Long menuId);
 
     /**
      * 다음 정렬 순서 조회

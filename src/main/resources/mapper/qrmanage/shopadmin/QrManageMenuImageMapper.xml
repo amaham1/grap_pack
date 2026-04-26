@@ -28,6 +28,21 @@
         SELECT * FROM qr_manage_menu_image WHERE id = #{id}
     </select>
 
+    <!-- 메뉴 ID와 이미지 ID로 이미지 조회 -->
+    <select id="findByIdAndMenuId" resultMap="imageResultMap">
+        SELECT * FROM qr_manage_menu_image
+        WHERE id = #{id}
+          AND menu_id = #{menuId}
+    </select>
+
+    <!-- 메뉴 ID와 이미지 ID로 이미지 존재 여부 확인 -->
+    <select id="existsByIdAndMenuId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM qr_manage_menu_image
+        WHERE id = #{id}
+          AND menu_id = #{menuId}
+    </select>
+
     <!-- 이미지 등록 -->
     <insert id="insert" parameterType="co.grap.pack.qrmanage.shopadmin.image.model.QrManageMenuImage" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO qr_manage_menu_image (menu_id, original_file_name, stored_file_name, file_path, file_size, file_type, sort_order, created_at)
@@ -39,6 +54,13 @@
         DELETE FROM qr_manage_menu_image WHERE id = #{id}
     </delete>
 
+    <!-- 메뉴 ID와 이미지 ID가 일치할 때만 삭제 -->
+    <delete id="deleteByIdAndMenuId">
+        DELETE FROM qr_manage_menu_image
+        WHERE id = #{id}
+          AND menu_id = #{menuId}
+    </delete>
+
     <!-- 메뉴의 모든 이미지 삭제 -->
     <delete id="deleteByMenuId">
         DELETE FROM qr_manage_menu_image WHERE menu_id = #{menuId}
@@ -48,6 +70,25 @@
     <update id="updateSortOrder">
         UPDATE qr_manage_menu_image SET sort_order = #{sortOrder} WHERE id = #{id}
     </update>
+
+    <!-- 메뉴 ID와 이미지 ID가 일치할 때만 정렬 순서 변경 -->
+    <update id="updateSortOrderForMenu">
+        UPDATE qr_manage_menu_image
+        SET sort_order = #{sortOrder}
+        WHERE id = #{id}
+          AND menu_id = #{menuId}
+    </update>
+
+    <!-- 메뉴 소유 이미지 개수 조회 -->
+    <select id="countByIdsAndMenuId" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_manage_menu_image
+        WHERE menu_id = #{menuId}
+          AND id IN
+          <foreach collection="ids" item="id" open="(" separator="," close=")">
+              #{id}
+          </foreach>
+    </select>
 
     <!-- 다음 정렬 순서 조회 -->
     <select id="getNextSortOrder" resultType="int">

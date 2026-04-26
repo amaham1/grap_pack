@@ -6,9 +6,9 @@ spring:
   # 공통 저장소는 grap_cms 를 사용한다.
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/grap_cms?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
-    username: jursi
-    password: Qnflck2##$
+    url: ${GRAP_DB_URL}
+    username: ${GRAP_DB_USERNAME}
+    password: ${GRAP_DB_PASSWORD}
 
 # MyBatis 설정
 mybatis:
@@ -29,9 +29,9 @@ pagehelper:
 qrgen:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
-    username: jursi
-    password: Qnflck2##$
+    url: ${QRGEN_DB_URL}
+    username: ${QRGEN_DB_USERNAME}
+    password: ${QRGEN_DB_PASSWORD}
 
   qr-image:
     save-path: ${user.dir}/uploads/qrgen/images

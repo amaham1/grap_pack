@@ -47,7 +47,6 @@ public class PublicSeoSitemapService {
                 Disallow: /qrgen/user/
                 Disallow: /qrgen/generate
                 Disallow: /qrgen/preview
-                Disallow: /qrgen/download
                 Disallow: /api/
 
                 Sitemap: %s/sitemap.xml

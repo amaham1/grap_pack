@@ -1,7 +1,7 @@
 # 공통 설정 (모든 서비스에서 사용)
 spring:
   profiles:
-    active: grap  # 기본 프로파일: grap
+    active: ${SPRING_PROFILES_ACTIVE:grap}  # 기본 프로파일: grap
 
   devtools:
     restart:
@@ -58,6 +58,6 @@ server:
 qrgen:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/qr_gen?characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true&useSSL=false
-    username: jursi
-    password: Qnflck2##$
+    url: ${QRGEN_DB_URL}
+    username: ${QRGEN_DB_USERNAME}
+    password: ${QRGEN_DB_PASSWORD}

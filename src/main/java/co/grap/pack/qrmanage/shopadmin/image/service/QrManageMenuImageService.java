@@ -15,14 +15,18 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,6 +38,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class QrManageMenuImageService {
+
+    private static final String ACCESS_DENIED_MESSAGE = "접근 권한이 없습니다.";
 
     private final QrManageMenuImageMapper imageMapper;
     private final QrManageMenuMapper menuMapper;
@@ -50,7 +56,8 @@ public class QrManageMenuImageService {
     /**
      * 메뉴의 이미지 목록 조회
      */
-    public List<QrManageMenuImage> getImages(Long menuId) {
+    public List<QrManageMenuImage> getImages(Long shopId, Long menuId) {
+        validateMenuOwnership(menuId, shopId);
         return imageMapper.findByMenuId(menuId);
     }
 
@@ -65,28 +72,29 @@ public class QrManageMenuImageService {
      * 이미지 업로드
      */
     @Transactional
-    public QrManageMenuImage uploadImage(Long menuId, MultipartFile file) throws IOException {
-        log.info("✅ [CHECK] 이미지 업로드 시작: menuId={}, fileName={}", menuId, file.getOriginalFilename());
+    public QrManageMenuImage uploadImage(Long shopId, Long menuId, MultipartFile file) throws IOException {
+        validateMenuOwnership(menuId, shopId);
+        log.info("✅ [CHECK] 이미지 업로드 시작: menuId={}, shopId={}, fileName={}",
+                menuId, shopId, file.getOriginalFilename());
 
-        // 파일 확장자 확인
         String originalFileName = file.getOriginalFilename();
         String extension = getFileExtension(originalFileName).toLowerCase();
         if (!isValidImageExtension(extension)) {
             throw new IllegalArgumentException("지원하지 않는 이미지 형식입니다.");
         }
 
-        // 저장 경로 생성
-        String storedFileName = UUID.randomUUID().toString() + "." + extension;
+        String storedFileName = UUID.randomUUID() + "." + extension;
         Path uploadDir = Paths.get(uploadPath, "menu", String.valueOf(menuId));
         Files.createDirectories(uploadDir);
         Path filePath = uploadDir.resolve(storedFileName);
 
-        // 이미지 압축 및 저장
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
+        if (originalImage == null) {
+            throw new IllegalArgumentException("이미지 파일을 읽을 수 없습니다.");
+        }
         BufferedImage processedImage = resizeAndCompress(originalImage);
         saveCompressedImage(processedImage, filePath.toFile(), extension);
 
-        // DB 저장
         Integer nextSortOrder = imageMapper.getNextSortOrder(menuId);
         QrManageMenuImage image = QrManageMenuImage.builder()
                 .menuId(menuId)
@@ -99,11 +107,10 @@ public class QrManageMenuImageService {
                 .build();
 
         imageMapper.insert(image);
-        log.info("✅ [CHECK] 이미지 업로드 완료: imageId={}", image.getId());
+        log.info("✅ [CHECK] 이미지 업로드 완료: imageId={}, menuId={}, shopId={}", image.getId(), menuId, shopId);
 
-        // 첫 이미지면 대표 이미지로 설정
         if (nextSortOrder == 1) {
-            menuMapper.updatePrimaryImage(menuId, image.getId());
+            menuMapper.updatePrimaryImage(menuId, image.getId(), shopId);
         }
 
         return image;
@@ -113,50 +120,64 @@ public class QrManageMenuImageService {
      * 이미지 삭제
      */
     @Transactional
-    public void deleteImage(Long id, Long menuId) {
-        QrManageMenuImage image = imageMapper.findById(id);
-        if (image != null) {
-            // 파일 삭제
-            try {
-                Path filePath = Paths.get(image.getFilePath().substring(1)); // 앞의 '/' 제거
-                Files.deleteIfExists(filePath);
-            } catch (IOException e) {
-                log.error("❌ [ERROR] 파일 삭제 실패: {}", e.getMessage());
-            }
-
-            // DB 삭제
-            imageMapper.delete(id);
-
-            // 대표 이미지 재설정
-            List<QrManageMenuImage> remainingImages = imageMapper.findByMenuId(menuId);
-            if (!remainingImages.isEmpty()) {
-                menuMapper.updatePrimaryImage(menuId, remainingImages.get(0).getId());
-            } else {
-                menuMapper.updatePrimaryImage(menuId, null);
-            }
-
-            log.info("✅ [CHECK] 이미지 삭제 완료: imageId={}", id);
+    public void deleteImage(Long shopId, Long id, Long menuId) {
+        validateMenuOwnership(menuId, shopId);
+        QrManageMenuImage image = imageMapper.findByIdAndMenuId(id, menuId);
+        if (image == null) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
         }
+
+        try {
+            Path filePath = Paths.get(image.getFilePath().substring(1));
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            log.error("❌ [ERROR] 이미지 파일 삭제 실패: {}", e.getMessage());
+        }
+
+        imageMapper.deleteByIdAndMenuId(id, menuId);
+
+        List<QrManageMenuImage> remainingImages = imageMapper.findByMenuId(menuId);
+        if (!remainingImages.isEmpty()) {
+            menuMapper.updatePrimaryImage(menuId, remainingImages.get(0).getId(), shopId);
+        } else {
+            menuMapper.updatePrimaryImage(menuId, null, shopId);
+        }
+
+        log.info("✅ [CHECK] 이미지 삭제 완료: imageId={}, menuId={}, shopId={}", id, menuId, shopId);
     }
 
     /**
      * 대표 이미지 설정
      */
     @Transactional
-    public void setPrimaryImage(Long menuId, Long imageId) {
-        menuMapper.updatePrimaryImage(menuId, imageId);
-        log.info("✅ [CHECK] 대표 이미지 설정: menuId={}, imageId={}", menuId, imageId);
+    public void setPrimaryImage(Long shopId, Long menuId, Long imageId) {
+        validateMenuOwnership(menuId, shopId);
+        validateImageOwnership(imageId, menuId);
+        menuMapper.updatePrimaryImage(menuId, imageId, shopId);
+        log.info("✅ [CHECK] 대표 이미지 설정: menuId={}, shopId={}, imageId={}", menuId, shopId, imageId);
     }
 
     /**
      * 이미지 순서 변경
      */
     @Transactional
-    public void updateSortOrders(List<Long> imageIds) {
-        for (int i = 0; i < imageIds.size(); i++) {
-            imageMapper.updateSortOrder(imageIds.get(i), i + 1);
+    public void updateSortOrders(Long shopId, Long menuId, List<Long> imageIds) {
+        validateMenuOwnership(menuId, shopId);
+        List<Long> normalizedIds = normalizeIds(imageIds);
+        if (normalizedIds.isEmpty()) {
+            return;
         }
-        log.info("✅ [CHECK] 이미지 순서 변경 완료");
+
+        int ownedCount = imageMapper.countByIdsAndMenuId(normalizedIds, menuId);
+        if (ownedCount != normalizedIds.size()) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
+        }
+
+        for (int i = 0; i < normalizedIds.size(); i++) {
+            imageMapper.updateSortOrderForMenu(normalizedIds.get(i), menuId, i + 1);
+        }
+        log.info("✅ [CHECK] 이미지 순서 변경 완료: menuId={}, shopId={}, count={}",
+                menuId, shopId, normalizedIds.size());
     }
 
     /**
@@ -166,7 +187,6 @@ public class QrManageMenuImageService {
         int width = original.getWidth();
         int height = original.getHeight();
 
-        // 최대 너비보다 크면 리사이즈
         if (width > maxWidth) {
             double ratio = (double) maxWidth / width;
             int newWidth = maxWidth;
@@ -180,7 +200,6 @@ public class QrManageMenuImageService {
             return resized;
         }
 
-        // RGB로 변환 (투명도 제거)
         BufferedImage rgb = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g = rgb.createGraphics();
         g.drawImage(original, 0, 0, Color.WHITE, null);
@@ -205,8 +224,9 @@ public class QrManageMenuImageService {
                 try (ImageOutputStream ios = ImageIO.createImageOutputStream(output)) {
                     writer.setOutput(ios);
                     writer.write(null, new IIOImage(image, null, null), param);
+                } finally {
+                    writer.dispose();
                 }
-                writer.dispose();
             }
         } else {
             ImageIO.write(image, formatName, output);
@@ -227,6 +247,37 @@ public class QrManageMenuImageService {
      * 유효한 이미지 확장자인지 확인
      */
     private boolean isValidImageExtension(String extension) {
-        return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("gif") || extension.equals("webp");
+        return extension.equals("jpg")
+                || extension.equals("jpeg")
+                || extension.equals("png")
+                || extension.equals("gif")
+                || extension.equals("webp");
+    }
+
+    private void validateMenuOwnership(Long menuId, Long shopId) {
+        if (menuId == null || shopId == null || !menuMapper.existsByIdAndShopId(menuId, shopId)) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
+        }
+    }
+
+    private void validateImageOwnership(Long imageId, Long menuId) {
+        if (imageId == null || menuId == null || !imageMapper.existsByIdAndMenuId(imageId, menuId)) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
+        }
+    }
+
+    private List<Long> normalizeIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        if (ids.stream().anyMatch(id -> id == null)) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
+        }
+
+        LinkedHashSet<Long> distinctIds = new LinkedHashSet<>(ids);
+        if (distinctIds.size() != ids.size()) {
+            throw new SecurityException(ACCESS_DENIED_MESSAGE);
+        }
+        return new ArrayList<>(distinctIds);
     }
 }

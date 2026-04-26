@@ -73,7 +73,7 @@ public class QrManageCategoryController {
             return "redirect:/qr-manage/shop/admin/category/list";
         }
 
-        QrManageCategory category = categoryService.getCategory(id);
+        QrManageCategory category = categoryService.getCategory(shopId, id);
         model.addAttribute("category", category);
         return "qrmanage/shop/category/qr-manage-category-form";
     }
@@ -99,7 +99,7 @@ public class QrManageCategoryController {
                     redirectAttributes.addFlashAttribute("error", "접근 권한이 없습니다.");
                     return "redirect:/qr-manage/shop/admin/category/list";
                 }
-                categoryService.updateCategory(id, name, description);
+                categoryService.updateCategory(shopId, id, name, description);
                 redirectAttributes.addFlashAttribute("message", "카테고리가 수정되었습니다.");
             } else {
                 // 등록
@@ -132,7 +132,7 @@ public class QrManageCategoryController {
         }
 
         try {
-            categoryService.deleteCategory(id);
+            categoryService.deleteCategory(shopId, id);
             redirectAttributes.addFlashAttribute("message", "카테고리가 삭제되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 카테고리 삭제 실패: {}", e.getMessage());
@@ -160,7 +160,7 @@ public class QrManageCategoryController {
             return "redirect:/qr-manage/shop/admin/category/list";
         }
 
-        categoryService.updateVisibility(id, isVisible);
+        categoryService.updateVisibility(shopId, id, isVisible);
         String status = isVisible ? "공개" : "비공개";
         redirectAttributes.addFlashAttribute("message", "카테고리가 " + status + "로 변경되었습니다.");
 
@@ -179,8 +179,13 @@ public class QrManageCategoryController {
             return "error";
         }
 
-        categoryService.updateSortOrders(categoryIds);
-        return "success";
+        try {
+            categoryService.updateSortOrders(shopId, categoryIds);
+            return "success";
+        } catch (SecurityException e) {
+            log.warn("카테고리 정렬 권한 검증 실패: shopId={}", shopId);
+            return "error";
+        }
     }
 
     /**

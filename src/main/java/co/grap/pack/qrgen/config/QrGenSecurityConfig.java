@@ -87,7 +87,7 @@ public class QrGenSecurityConfig {
                 .securityMatcher("/qrgen/**")
                 .authenticationProvider(qrGenUserAuthProvider)
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/qrgen/generate", "/qrgen/download", "/qrgen/data/verify")
+                        .ignoringRequestMatchers("/qrgen/generate", "/qrgen/data/verify")
                 )
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll()

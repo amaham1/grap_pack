@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS qr_manage_shop_admin (
 CREATE TABLE IF NOT EXISTS qr_manage_password_reset_token (
     id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '토큰 ID',
     shop_admin_id BIGINT NOT NULL COMMENT '상점관리자 ID',
-    token VARCHAR(100) NOT NULL UNIQUE COMMENT '토큰 문자열 (UUID)',
+    token VARCHAR(100) NOT NULL UNIQUE COMMENT '토큰 SHA-256 해시',
     expires_at DATETIME NOT NULL COMMENT '만료일시',
     used BOOLEAN DEFAULT FALSE COMMENT '사용 여부',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',

@@ -48,8 +48,8 @@ public class QrManageMenuImageController {
             return "redirect:/qr-manage/shop/admin/menu/list";
         }
 
-        QrManageMenu menu = menuService.getMenu(menuId);
-        List<QrManageMenuImage> images = imageService.getImages(menuId);
+        QrManageMenu menu = menuService.getMenu(shopId, menuId);
+        List<QrManageMenuImage> images = imageService.getImages(shopId, menuId);
 
         model.addAttribute("menu", menu);
         model.addAttribute("images", images);
@@ -76,7 +76,7 @@ public class QrManageMenuImageController {
                 return "redirect:/qr-manage/shop/admin/menu/" + menuId + "/image";
             }
 
-            imageService.uploadImage(menuId, file);
+            imageService.uploadImage(shopId, menuId, file);
             redirectAttributes.addFlashAttribute("message", "이미지가 업로드되었습니다.");
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
@@ -103,7 +103,7 @@ public class QrManageMenuImageController {
         }
 
         try {
-            imageService.deleteImage(imageId, menuId);
+            imageService.deleteImage(shopId, imageId, menuId);
             redirectAttributes.addFlashAttribute("message", "이미지가 삭제되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 이미지 삭제 실패: {}", e.getMessage());
@@ -128,7 +128,7 @@ public class QrManageMenuImageController {
         }
 
         try {
-            imageService.setPrimaryImage(menuId, imageId);
+            imageService.setPrimaryImage(shopId, menuId, imageId);
             redirectAttributes.addFlashAttribute("message", "대표 이미지가 설정되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 대표 이미지 설정 실패: {}", e.getMessage());
@@ -151,14 +151,19 @@ public class QrManageMenuImageController {
             return "error";
         }
 
-        imageService.updateSortOrders(imageIds);
-        return "success";
+        try {
+            imageService.updateSortOrders(shopId, menuId, imageIds);
+            return "success";
+        } catch (SecurityException e) {
+            log.warn("이미지 정렬 권한 검증 실패: shopId={}, menuId={}", shopId, menuId);
+            return "error";
+        }
     }
 
     /**
      * 현재 로그인한 상점관리자의 상점 ID 조회
      */
     private Long getShopId(UserDetails userDetails) {
-        return shopService.getShopIdByAdminEmail(userDetails.getUsername());
+        return shopService.getShopIdByAdminUsername(userDetails.getUsername());
     }
 }

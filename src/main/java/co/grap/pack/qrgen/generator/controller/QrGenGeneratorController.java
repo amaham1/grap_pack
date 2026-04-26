@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Map;
 
 /**
- * QR Generator 공개 컨트롤러다.
+ * QR Generator 공개 컨트롤러
  */
 @Slf4j
 @Controller
@@ -42,11 +42,7 @@ public class QrGenGeneratorController {
     private final QrGenRateLimitService rateLimitService;
 
     /**
-     * QR Generator 메인 페이지를 보여준다.
-     *
-     * @param model 화면 모델
-     * @param httpRequest 현재 요청
-     * @return 템플릿 경로
+     * QR Generator 메인 페이지
      */
     @GetMapping({"", "/"})
     public String home(Model model, HttpServletRequest httpRequest) {
@@ -61,16 +57,7 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * QR 코드 미리보기 API다.
-     *
-     * @param contentType 콘텐츠 타입
-     * @param contentValue 콘텐츠 값
-     * @param size 이미지 크기
-     * @param errorCorrection 오류 보정 레벨
-     * @param foregroundColor 전경색
-     * @param backgroundColor 배경색
-     * @param httpRequest 현재 요청
-     * @return PNG 바이트 응답
+     * QR 코드 미리보기 API
      */
     @GetMapping("/preview")
     @ResponseBody
@@ -108,11 +95,7 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * QR 코드 생성 API다.
-     *
-     * @param request QR 생성 요청
-     * @param httpRequest 현재 요청
-     * @return QR 이미지 또는 오류 응답
+     * QR 코드 생성 API
      */
     @PostMapping("/generate")
     @ResponseBody
@@ -124,11 +107,9 @@ public class QrGenGeneratorController {
                 return rateLimitResponse;
             }
 
-            log.info("✅ [CHECK] QR 생성 요청: type={}, value={}",
+            log.info("✅ [CHECK] QR 생성 요청: type={}, valueLength={}",
                     request.getContentType(),
-                    request.getContentValue() != null
-                            ? request.getContentValue().substring(0, Math.min(50, request.getContentValue().length()))
-                            : "null");
+                    request.getContentValue() != null ? request.getContentValue().length() : 0);
 
             byte[] qrImage = generatorService.generateQrCode(request);
 
@@ -158,33 +139,7 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * QR 코드 다운로드 API다.
-     *
-     * @param request QR 생성 요청
-     * @return 파일 다운로드 응답
-     */
-    @PostMapping("/download")
-    @ResponseBody
-    public ResponseEntity<byte[]> downloadQrCode(@RequestBody QrGenRequest request) {
-        try {
-            byte[] qrImage = generatorService.generateQrCode(request);
-            String filename = "qrcode_" + System.currentTimeMillis() + ".png";
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_PNG)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .body(qrImage);
-        } catch (Exception exception) {
-            log.error("❌ [ERROR] QR 코드 다운로드 실패: {}", exception.getMessage(), exception);
-            return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
      * QR 생성 제한을 확인한다.
-     *
-     * @param httpRequest 현재 요청
-     * @return 제한 응답 또는 null
      */
     private ResponseEntity<?> checkQrGenGenerateRateLimit(HttpServletRequest httpRequest) {
         QrGenRateLimitCheckResult result;
@@ -215,9 +170,6 @@ public class QrGenGeneratorController {
 
     /**
      * 현재 요청 기준 QR 생성 제한 정보를 조회한다.
-     *
-     * @param httpRequest 현재 요청
-     * @return 제한 확인 결과
      */
     private QrGenRateLimitCheckResult getQrGenRateLimitInfo(HttpServletRequest httpRequest) {
         if (isAuthenticated()) {
@@ -231,9 +183,7 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * 로그인 여부를 확인한다.
-     *
-     * @return 로그인 여부
+     * 로그인 여부 확인
      */
     private boolean isAuthenticated() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -243,9 +193,7 @@ public class QrGenGeneratorController {
     }
 
     /**
-     * 현재 로그인한 QRgen 사용자를 조회한다.
-     *
-     * @return 로그인 사용자 또는 null
+     * 현재 로그인한 QRgen 사용자 조회
      */
     private QrGenUser getCurrentQrGenUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

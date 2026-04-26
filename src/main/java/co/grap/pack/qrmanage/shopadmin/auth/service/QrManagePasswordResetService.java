@@ -10,7 +10,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.HexFormat;
 import java.util.UUID;
 
 /**
@@ -22,38 +26,34 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class QrManagePasswordResetService {
 
+    private static final int TOKEN_VALIDITY_HOURS = 24;
+
     private final QrManagePasswordResetTokenMapper tokenMapper;
     private final QrManageShopAdminMapper shopAdminMapper;
     private final PasswordEncoder passwordEncoder;
 
-    /** 토큰 유효 시간 (시간 단위) */
-    private static final int TOKEN_VALIDITY_HOURS = 24;
-
     /**
      * 비밀번호 재설정 토큰 생성
+     *
      * @param email 이메일
-     * @return 생성된 토큰 (이메일 발송용)
+     * @return 이메일로 발송할 원문 토큰
      */
     @Transactional
     public String createResetToken(String email) {
-        log.info("✅ [CHECK] 비밀번호 재설정 토큰 생성 요청: {}", email);
+        log.info("✅ [CHECK] 비밀번호 재설정 토큰 생성 요청: email={}", maskEmail(email));
 
-        // 이메일로 상점관리자 조회
         QrManageShopAdmin shopAdmin = shopAdminMapper.findByEmail(email);
         if (shopAdmin == null) {
-            log.warn("❌ [ERROR] 해당 이메일로 등록된 계정 없음: {}", email);
-            // 보안상 이메일 존재 여부를 노출하지 않음
+            log.warn("비밀번호 재설정 요청 계정 없음: email={}", maskEmail(email));
             return null;
         }
 
-        // 기존 토큰 무효화
         tokenMapper.invalidateByShopAdminId(shopAdmin.getId());
 
-        // 새 토큰 생성
-        String tokenString = UUID.randomUUID().toString();
+        String rawToken = UUID.randomUUID().toString();
         QrManagePasswordResetToken token = QrManagePasswordResetToken.builder()
                 .shopAdminId(shopAdmin.getId())
-                .token(tokenString)
+                .token(hashResetToken(rawToken))
                 .expiresAt(LocalDateTime.now().plusHours(TOKEN_VALIDITY_HOURS))
                 .used(false)
                 .build();
@@ -61,18 +61,24 @@ public class QrManagePasswordResetService {
         tokenMapper.insert(token);
         log.info("✅ [CHECK] 비밀번호 재설정 토큰 생성 완료: shopAdminId={}", shopAdmin.getId());
 
-        return tokenString;
+        return rawToken;
     }
 
     /**
      * 토큰 유효성 검증
-     * @param token 토큰 문자열
+     *
+     * @param token 원문 토큰
      * @return 유효하면 true
      */
     public boolean validateToken(String token) {
-        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(token);
+        if (token == null || token.isBlank()) {
+            log.warn("비밀번호 재설정 토큰 검증 실패: 빈 토큰");
+            return false;
+        }
+
+        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(hashResetToken(token));
         if (resetToken == null) {
-            log.warn("❌ [ERROR] 존재하지 않는 토큰: {}", token);
+            log.warn("비밀번호 재설정 토큰 검증 실패: 토큰 없음");
             return false;
         }
         return resetToken.isValid();
@@ -80,7 +86,8 @@ public class QrManagePasswordResetService {
 
     /**
      * 비밀번호 재설정
-     * @param token 토큰 문자열
+     *
+     * @param token 원문 토큰
      * @param newPassword 새 비밀번호
      * @return 성공 여부
      */
@@ -88,39 +95,74 @@ public class QrManagePasswordResetService {
     public boolean resetPassword(String token, String newPassword) {
         log.info("✅ [CHECK] 비밀번호 재설정 시도");
 
-        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(token);
-        if (resetToken == null || !resetToken.isValid()) {
-            log.warn("❌ [ERROR] 유효하지 않은 토큰");
+        if (token == null || token.isBlank()) {
+            log.warn("비밀번호 재설정 실패: 빈 토큰");
             return false;
         }
 
-        // 비밀번호 변경
+        String tokenHash = hashResetToken(token);
+        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(tokenHash);
+        if (resetToken == null || !resetToken.isValid()) {
+            log.warn("비밀번호 재설정 실패: 유효하지 않은 토큰");
+            return false;
+        }
+
         QrManageShopAdmin shopAdmin = shopAdminMapper.findById(resetToken.getShopAdminId());
         if (shopAdmin == null) {
-            log.error("❌ [ERROR] 상점관리자를 찾을 수 없음: id={}", resetToken.getShopAdminId());
+            log.error("❌ [ERROR] 비밀번호 재설정 실패: shopAdminId={} 계정 없음", resetToken.getShopAdminId());
             return false;
         }
 
         shopAdmin.setPassword(passwordEncoder.encode(newPassword));
         shopAdminMapper.update(shopAdmin);
 
-        // 토큰 사용 처리
-        tokenMapper.markAsUsed(token);
+        tokenMapper.markAsUsed(tokenHash);
 
         log.info("✅ [CHECK] 비밀번호 재설정 완료: shopAdminId={}", shopAdmin.getId());
         return true;
     }
 
     /**
-     * 토큰으로 상점관리자 조회
-     * @param token 토큰 문자열
-     * @return 상점관리자 정보
+     * 토큰으로 점포 관리자 조회
+     *
+     * @param token 원문 토큰
+     * @return 점포 관리자 정보
      */
     public QrManageShopAdmin findShopAdminByToken(String token) {
-        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(token);
+        if (token == null || token.isBlank()) {
+            return null;
+        }
+
+        QrManagePasswordResetToken resetToken = tokenMapper.findByToken(hashResetToken(token));
         if (resetToken == null || !resetToken.isValid()) {
             return null;
         }
         return shopAdminMapper.findById(resetToken.getShopAdminId());
+    }
+
+    private String hashResetToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            return HexFormat.of().formatHex(digest.digest(token.getBytes(StandardCharsets.UTF_8)));
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SHA-256 해시 알고리즘을 사용할 수 없습니다.", e);
+        }
+    }
+
+    private String maskEmail(String email) {
+        if (email == null || email.isBlank()) {
+            return "";
+        }
+
+        int atIndex = email.indexOf('@');
+        if (atIndex < 0) {
+            return "***";
+        }
+
+        String domain = email.substring(atIndex);
+        if (atIndex <= 1) {
+            return "***" + domain;
+        }
+        return email.charAt(0) + "***" + domain;
     }
 }

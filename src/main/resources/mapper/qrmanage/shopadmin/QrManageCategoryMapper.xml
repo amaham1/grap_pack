@@ -55,11 +55,14 @@
             description = #{description},
             updated_at = NOW()
         WHERE id = #{id}
+          AND shop_id = #{shopId}
     </update>
 
     <!-- 카테고리 삭제 -->
     <delete id="delete">
-        DELETE FROM qr_manage_category WHERE id = #{id}
+        DELETE FROM qr_manage_category
+        WHERE id = #{id}
+          AND shop_id = #{shopId}
     </delete>
 
     <!-- 정렬 순서 변경 -->
@@ -69,11 +72,20 @@
         WHERE id = #{id}
     </update>
 
+    <!-- 상점 소유 카테고리 정렬 순서 변경 -->
+    <update id="updateSortOrderForShop">
+        UPDATE qr_manage_category
+        SET sort_order = #{sortOrder}, updated_at = NOW()
+        WHERE id = #{id}
+          AND shop_id = #{shopId}
+    </update>
+
     <!-- 공개 여부 변경 -->
     <update id="updateVisibility">
         UPDATE qr_manage_category
         SET is_visible = #{isVisible}, updated_at = NOW()
         WHERE id = #{id}
+          AND shop_id = #{shopId}
     </update>
 
     <!-- 다음 정렬 순서 조회 -->
@@ -88,6 +100,17 @@
         SELECT COUNT(*) > 0
         FROM qr_manage_category
         WHERE id = #{id} AND shop_id = #{shopId}
+    </select>
+
+    <!-- 상점 소유 카테고리 개수 조회 -->
+    <select id="countByIdsAndShopId" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_manage_category
+        WHERE shop_id = #{shopId}
+          AND id IN
+          <foreach collection="ids" item="id" open="(" separator="," close=")">
+              #{id}
+          </foreach>
     </select>
 
 </mapper>

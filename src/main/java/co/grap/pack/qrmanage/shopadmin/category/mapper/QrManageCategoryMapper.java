@@ -40,7 +40,7 @@ public interface QrManageCategoryMapper {
     /**
      * 카테고리 삭제
      */
-    void delete(@Param("id") Long id);
+    void delete(@Param("id") Long id, @Param("shopId") Long shopId);
 
     /**
      * 정렬 순서 변경
@@ -48,9 +48,18 @@ public interface QrManageCategoryMapper {
     void updateSortOrder(@Param("id") Long id, @Param("sortOrder") Integer sortOrder);
 
     /**
+     * 상점 소유 카테고리 정렬 순서 변경
+     */
+    void updateSortOrderForShop(@Param("id") Long id,
+                                @Param("shopId") Long shopId,
+                                @Param("sortOrder") Integer sortOrder);
+
+    /**
      * 공개 여부 변경
      */
-    void updateVisibility(@Param("id") Long id, @Param("isVisible") Boolean isVisible);
+    void updateVisibility(@Param("id") Long id,
+                          @Param("shopId") Long shopId,
+                          @Param("isVisible") Boolean isVisible);
 
     /**
      * 다음 정렬 순서 조회
@@ -61,4 +70,9 @@ public interface QrManageCategoryMapper {
      * 상점 ID와 카테고리 ID로 카테고리 존재 확인
      */
     boolean existsByIdAndShopId(@Param("id") Long id, @Param("shopId") Long shopId);
+
+    /**
+     * 상점 소유 카테고리 개수 조회
+     */
+    int countByIdsAndShopId(@Param("ids") List<Long> ids, @Param("shopId") Long shopId);
 }

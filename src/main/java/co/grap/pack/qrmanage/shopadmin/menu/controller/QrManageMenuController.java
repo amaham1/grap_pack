@@ -46,7 +46,12 @@ public class QrManageMenuController {
         List<QrManageMenu> menus;
 
         if (categoryId != null) {
-            menus = menuService.getMenusByCategory(categoryId);
+            try {
+                menus = menuService.getMenusByCategory(shopId, categoryId);
+            } catch (SecurityException e) {
+                menus = menuService.getMenus(shopId);
+                categoryId = null;
+            }
         } else {
             menus = menuService.getMenus(shopId);
         }
@@ -98,7 +103,7 @@ public class QrManageMenuController {
             return "redirect:/qr-manage/shop/admin/menu/list";
         }
 
-        QrManageMenu menu = menuService.getMenu(id);
+        QrManageMenu menu = menuService.getMenu(shopId, id);
         List<QrManageCategory> categories = categoryService.getCategories(shopId);
 
         model.addAttribute("categories", categories);
@@ -129,7 +134,7 @@ public class QrManageMenuController {
                     redirectAttributes.addFlashAttribute("error", "접근 권한이 없습니다.");
                     return "redirect:/qr-manage/shop/admin/menu/list";
                 }
-                menuService.updateMenu(id, categoryId, name, description, price);
+                menuService.updateMenu(shopId, id, categoryId, name, description, price);
                 redirectAttributes.addFlashAttribute("message", "메뉴가 수정되었습니다.");
             } else {
                 // 등록
@@ -166,7 +171,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.deleteMenu(id);
+            menuService.deleteMenu(shopId, id);
             redirectAttributes.addFlashAttribute("message", "메뉴가 삭제되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 메뉴 삭제 실패: {}", e.getMessage());
@@ -194,7 +199,7 @@ public class QrManageMenuController {
             return "redirect:/qr-manage/shop/admin/menu/list";
         }
 
-        menuService.updateVisibility(id, isVisible);
+        menuService.updateVisibility(shopId, id, isVisible);
         String status = isVisible ? "공개" : "비공개";
         redirectAttributes.addFlashAttribute("message", "메뉴가 " + status + "로 변경되었습니다.");
 
@@ -219,7 +224,7 @@ public class QrManageMenuController {
             return "redirect:/qr-manage/shop/admin/menu/list";
         }
 
-        menuService.updateSoldOut(id, isSoldOut);
+        menuService.updateSoldOut(shopId, id, isSoldOut);
         String status = isSoldOut ? "품절" : "판매중";
         redirectAttributes.addFlashAttribute("message", "메뉴가 " + status + "으로 변경되었습니다.");
 
@@ -238,8 +243,13 @@ public class QrManageMenuController {
             return "error";
         }
 
-        menuService.updateSortOrders(menuIds);
-        return "success";
+        try {
+            menuService.updateSortOrders(shopId, menuIds);
+            return "success";
+        } catch (SecurityException e) {
+            log.warn("메뉴 정렬 권한 검증 실패: shopId={}", shopId);
+            return "error";
+        }
     }
 
     // ========== 옵션 그룹 관리 ==========
@@ -262,8 +272,8 @@ public class QrManageMenuController {
             return "redirect:/qr-manage/shop/admin/menu/list";
         }
 
-        QrManageMenu menu = menuService.getMenu(menuId);
-        List<QrManageMenuOptionGroup> optionGroups = menuService.getOptionGroups(menuId);
+        QrManageMenu menu = menuService.getMenu(shopId, menuId);
+        List<QrManageMenuOptionGroup> optionGroups = menuService.getOptionGroups(shopId, menuId);
 
         model.addAttribute("menu", menu);
         model.addAttribute("optionGroups", optionGroups);
@@ -286,7 +296,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.createOptionGroup(menuId, name, isRequired);
+            menuService.createOptionGroup(shopId, menuId, name, isRequired);
             redirectAttributes.addFlashAttribute("message", "옵션 그룹이 추가되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 옵션 그룹 추가 실패: {}", e.getMessage());
@@ -313,7 +323,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.updateOptionGroup(groupId, name, isRequired);
+            menuService.updateOptionGroup(shopId, menuId, groupId, name, isRequired);
             redirectAttributes.addFlashAttribute("message", "옵션 그룹이 수정되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 옵션 그룹 수정 실패: {}", e.getMessage());
@@ -338,7 +348,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.deleteOptionGroup(groupId);
+            menuService.deleteOptionGroup(shopId, menuId, groupId);
             redirectAttributes.addFlashAttribute("message", "옵션 그룹이 삭제되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 옵션 그룹 삭제 실패: {}", e.getMessage());
@@ -366,7 +376,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.createOption(groupId, name);
+            menuService.createOption(shopId, menuId, groupId, name);
             redirectAttributes.addFlashAttribute("message", "옵션이 추가되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 옵션 추가 실패: {}", e.getMessage());
@@ -391,7 +401,7 @@ public class QrManageMenuController {
         }
 
         try {
-            menuService.deleteOption(optionId);
+            menuService.deleteOption(shopId, menuId, optionId);
             redirectAttributes.addFlashAttribute("message", "옵션이 삭제되었습니다.");
         } catch (Exception e) {
             log.error("❌ [ERROR] 옵션 삭제 실패: {}", e.getMessage());

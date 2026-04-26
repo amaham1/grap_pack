@@ -110,7 +110,6 @@ public class PackVisitorInterceptor implements HandlerInterceptor {
 
         if (uri.equals("/qrgen/preview")
                 || uri.equals("/qrgen/generate")
-                || uri.equals("/qrgen/download")
                 || uri.equals("/robots.txt")
                 || uri.equals("/sitemap.xml")) {
             return false;

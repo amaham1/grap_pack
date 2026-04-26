@@ -27,6 +27,12 @@ public interface QrManageMenuMapper {
     List<QrManageMenu> findByCategoryId(@Param("categoryId") Long categoryId);
 
     /**
+     * 상점 소유 카테고리의 메뉴 목록 조회
+     */
+    List<QrManageMenu> findByCategoryIdAndShopId(@Param("categoryId") Long categoryId,
+                                                 @Param("shopId") Long shopId);
+
+    /**
      * 공개된 메뉴만 조회
      */
     List<QrManageMenu> findVisibleByShopId(@Param("shopId") Long shopId);
@@ -54,27 +60,35 @@ public interface QrManageMenuMapper {
     /**
      * 메뉴 삭제
      */
-    void delete(@Param("id") Long id);
+    void delete(@Param("id") Long id, @Param("shopId") Long shopId);
 
     /**
      * 정렬 순서 변경
      */
-    void updateSortOrder(@Param("id") Long id, @Param("sortOrder") Integer sortOrder);
+    void updateSortOrder(@Param("id") Long id,
+                         @Param("shopId") Long shopId,
+                         @Param("sortOrder") Integer sortOrder);
 
     /**
      * 공개 여부 변경
      */
-    void updateVisibility(@Param("id") Long id, @Param("isVisible") Boolean isVisible);
+    void updateVisibility(@Param("id") Long id,
+                          @Param("shopId") Long shopId,
+                          @Param("isVisible") Boolean isVisible);
 
     /**
      * 품절 여부 변경
      */
-    void updateSoldOut(@Param("id") Long id, @Param("isSoldOut") Boolean isSoldOut);
+    void updateSoldOut(@Param("id") Long id,
+                       @Param("shopId") Long shopId,
+                       @Param("isSoldOut") Boolean isSoldOut);
 
     /**
      * 대표 이미지 변경
      */
-    void updatePrimaryImage(@Param("id") Long id, @Param("primaryImageId") Long primaryImageId);
+    void updatePrimaryImage(@Param("id") Long id,
+                            @Param("primaryImageId") Long primaryImageId,
+                            @Param("shopId") Long shopId);
 
     /**
      * 다음 정렬 순서 조회
@@ -85,6 +99,11 @@ public interface QrManageMenuMapper {
      * 상점 ID와 메뉴 ID로 메뉴 존재 확인
      */
     boolean existsByIdAndShopId(@Param("id") Long id, @Param("shopId") Long shopId);
+
+    /**
+     * 상점 소유 메뉴 개수 조회
+     */
+    int countByIdsAndShopId(@Param("ids") List<Long> ids, @Param("shopId") Long shopId);
 
     // ========== 옵션 그룹 ==========
 
@@ -99,6 +118,13 @@ public interface QrManageMenuMapper {
     QrManageMenuOptionGroup findOptionGroupById(@Param("id") Long id);
 
     /**
+     * 상점 소유 메뉴의 옵션 그룹 존재 여부 확인
+     */
+    boolean existsOptionGroupByIdAndMenuIdAndShopId(@Param("id") Long id,
+                                                    @Param("menuId") Long menuId,
+                                                    @Param("shopId") Long shopId);
+
+    /**
      * 옵션 그룹 등록
      */
     void insertOptionGroup(QrManageMenuOptionGroup optionGroup);
@@ -109,14 +135,38 @@ public interface QrManageMenuMapper {
     void updateOptionGroup(QrManageMenuOptionGroup optionGroup);
 
     /**
+     * 상점 소유 메뉴의 옵션 그룹 수정
+     */
+    int updateOptionGroupForShop(@Param("id") Long id,
+                                 @Param("menuId") Long menuId,
+                                 @Param("shopId") Long shopId,
+                                 @Param("name") String name,
+                                 @Param("isRequired") Boolean isRequired);
+
+    /**
      * 옵션 그룹 삭제
      */
     void deleteOptionGroup(@Param("id") Long id);
 
     /**
+     * 상점 소유 메뉴의 옵션 그룹 삭제
+     */
+    int deleteOptionGroupForShop(@Param("id") Long id,
+                                 @Param("menuId") Long menuId,
+                                 @Param("shopId") Long shopId);
+
+    /**
      * 옵션 그룹 정렬 순서 변경
      */
     void updateOptionGroupSortOrder(@Param("id") Long id, @Param("sortOrder") Integer sortOrder);
+
+    /**
+     * 점포 소유 메뉴의 옵션 그룹 정렬 순서 변경
+     */
+    void updateOptionGroupSortOrderForShop(@Param("id") Long id,
+                                           @Param("menuId") Long menuId,
+                                           @Param("shopId") Long shopId,
+                                           @Param("sortOrder") Integer sortOrder);
 
     /**
      * 다음 옵션 그룹 정렬 순서
@@ -146,6 +196,14 @@ public interface QrManageMenuMapper {
     void updateOption(QrManageMenuOption option);
 
     /**
+     * 점포 소유 메뉴의 옵션 수정
+     */
+    int updateOptionForShop(@Param("id") Long id,
+                            @Param("menuId") Long menuId,
+                            @Param("shopId") Long shopId,
+                            @Param("name") String name);
+
+    /**
      * 옵션 삭제
      */
     void deleteOption(@Param("id") Long id);
@@ -156,9 +214,38 @@ public interface QrManageMenuMapper {
     void deleteOptionsByGroupId(@Param("optionGroupId") Long optionGroupId);
 
     /**
+     * 상점 소유 메뉴의 옵션 그룹 하위 옵션 삭제
+     */
+    int deleteOptionsByGroupIdForShop(@Param("optionGroupId") Long optionGroupId,
+                                      @Param("menuId") Long menuId,
+                                      @Param("shopId") Long shopId);
+
+    /**
+     * 상점 소유 메뉴의 옵션 존재 여부 확인
+     */
+    boolean existsOptionByIdAndMenuIdAndShopId(@Param("id") Long id,
+                                               @Param("menuId") Long menuId,
+                                               @Param("shopId") Long shopId);
+
+    /**
+     * 상점 소유 메뉴의 옵션 삭제
+     */
+    int deleteOptionForShop(@Param("id") Long id,
+                            @Param("menuId") Long menuId,
+                            @Param("shopId") Long shopId);
+
+    /**
      * 옵션 정렬 순서 변경
      */
     void updateOptionSortOrder(@Param("id") Long id, @Param("sortOrder") Integer sortOrder);
+
+    /**
+     * 점포 소유 메뉴의 옵션 정렬 순서 변경
+     */
+    void updateOptionSortOrderForShop(@Param("id") Long id,
+                                      @Param("menuId") Long menuId,
+                                      @Param("shopId") Long shopId,
+                                      @Param("sortOrder") Integer sortOrder);
 
     /**
      * 다음 옵션 정렬 순서
