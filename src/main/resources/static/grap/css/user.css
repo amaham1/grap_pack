@@ -1169,24 +1169,24 @@ body {
     height: 42px;
     align-items: center;
     justify-content: center;
-    border: 1px solid #1372ef;
+    border: 1px solid #f4d000;
     border-radius: 8px;
-    background: #1877f2;
-    color: #ffdf1b;
+    background: #fee500;
+    color: #1877f2;
     text-decoration: none;
     transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
 }
 
 .real-estate-map-link:hover,
 .real-estate-map-link:focus-visible {
-    border-color: #0f63d0;
-    background: #0f6fe8;
-    color: #ffdf1b;
+    border-color: #d8b900;
+    background: #ffdf1b;
+    color: #0f63d0;
     transform: translateY(-1px);
 }
 
 .real-estate-map-link:focus-visible {
-    outline: 2px solid #ffdf1b;
+    outline: 2px solid #1877f2;
     outline-offset: 2px;
 }
 
@@ -1206,7 +1206,7 @@ body {
     width: 5px;
     height: 5px;
     border-radius: 50%;
-    background: #1877f2;
+    background: #fee500;
     content: "";
     transform: translate(-50%, -50%);
 }
