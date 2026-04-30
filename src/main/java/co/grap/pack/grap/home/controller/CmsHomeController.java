@@ -2,9 +2,11 @@ package co.grap.pack.grap.home.controller;
 
 import co.grap.pack.grap.seo.CmsPublicSeoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * 루트 홈 컨트롤러다.
@@ -33,7 +35,9 @@ public class CmsHomeController {
      * @return 리다이렉트 경로
      */
     @GetMapping("/grap")
-    public String grapHome() {
-        return "redirect:/grap/user/content/real-estate";
+    public RedirectView grapHome() {
+        RedirectView redirectView = new RedirectView("https://grap.co.kr/grap/user/content/real-estate");
+        redirectView.setStatusCode(HttpStatus.MOVED_PERMANENTLY);
+        return redirectView;
     }
 }
