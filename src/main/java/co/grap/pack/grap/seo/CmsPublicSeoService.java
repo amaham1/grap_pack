@@ -27,8 +27,8 @@ public class CmsPublicSeoService {
      * @param model 화면 모델
      */
     public void applyLandingSeo(Model model) {
-        String title = "제주도 부동산과 생활 정보";
-        String description = "Grap에서 제주도 부동산 실거래가, 전월세 시세, 축제, 전시, 복지, 주유소 정보와 QR 코드 생성 도구를 한 번에 확인하세요.";
+        String title = "제주도 부동산 실거래가";
+        String description = "Grap에서 제주도 부동산 실거래가, 전월세 시세, 매매 흐름, 대출 계산과 QR 코드 생성 도구를 한 번에 확인하세요.";
 
         Map<String, Object> website = PublicSeoSupport.linkedData("WebSite");
         website.put("name", PublicSeoSupport.SITE_NAME);
@@ -483,6 +483,7 @@ public class CmsPublicSeoService {
                 .twitterCard("summary")
                 .structuredDataList(List.of(
                         realEstateCollectionPageJson(title, description, REAL_ESTATE_PATH),
+                        realEstateDatasetJson(description, currentPropertyMonth),
                         PublicSeoSupport.breadcrumbJson(List.of(
                                 new PublicSeoBreadcrumbItem("홈", "/"),
                                 new PublicSeoBreadcrumbItem("제주도 부동산 실거래가", REAL_ESTATE_PATH)
@@ -604,6 +605,37 @@ public class CmsPublicSeoService {
         return PublicSeoSupport.toJson(data);
     }
 
+    private String realEstateDatasetJson(String description, String currentPropertyMonth) {
+        Map<String, Object> data = PublicSeoSupport.linkedData("Dataset");
+        data.put("name", "제주도 부동산 실거래가 데이터");
+        data.put("description", description);
+        data.put("url", PublicSeoSupport.absoluteUrl(REAL_ESTATE_PATH));
+        data.put("inLanguage", "ko-KR");
+        data.put("keywords", REAL_ESTATE_KEYWORDS);
+        data.put("creator", Map.of(
+                "@type", "Organization",
+                "name", PublicSeoSupport.SITE_NAME,
+                "url", PublicSeoSupport.absoluteUrl("/")
+        ));
+        data.put("publisher", Map.of(
+                "@type", "Organization",
+                "name", PublicSeoSupport.SITE_NAME,
+                "url", PublicSeoSupport.absoluteUrl("/")
+        ));
+        data.put("spatialCoverage", Map.of(
+                "@type", "AdministrativeArea",
+                "name", "제주특별자치도"
+        ));
+        data.put("variableMeasured", List.of("거래금액", "계약일", "전용면적", "시군구", "읍면동", "부동산 유형"));
+        data.put("isAccessibleForFree", true);
+
+        String temporalCoverage = realEstateTemporalCoverage(currentPropertyMonth);
+        if (PublicSeoSupport.hasText(temporalCoverage)) {
+            data.put("temporalCoverage", temporalCoverage);
+        }
+        return PublicSeoSupport.toJson(data);
+    }
+
     private String realEstateWebPageJson(String title, String description, String path, String modifiedAt) {
         Map<String, Object> data = PublicSeoSupport.linkedData("WebPage");
         data.put("name", title);
@@ -630,6 +662,13 @@ public class CmsPublicSeoService {
                 stringValue(property.get("displayName")),
                 "실거래가"
         );
+    }
+
+    private String realEstateTemporalCoverage(String currentPropertyMonth) {
+        if (!PublicSeoSupport.hasText(currentPropertyMonth) || currentPropertyMonth.length() != 6) {
+            return "";
+        }
+        return currentPropertyMonth.substring(0, 4) + "-" + currentPropertyMonth.substring(4);
     }
 
     private String stringValue(Object value) {

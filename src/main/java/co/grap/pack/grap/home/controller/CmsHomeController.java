@@ -28,12 +28,12 @@ public class CmsHomeController {
     }
 
     /**
-     * Grap 서비스 루트는 공개 축제 목록으로 보낸다.
+     * Grap 서비스 루트는 제주도 부동산 대표 페이지로 보낸다.
      *
      * @return 리다이렉트 경로
      */
     @GetMapping("/grap")
     public String grapHome() {
-        return "redirect:/grap/user/content/festivals";
+        return "redirect:/grap/user/content/real-estate";
     }
 }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,10 +56,9 @@ public class PublicSeoSitemapService {
      * @return sitemap.xml 인덱스 문자열
      */
     public String buildSitemapXml() {
-        String today = LocalDate.now().toString();
         List<SitemapIndexEntry> entries = new ArrayList<>();
-        entries.add(new SitemapIndexEntry("/sitemap-static.xml", today));
-        entries.add(new SitemapIndexEntry("/sitemap-content.xml", today));
+        entries.add(new SitemapIndexEntry("/sitemap-static.xml", ""));
+        entries.add(new SitemapIndexEntry("/sitemap-content.xml", ""));
         return buildSitemapIndexXml(entries);
     }
 
@@ -70,7 +68,13 @@ public class PublicSeoSitemapService {
      * @return 정적 URL sitemap 문자열
      */
     public String buildStaticSitemapXml() {
-        return buildUrlsetXml(createStaticUrls());
+        String realEstateLastModified = "";
+        try {
+            realEstateLastModified = publicSeoMapper.selectRealEstateSitemapLastModified();
+        } catch (DataAccessException exception) {
+            log.warn("Public real estate sitemap lastmod is not available. Serving static sitemap without it.", exception);
+        }
+        return buildUrlsetXml(createStaticUrls(realEstateLastModified));
     }
 
     /**
@@ -146,18 +150,17 @@ public class PublicSeoSitemapService {
         return xmlBuilder.toString();
     }
 
-    private List<PublicSeoSitemapUrl> createStaticUrls() {
-        String today = LocalDate.now().toString();
+    private List<PublicSeoSitemapUrl> createStaticUrls(String realEstateLastModified) {
         List<PublicSeoSitemapUrl> urls = new ArrayList<>();
-        urls.add(staticUrl("/", today, "weekly", "1.0"));
-        urls.add(staticUrl("/grap/user/content/list", today, "daily", "0.9"));
-        urls.add(staticUrl("/grap/user/content/festivals", today, "daily", "0.9"));
-        urls.add(staticUrl("/grap/user/content/exhibitions", today, "daily", "0.9"));
-        urls.add(staticUrl("/grap/user/content/welfare", today, "daily", "0.8"));
-        urls.add(staticUrl("/grap/user/content/gas-stations", today, "daily", "0.8"));
-        urls.add(staticUrl("/grap/user/content/real-estate", today, "daily", "0.9"));
-        urls.add(staticUrl("/qrgen/", today, "weekly", "0.8"));
-        urls.add(staticUrl("/qrgen/auth/register", today, "monthly", "0.5"));
+        urls.add(staticUrl("/", "", "weekly", "1.0"));
+        urls.add(staticUrl("/grap/user/content/list", "", "daily", "0.9"));
+        urls.add(staticUrl("/grap/user/content/festivals", "", "daily", "0.9"));
+        urls.add(staticUrl("/grap/user/content/exhibitions", "", "daily", "0.9"));
+        urls.add(staticUrl("/grap/user/content/welfare", "", "daily", "0.8"));
+        urls.add(staticUrl("/grap/user/content/gas-stations", "", "daily", "0.8"));
+        urls.add(staticUrl("/grap/user/content/real-estate", realEstateLastModified, "daily", "0.9"));
+        urls.add(staticUrl("/qrgen/", "", "weekly", "0.8"));
+        urls.add(staticUrl("/qrgen/auth/register", "", "monthly", "0.5"));
         return urls;
     }
 

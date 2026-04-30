@@ -51,7 +51,9 @@ class CmsPublicSeoServiceTest {
         assertThat(model.getAttribute("seoCanonical")).isEqualTo("https://grap.co.kr/grap/user/content/real-estate");
         assertThat(String.join("", (List<String>) model.getAttribute("seoStructuredDataList")))
                 .contains("제주도 부동산")
-                .contains("제주특별자치도");
+                .contains("제주특별자치도")
+                .contains("\"@type\":\"Dataset\"")
+                .contains("\"temporalCoverage\":\"2026-04\"");
     }
 
     /**

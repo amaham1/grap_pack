@@ -37,6 +37,7 @@ class PublicSeoSitemapServiceTest {
         assertThat(sitemapXml).contains("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/sitemap-static.xml</loc>");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/sitemap-content.xml</loc>");
+        assertThat(sitemapXml).doesNotContain("<lastmod>");
         assertThat(sitemapXml).doesNotContain("sitemap-real-estate");
         assertThat(sitemapXml).doesNotContain("/grap/user/content/real-estate/120</loc>");
     }
@@ -46,11 +47,15 @@ class PublicSeoSitemapServiceTest {
      */
     @Test
     void buildStaticSitemapXmlIncludesStaticUrls() {
+        when(publicSeoMapper.selectRealEstateSitemapLastModified()).thenReturn("2026-04-24");
+
         String sitemapXml = publicSeoSitemapService.buildStaticSitemapXml();
 
         assertThat(sitemapXml).contains("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/</loc>");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/real-estate</loc>");
+        assertThat(sitemapXml).contains("<lastmod>2026-04-24</lastmod>");
+        assertThat(sitemapXml).doesNotContain("<lastmod>2026-04-30</lastmod>");
     }
 
     /**

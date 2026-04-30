@@ -59,4 +59,9 @@
         ORDER BY path
     </select>
 
+    <select id="selectRealEstateSitemapLastModified" resultType="string">
+        SELECT DATE_FORMAT(MAX(COALESCE(updated_at, fetched_at, deal_date)), '%Y-%m-%d')
+        FROM real_estate_transactions
+    </select>
+
 </mapper>

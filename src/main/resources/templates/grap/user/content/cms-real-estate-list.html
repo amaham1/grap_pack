@@ -11,6 +11,40 @@
     </p>
 </section>
 
+<section class="real-estate-info-panel" aria-labelledby="real-estate-info-title">
+    <div class="real-estate-section-header">
+        <div>
+            <p class="real-estate-section-eyebrow">제주도 부동산 실거래가</p>
+            <h3 id="real-estate-info-title">검색 전에 확인할 수 있는 기준 정보</h3>
+        </div>
+    </div>
+    <div class="real-estate-info-grid">
+        <article class="real-estate-info-card">
+            <span>최신 기준월</span>
+            <strong th:text="${hasData ? formattedCurrentPropertyMonth : '데이터 준비 중'}"></strong>
+            <p th:if="${hasData}">
+                현재 목록 기준 <span th:text="${#numbers.formatInteger(totalCount, 0, 'COMMA')}"></span>건의 제주도 부동산 거래를 확인할 수 있습니다.
+            </p>
+            <p th:unless="${hasData}">관리자 동기화 후 최신 거래 기준월이 표시됩니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>거래 유형</span>
+            <strong>매매 · 전월세</strong>
+            <p>아파트, 연립·다세대, 오피스텔, 단독·다가구 거래를 함께 비교합니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>지역 범위</span>
+            <strong>제주시 · 서귀포시</strong>
+            <p>시군구, 읍면동, 주소, 단지명 기준으로 제주도 부동산 거래를 좁혀 볼 수 있습니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>데이터 기준</span>
+            <strong>국토교통부 실거래 공개 데이터</strong>
+            <p>거래금액, 계약일, 전용면적, 층수, 준공연도 정보를 화면 표시용으로 정리합니다.</p>
+        </article>
+    </div>
+</section>
+
 <div class="user-search-section real-estate-search-section">
     <form th:action="@{/grap/user/content/real-estate}" method="get" class="user-search-form real-estate-search-form">
         <input type="text"

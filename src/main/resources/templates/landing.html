@@ -45,22 +45,22 @@
 </header>
 
 <section class="landing-hero">
-    <h1 class="landing-hero-title">Grap 플랫폼</h1>
-    <p class="landing-hero-subtitle">제주 생활 정보와 QR 도구를 한 곳에서 제공합니다.</p>
+    <h1 class="landing-hero-title">제주도 부동산 실거래가</h1>
+    <p class="landing-hero-subtitle">제주 아파트, 연립·다세대, 오피스텔, 단독·다가구 매매와 전월세 거래 흐름을 확인하세요.</p>
 </section>
 
 <main class="landing-main">
     <div class="landing-services">
-        <a th:href="@{/qrgen/}" class="landing-card landing-card-featured">
+        <a th:href="@{/grap/user/content/real-estate}" class="landing-card landing-card-featured">
+            <h2 class="landing-card-title">제주도 부동산 실거래가</h2>
+            <p class="landing-card-desc">제주시와 서귀포시의 부동산 실거래가 목록, 월별 시세 흐름, 대출 계산까지 한 번에 확인할 수 있습니다.</p>
+            <span class="landing-card-badge landing-badge-active">바로 보기</span>
+        </a>
+
+        <a th:href="@{/qrgen/}" class="landing-card">
             <h2 class="landing-card-title">QR 코드 생성기</h2>
             <p class="landing-card-desc">URL, 텍스트, 연락처 등 다양한 정보를 QR 코드로 빠르게 만들고 내려받을 수 있습니다.</p>
             <span class="landing-card-badge landing-badge-active">바로 사용하기</span>
-        </a>
-
-        <a th:href="@{/grap/user/content/real-estate}" class="landing-card">
-            <h2 class="landing-card-title">제주도 부동산</h2>
-            <p class="landing-card-desc">제주도 부동산 실거래가 목록과 시세 흐름, 대출 계산까지 한 번에 확인할 수 있습니다.</p>
-            <span class="landing-card-badge landing-badge-active">바로 보기</span>
         </a>
     </div>
 </main>

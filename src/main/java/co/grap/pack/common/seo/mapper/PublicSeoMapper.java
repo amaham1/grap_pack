@@ -17,4 +17,11 @@ public interface PublicSeoMapper {
      * @return 사이트맵 URL 목록
      */
     List<PublicSeoSitemapUrl> selectGeneralDynamicSitemapUrls();
+
+    /**
+     * 부동산 대표 페이지의 마지막 갱신일을 조회한다.
+     *
+     * @return 부동산 데이터 마지막 갱신일
+     */
+    String selectRealEstateSitemapLastModified();
 }

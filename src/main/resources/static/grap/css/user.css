@@ -996,6 +996,50 @@ body {
     line-height: 1.7;
 }
 
+.real-estate-info-panel {
+    margin: -12px 0 30px;
+}
+
+.real-estate-info-panel .real-estate-section-header {
+    margin-bottom: 14px;
+}
+
+.real-estate-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.real-estate-info-card {
+    padding: 18px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-info-card > span {
+    display: block;
+    margin-bottom: 8px;
+    color: #7a8699;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.real-estate-info-card > strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #1f2937;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.real-estate-info-card p {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
 .real-estate-summary {
     margin: -20px 0 30px;
     color: #666666;
@@ -1571,6 +1615,7 @@ body {
 }
 
 @media (max-width: 1024px) {
+    .real-estate-info-grid,
     .real-estate-meta-grid,
     .real-estate-mortgage-summary,
     .real-estate-trend-grid {
@@ -1589,6 +1634,7 @@ body {
     .real-estate-mortgage-form,
     .real-estate-mortgage-detail-grid,
     .real-estate-comparison-grid,
+    .real-estate-info-grid,
     .real-estate-meta-grid,
     .real-estate-mortgage-summary,
     .real-estate-trend-grid,
