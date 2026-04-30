@@ -52,18 +52,65 @@ public class PublicSeoSitemapService {
     }
 
     /**
-     * sitemap.xml 내용을 만든다.
+     * sitemap.xml 인덱스 내용을 만든다.
      *
-     * @return sitemap.xml 문자열
+     * @return sitemap.xml 인덱스 문자열
      */
     public String buildSitemapXml() {
-        List<PublicSeoSitemapUrl> urls = new ArrayList<>(createStaticUrls());
+        String today = LocalDate.now().toString();
+        List<SitemapIndexEntry> entries = new ArrayList<>();
+        entries.add(new SitemapIndexEntry("/sitemap-static.xml", today));
+        entries.add(new SitemapIndexEntry("/sitemap-content.xml", today));
+        return buildSitemapIndexXml(entries);
+    }
+
+    /**
+     * 정적 URL sitemap 내용을 만든다.
+     *
+     * @return 정적 URL sitemap 문자열
+     */
+    public String buildStaticSitemapXml() {
+        return buildUrlsetXml(createStaticUrls());
+    }
+
+    /**
+     * 일반 콘텐츠 sitemap 내용을 만든다.
+     *
+     * @return 일반 콘텐츠 sitemap 문자열
+     */
+    public String buildContentSitemapXml() {
+        List<PublicSeoSitemapUrl> urls = new ArrayList<>();
         try {
-            urls.addAll(publicSeoMapper.selectDynamicSitemapUrls());
+            urls.addAll(publicSeoMapper.selectGeneralDynamicSitemapUrls());
         } catch (DataAccessException exception) {
-            log.warn("Public sitemap dynamic URLs are not fully available. Serving static sitemap only.", exception);
+            log.warn("Public content sitemap URLs are not available. Serving empty content sitemap.", exception);
+        }
+        return buildUrlsetXml(urls);
+    }
+
+    private String buildSitemapIndexXml(List<SitemapIndexEntry> entries) {
+        StringBuilder xmlBuilder = new StringBuilder();
+        xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xmlBuilder.append("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
+
+        for (SitemapIndexEntry entry : entries) {
+            xmlBuilder.append("    <sitemap>\n");
+            xmlBuilder.append("        <loc>")
+                    .append(HtmlUtils.htmlEscape(PublicSeoSupport.absoluteUrl(entry.path())))
+                    .append("</loc>\n");
+            if (PublicSeoSupport.hasText(entry.lastModified())) {
+                xmlBuilder.append("        <lastmod>")
+                        .append(HtmlUtils.htmlEscape(entry.lastModified()))
+                        .append("</lastmod>\n");
+            }
+            xmlBuilder.append("    </sitemap>\n");
         }
 
+        xmlBuilder.append("</sitemapindex>\n");
+        return xmlBuilder.toString();
+    }
+
+    private String buildUrlsetXml(List<PublicSeoSitemapUrl> urls) {
         StringBuilder xmlBuilder = new StringBuilder();
         xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
         xmlBuilder.append("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
@@ -121,5 +168,8 @@ public class PublicSeoSitemapService {
         url.setChangeFrequency(changeFrequency);
         url.setPriority(priority);
         return url;
+    }
+
+    private record SitemapIndexEntry(String path, String lastModified) {
     }
 }

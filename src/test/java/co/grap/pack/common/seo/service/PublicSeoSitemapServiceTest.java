@@ -28,45 +28,63 @@ class PublicSeoSitemapServiceTest {
     private PublicSeoSitemapService publicSeoSitemapService;
 
     /**
-     * 정적 URL과 동적 URL이 함께 사이트맵에 포함되는지 검증한다.
+     * sitemap.xml이 핵심 sitemap만 안내하고 대량 부동산 상세 URL을 제외하는지 검증한다.
      */
     @Test
-    void buildSitemapXmlIncludesStaticAndDynamicUrls() {
+    void buildSitemapXmlIncludesCompactSitemapIndex() {
+        String sitemapXml = publicSeoSitemapService.buildSitemapXml();
+
+        assertThat(sitemapXml).contains("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/sitemap-static.xml</loc>");
+        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/sitemap-content.xml</loc>");
+        assertThat(sitemapXml).doesNotContain("sitemap-real-estate");
+        assertThat(sitemapXml).doesNotContain("/grap/user/content/real-estate/120</loc>");
+    }
+
+    /**
+     * 정적 URL sitemap에 공개 핵심 경로가 포함되는지 검증한다.
+     */
+    @Test
+    void buildStaticSitemapXmlIncludesStaticUrls() {
+        String sitemapXml = publicSeoSitemapService.buildStaticSitemapXml();
+
+        assertThat(sitemapXml).contains("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/</loc>");
+        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/real-estate</loc>");
+    }
+
+    /**
+     * 일반 콘텐츠 sitemap에 부동산을 제외한 동적 URL이 포함되는지 검증한다.
+     */
+    @Test
+    void buildContentSitemapXmlIncludesGeneralDynamicUrls() {
         PublicSeoSitemapUrl dynamicUrl = new PublicSeoSitemapUrl();
         dynamicUrl.setPath("/grap/user/content/detail/99");
         dynamicUrl.setLastModified("2026-04-22");
         dynamicUrl.setChangeFrequency("weekly");
         dynamicUrl.setPriority("0.8");
 
-        PublicSeoSitemapUrl realEstateUrl = new PublicSeoSitemapUrl();
-        realEstateUrl.setPath("/grap/user/content/real-estate/120");
-        realEstateUrl.setLastModified("2026-04-24");
-        realEstateUrl.setChangeFrequency("monthly");
-        realEstateUrl.setPriority("0.8");
+        when(publicSeoMapper.selectGeneralDynamicSitemapUrls()).thenReturn(List.of(dynamicUrl));
 
-        when(publicSeoMapper.selectDynamicSitemapUrls()).thenReturn(List.of(dynamicUrl, realEstateUrl));
+        String sitemapXml = publicSeoSitemapService.buildContentSitemapXml();
 
-        String sitemapXml = publicSeoSitemapService.buildSitemapXml();
-
-        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/</loc>");
         assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/detail/99</loc>");
-        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/real-estate/120</loc>");
         assertThat(sitemapXml).contains("<changefreq>weekly</changefreq>");
-        assertThat(sitemapXml).contains("<changefreq>monthly</changefreq>");
+        assertThat(sitemapXml).doesNotContain("/grap/user/content/real-estate/120");
     }
 
     /**
-     * 동적 URL 조회가 실패해도 정적 사이트맵은 유지되는지 검증한다.
+     * 일반 콘텐츠 URL 조회가 실패해도 빈 sitemap을 반환하는지 검증한다.
      */
     @Test
-    void buildSitemapXmlFallsBackToStaticUrlsWhenDynamicQueryFails() {
-        when(publicSeoMapper.selectDynamicSitemapUrls()).thenThrow(
-                new BadSqlGrammarException("selectDynamicSitemapUrls", "SELECT", new SQLException("table missing"))
+    void buildContentSitemapXmlFallsBackToEmptyUrlsetWhenDynamicQueryFails() {
+        when(publicSeoMapper.selectGeneralDynamicSitemapUrls()).thenThrow(
+                new BadSqlGrammarException("selectGeneralDynamicSitemapUrls", "SELECT", new SQLException("table missing"))
         );
 
-        String sitemapXml = publicSeoSitemapService.buildSitemapXml();
+        String sitemapXml = publicSeoSitemapService.buildContentSitemapXml();
 
-        assertThat(sitemapXml).contains("<loc>https://grap.co.kr/grap/user/content/festivals</loc>");
-        assertThat(sitemapXml).doesNotContain("/grap/user/content/detail/99");
+        assertThat(sitemapXml).contains("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">");
+        assertThat(sitemapXml).doesNotContain("<url>");
     }
 }

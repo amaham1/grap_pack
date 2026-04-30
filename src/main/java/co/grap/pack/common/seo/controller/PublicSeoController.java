@@ -28,13 +28,36 @@ public class PublicSeoController {
     }
 
     /**
-     * sitemap.xml을 제공한다.
+     * sitemap.xml 인덱스를 제공한다.
      *
-     * @return sitemap.xml 문자열
+     * @return sitemap.xml 인덱스 문자열
      */
     @GetMapping(value = "/sitemap.xml", produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
     public String sitemapXml() {
         return publicSeoSitemapService.buildSitemapXml();
     }
+
+    /**
+     * 정적 URL sitemap을 제공한다.
+     *
+     * @return 정적 URL sitemap 문자열
+     */
+    @GetMapping(value = "/sitemap-static.xml", produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public String staticSitemapXml() {
+        return publicSeoSitemapService.buildStaticSitemapXml();
+    }
+
+    /**
+     * 일반 콘텐츠 sitemap을 제공한다.
+     *
+     * @return 일반 콘텐츠 sitemap 문자열
+     */
+    @GetMapping(value = "/sitemap-content.xml", produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public String contentSitemapXml() {
+        return publicSeoSitemapService.buildContentSitemapXml();
+    }
+
 }

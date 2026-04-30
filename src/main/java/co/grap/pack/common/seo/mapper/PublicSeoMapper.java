@@ -12,9 +12,9 @@ import java.util.List;
 public interface PublicSeoMapper {
 
     /**
-     * 동적 사이트맵 URL 목록을 조회한다.
+     * 부동산을 제외한 동적 사이트맵 URL 목록을 조회한다.
      *
      * @return 사이트맵 URL 목록
      */
-    List<PublicSeoSitemapUrl> selectDynamicSitemapUrls();
+    List<PublicSeoSitemapUrl> selectGeneralDynamicSitemapUrls();
 }
