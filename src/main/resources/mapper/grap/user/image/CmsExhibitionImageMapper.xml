@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.user.image.mapper.CmsExhibitionImageMapper">
+
+    <!-- 결과 매핑 -->
+    <resultMap id="exhibitionImageResultMap" type="co.grap.pack.grap.user.image.model.CmsExhibitionImage">
+        <id property="imageId" column="image_id"/>
+        <result property="exhibitionId" column="exhibition_id"/>
+        <result property="originalName" column="original_name"/>
+        <result property="savedName" column="saved_name"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="isThumbnail" column="is_thumbnail"/>
+        <result property="displayOrder" column="display_order"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <!-- 이미지 등록 -->
+    <insert id="insertImage" parameterType="co.grap.pack.grap.user.image.model.CmsExhibitionImage" useGeneratedKeys="true" keyProperty="imageId">
+        INSERT INTO exhibitions_image (
+            exhibition_id, original_name, saved_name, file_path,
+            file_size, is_thumbnail, display_order, created_at
+        ) VALUES (
+            #{exhibitionId}, #{originalName}, #{savedName}, #{filePath},
+            #{fileSize}, #{isThumbnail}, #{displayOrder}, NOW()
+        )
+    </insert>
+
+    <!-- 공연/전시별 이미지 목록 조회 -->
+    <select id="selectImagesByExhibitionId" parameterType="long" resultMap="exhibitionImageResultMap">
+        SELECT * FROM exhibitions_image
+        WHERE exhibition_id = #{exhibitionId}
+        ORDER BY is_thumbnail DESC, display_order ASC, created_at ASC
+    </select>
+
+    <!-- 이미지 단건 조회 -->
+    <select id="selectImageById" parameterType="long" resultMap="exhibitionImageResultMap">
+        SELECT * FROM exhibitions_image
+        WHERE image_id = #{imageId}
+    </select>
+
+    <!-- 썸네일 이미지 조회 -->
+    <select id="selectThumbnailByExhibitionId" parameterType="long" resultMap="exhibitionImageResultMap">
+        SELECT * FROM exhibitions_image
+        WHERE exhibition_id = #{exhibitionId} AND is_thumbnail = TRUE
+        LIMIT 1
+    </select>
+
+    <!-- 썸네일 설정 -->
+    <update id="updateThumbnail">
+        UPDATE exhibitions_image
+        SET is_thumbnail = CASE
+            WHEN image_id = #{imageId} THEN TRUE
+            ELSE FALSE
+        END
+        WHERE exhibition_id = #{exhibitionId}
+    </update>
+
+    <!-- 썸네일 해제 -->
+    <update id="clearThumbnail" parameterType="long">
+        UPDATE exhibitions_image
+        SET is_thumbnail = FALSE
+        WHERE exhibition_id = #{exhibitionId}
+    </update>
+
+    <!-- 이미지 삭제 -->
+    <delete id="deleteImage" parameterType="long">
+        DELETE FROM exhibitions_image
+        WHERE image_id = #{imageId}
+    </delete>
+
+    <!-- 공연/전시별 이미지 전체 삭제 -->
+    <delete id="deleteImagesByExhibitionId" parameterType="long">
+        DELETE FROM exhibitions_image
+        WHERE exhibition_id = #{exhibitionId}
+    </delete>
+
+    <!-- 이미지 개수 조회 -->
+    <select id="selectImageCountByExhibitionId" parameterType="long" resultType="int">
+        SELECT COUNT(*) FROM exhibitions_image
+        WHERE exhibition_id = #{exhibitionId}
+    </select>
+
+</mapper>

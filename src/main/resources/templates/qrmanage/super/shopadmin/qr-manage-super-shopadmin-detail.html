@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">상점관리자 상세</h1>
+        <a th:href="@{/qr-manage/super/admin/shop-admin/list}" class="qr-manage-btn qr-manage-btn-secondary">
+            목록으로
+        </a>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">기본 정보</h2>
+            <span class="qr-manage-badge"
+                  th:classappend="${shopAdmin.status.name() == 'ACTIVE' ? 'qr-manage-badge-active' :
+                                   (shopAdmin.status.name() == 'PENDING' ? 'qr-manage-badge-pending' :
+                                   (shopAdmin.status.name() == 'SUSPENDED' ? 'qr-manage-badge-suspended' : 'qr-manage-badge-inactive'))}"
+                  th:text="${shopAdmin.status.description}">활성</span>
+        </div>
+        <div class="qr-manage-card-body">
+            <table class="qr-manage-detail-table">
+                <tr>
+                    <th>ID</th>
+                    <td th:text="${shopAdmin.id}">1</td>
+                </tr>
+                <tr>
+                    <th>아이디</th>
+                    <td th:text="${shopAdmin.username}">user1</td>
+                </tr>
+                <tr>
+                    <th>이름</th>
+                    <td th:text="${shopAdmin.name}">홍길동</td>
+                </tr>
+                <tr>
+                    <th>이메일</th>
+                    <td th:text="${shopAdmin.email}">test@example.com</td>
+                </tr>
+                <tr>
+                    <th>연락처</th>
+                    <td th:text="${shopAdmin.phone ?: '-'}">010-1234-5678</td>
+                </tr>
+                <tr>
+                    <th>가입일</th>
+                    <td th:text="${#temporals.format(shopAdmin.createdAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</td>
+                </tr>
+                <tr>
+                    <th>최근 수정일</th>
+                    <td th:text="${#temporals.format(shopAdmin.updatedAt, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- 상태 변경 버튼 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">상태 관리</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-action-buttons">
+                <!-- 승인 대기 상태일 때 -->
+                <form th:if="${shopAdmin.status.name() == 'PENDING'}"
+                      th:action="@{/qr-manage/super/admin/shop-admin/approve/{id}(id=${shopAdmin.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-success"
+                            onclick="return confirm('이 상점관리자를 승인하시겠습니까?')">
+                        승인
+                    </button>
+                </form>
+
+                <!-- 활성 상태일 때 -->
+                <form th:if="${shopAdmin.status.name() == 'ACTIVE'}"
+                      th:action="@{/qr-manage/super/admin/shop-admin/suspend/{id}(id=${shopAdmin.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-danger"
+                            onclick="return confirm('이 상점관리자를 정지하시겠습니까?')">
+                        정지
+                    </button>
+                </form>
+
+                <!-- 정지/비활성 상태일 때 -->
+                <form th:if="${shopAdmin.status.name() == 'SUSPENDED' or shopAdmin.status.name() == 'INACTIVE'}"
+                      th:action="@{/qr-manage/super/admin/shop-admin/activate/{id}(id=${shopAdmin.id})}"
+                      method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-success"
+                            onclick="return confirm('이 상점관리자를 활성화하시겠습니까?')">
+                        활성화
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-detail-table {
+            width: 100%;
+        }
+        .qr-manage-detail-table th {
+            width: 150px;
+            padding: 12px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            text-align: left;
+        }
+        .qr-manage-detail-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .qr-manage-action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</th:block>
+</html>

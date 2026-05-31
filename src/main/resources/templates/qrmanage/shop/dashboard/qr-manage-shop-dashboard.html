@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">대시보드</h1>
+    </div>
+
+    <!-- 통계 카드 -->
+    <div class="qr-manage-stats-grid">
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">등록 메뉴</div>
+            <div class="qr-manage-stat-value" th:text="${totalMenus}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">카테고리</div>
+            <div class="qr-manage-stat-value" th:text="${totalCategories}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">QR 코드</div>
+            <div class="qr-manage-stat-value" th:text="${totalQrCodes}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 스캔</div>
+            <div class="qr-manage-stat-value" th:text="${todayScans}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">이번 주 스캔</div>
+            <div class="qr-manage-stat-value" th:text="${weeklyScans}">0</div>
+        </div>
+    </div>
+
+    <!-- 빠른 시작 가이드 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">빠른 시작</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <a th:href="@{/qr-manage/shop/admin/info}" class="qr-manage-quick-link">
+                    <span class="qr-manage-quick-icon">🏪</span>
+                    <span class="qr-manage-quick-text">상점 정보 설정</span>
+                </a>
+                <a th:href="@{/qr-manage/shop/admin/category/list}" class="qr-manage-quick-link">
+                    <span class="qr-manage-quick-icon">📁</span>
+                    <span class="qr-manage-quick-text">카테고리 관리</span>
+                </a>
+                <a th:href="@{/qr-manage/shop/admin/menu/list}" class="qr-manage-quick-link">
+                    <span class="qr-manage-quick-icon">🍽️</span>
+                    <span class="qr-manage-quick-text">메뉴 관리</span>
+                </a>
+                <a th:href="@{/qr-manage/shop/admin/qrcode/list}" class="qr-manage-quick-link">
+                    <span class="qr-manage-quick-icon">📱</span>
+                    <span class="qr-manage-quick-text">QR 코드 관리</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 최근 스캔 통계 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">최근 스캔 현황</h2>
+            <a th:href="@{/qr-manage/shop/admin/stats}" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-secondary">
+                상세보기
+            </a>
+        </div>
+        <div class="qr-manage-card-body">
+            <p class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                아직 스캔 데이터가 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-quick-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.2s;
+        }
+        .qr-manage-quick-link:hover {
+            background: #27ae60;
+            color: white;
+        }
+        .qr-manage-quick-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .qr-manage-quick-text {
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</th:block>
+</html>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.superadmin.visitorstats.mapper.QrManageSuperVisitorStatsMapper">
+
+    <sql id="nonBotFilter">
+        (device_type IS NULL OR device_type != 'BOT')
+    </sql>
+
+    <sql id="visitorIdentityExpression">
+        COALESCE(
+            CASE
+                WHEN auth_scope IS NOT NULL AND auth_user_id IS NOT NULL
+                THEN CONCAT(auth_scope, ':', auth_user_id)
+            END,
+            NULLIF(visitor_uid, ''),
+            session_id
+        )
+    </sql>
+
+    <sql id="visitorDateRangeFilter">
+        DATE(visited_at) BETWEEN #{startDate} AND #{endDate}
+        <if test="serviceCode != null and serviceCode != ''">
+            AND service_code = #{serviceCode}
+        </if>
+        <if test="menuCode != null and menuCode != ''">
+            AND menu_code = #{menuCode}
+        </if>
+    </sql>
+
+    <sql id="visitorTodayFilter">
+        DATE(visited_at) = #{targetDate}
+        <if test="serviceCode != null and serviceCode != ''">
+            AND service_code = #{serviceCode}
+        </if>
+        <if test="menuCode != null and menuCode != ''">
+            AND menu_code = #{menuCode}
+        </if>
+    </sql>
+
+    <sql id="ipAccessLogBotFilter">
+        <if test="includeBots == false">
+            AND <include refid="nonBotFilter"/>
+        </if>
+    </sql>
+
+    <select id="selectDashboardStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats">
+        SELECT
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS totalPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN <include refid="visitorIdentityExpression"/> END), 0) AS totalUv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS totalHumanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN <include refid="visitorIdentityExpression"/> END), 0) AS totalHumanVerifiedUv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS totalBotPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN <include refid="visitorIdentityExpression"/> END), 0) AS totalBotUv,
+            ROUND(
+                COALESCE(AVG(CASE WHEN <include refid="nonBotFilter"/> THEN COALESCE(duration_seconds, 0) END), 0),
+                1
+            ) AS averageDurationSeconds
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+    </select>
+
+    <select id="selectTodayStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats">
+        SELECT
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS todayPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN <include refid="visitorIdentityExpression"/> END), 0) AS todayUv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS todayHumanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN <include refid="visitorIdentityExpression"/> END), 0) AS todayHumanVerifiedUv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS todayBotPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN <include refid="visitorIdentityExpression"/> END), 0) AS todayBotUv
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorTodayFilter"/>
+    </select>
+
+    <select id="selectDailyStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats">
+        SELECT
+            DATE_FORMAT(MIN(visited_at), '%Y-%m-%d') AS date,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 0 ELSE 1 END), 0) AS pv,
+            COALESCE(COUNT(DISTINCT CASE WHEN <include refid="nonBotFilter"/> THEN <include refid="visitorIdentityExpression"/> END), 0) AS uv,
+            COALESCE(SUM(CASE WHEN human_verified = TRUE THEN 1 ELSE 0 END), 0) AS humanVerifiedPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN human_verified = TRUE THEN <include refid="visitorIdentityExpression"/> END), 0) AS humanVerifiedUv,
+            COALESCE(SUM(CASE WHEN device_type = 'BOT' THEN 1 ELSE 0 END), 0) AS botPv,
+            COALESCE(COUNT(DISTINCT CASE WHEN device_type = 'BOT' THEN <include refid="visitorIdentityExpression"/> END), 0) AS botUv
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+        GROUP BY DATE(visited_at)
+        ORDER BY DATE(visited_at) ASC
+    </select>
+
+    <select id="selectMenuStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats">
+        SELECT
+            service_code AS serviceCode,
+            menu_code AS menuCode,
+            COALESCE(COUNT(*), 0) AS pv,
+            COALESCE(COUNT(DISTINCT <include refid="visitorIdentityExpression"/>), 0) AS uv,
+            ROUND(COALESCE(AVG(COALESCE(duration_seconds, 0)), 0), 1) AS averageDurationSeconds,
+            ROUND(
+                COALESCE(
+                    SUM(CASE WHEN device_type = 'MOBILE' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(*), 0),
+                    0
+                ),
+                1
+            ) AS mobileRatio
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
+        GROUP BY service_code, menu_code
+        ORDER BY pv DESC, uv DESC, service_code ASC, menu_code ASC
+    </select>
+
+    <select id="selectRouteStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorRouteStats">
+        SELECT
+            route_key AS routeKey,
+            COALESCE(COUNT(*), 0) AS pv,
+            COALESCE(COUNT(DISTINCT <include refid="visitorIdentityExpression"/>), 0) AS uv,
+            ROUND(COALESCE(AVG(COALESCE(duration_seconds, 0)), 0), 1) AS averageDurationSeconds
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
+        GROUP BY route_key
+        ORDER BY pv DESC, uv DESC, route_key ASC
+    </select>
+
+    <select id="selectDeviceStats" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats">
+        SELECT
+            device_type AS deviceType,
+            COALESCE(COUNT(*), 0) AS pv
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+          AND <include refid="nonBotFilter"/>
+        GROUP BY device_type
+        ORDER BY FIELD(device_type, 'DESKTOP', 'MOBILE', 'TABLET', 'UNKNOWN')
+    </select>
+
+    <select id="selectRecentIpAccessLogCount" resultType="long">
+        SELECT COUNT(*)
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+        <include refid="ipAccessLogBotFilter"/>
+    </select>
+
+    <select id="selectRecentIpAccessLogs" resultType="co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog">
+        SELECT
+            DATE_FORMAT(visited_at, '%Y-%m-%d %H:%i:%s') AS visitedAt,
+            ip_address AS ipAddress,
+            service_code AS serviceCode,
+            menu_code AS menuCode,
+            COALESCE(route_key, page_url) AS routeKey,
+            device_type AS deviceType
+        FROM grap_pack_visitor
+        WHERE <include refid="visitorDateRangeFilter"/>
+        <include refid="ipAccessLogBotFilter"/>
+        ORDER BY visited_at DESC, id DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+</mapper>

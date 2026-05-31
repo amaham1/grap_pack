@@ -1,0 +1,439 @@
+<article class="user-content-detail real-estate-detail-page"
+         th:attr="data-real-estate-current-id=${property['id']},
+                  data-real-estate-current-name=${property['displayName']},
+                  data-real-estate-current-address=${property['address']},
+                  data-real-estate-current-transaction-label=${property['transactionLabel']},
+                  data-real-estate-current-amount-label=${property['formattedDisplayAmount']},
+                  data-real-estate-current-deal-month=${property['dealYearMonth']}">
+    <div class="user-content-header real-estate-detail-header">
+        <div class="real-estate-badges">
+            <span class="user-badge badge-real-estate-location" th:text="${property['sggName'] + ' ' + property['umdName']}"></span>
+            <span class="user-badge badge-real-estate-type" th:text="${property['categoryLabel'] + ' · ' + property['transactionLabel']}"></span>
+        </div>
+
+        <h1 th:text="|제주도 부동산 ${property['displayName']} 실거래가|"></h1>
+        <p class="real-estate-address" th:text="${property['address']}"></p>
+        <p class="real-estate-detail-summary"
+           th:text="|${property['sggName']} ${property['umdName']} 부동산 거래 사례를 계약일, 면적, 금액 기준으로 확인하세요.|">
+        </p>
+
+        <div class="real-estate-hero-amount">
+            <span class="real-estate-amount-label" th:text="${property['amountLabel']}"></span>
+            <strong class="real-estate-amount-value" th:text="${property['formattedDisplayAmount']}"></strong>
+            <p th:if="${property['transactionType'] == 'rent'}" class="real-estate-rent-note">
+                월세 <span th:text="${property['formattedMonthlyRent']}"></span>
+            </p>
+        </div>
+
+        <div class="real-estate-detail-actions">
+            <button type="button"
+                    class="user-btn user-btn-secondary real-estate-favorite-button"
+                    data-real-estate-favorite-button
+                    th:attr="data-property-id=${property['id']},
+                             data-property-name=${property['displayName']},
+                             data-property-address=${property['address']},
+                             data-property-transaction-label=${property['transactionLabel']},
+                             data-property-amount-label=${property['formattedDisplayAmount']},
+                             data-property-deal-month=${property['dealYearMonth']}">
+                관심 등록
+            </button>
+        </div>
+    </div>
+
+    <section class="real-estate-meta-grid">
+        <div class="real-estate-meta-card">
+            <span>계약일</span>
+            <strong th:text="${property['formattedDealDate']}"></strong>
+        </div>
+        <div class="real-estate-meta-card">
+            <span>전용면적</span>
+            <strong th:text="${property['formattedAreaLabel']}"></strong>
+        </div>
+        <div class="real-estate-meta-card">
+            <span>층수</span>
+            <strong th:text="${property['formattedFloor']}"></strong>
+        </div>
+        <div class="real-estate-meta-card">
+            <span>준공연도</span>
+            <strong th:text="${property['formattedBuildYear']}"></strong>
+        </div>
+    </section>
+
+    <section class="real-estate-chart-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">시세 흐름</p>
+                <h2 th:text="${chartMetricLabel}"></h2>
+            </div>
+
+            <form th:action="@{/grap/user/content/real-estate/{id}(id=${property['id']})}" method="get" class="real-estate-year-form">
+                <label for="year" class="real-estate-year-label">조회 연도</label>
+                <select id="year" name="year" class="user-form-control real-estate-select" onchange="this.form.submit()">
+                    <option th:each="yearOption : ${availableYears}"
+                            th:value="${yearOption}"
+                            th:selected="${yearOption == selectedYear}"
+                            th:text="${yearOption} + '년'"></option>
+                </select>
+            </form>
+        </div>
+
+        <div th:if="${trendSummary['hasTrend']}" class="real-estate-trend-grid">
+            <div class="real-estate-summary-card">
+                <span>최근 월 평균</span>
+                <strong th:text="${trendSummary['formattedLatestAverageAmount']}"></strong>
+                <em th:text="${trendSummary['latestMonthLabel']}"></em>
+            </div>
+            <div class="real-estate-summary-card"
+                 th:classappend="| is-${trendSummary['changeDirection']}|">
+                <span>직전 월 대비</span>
+                <strong th:text="${trendSummary['formattedChangeAmount']}"></strong>
+                <em th:text="${trendSummary['formattedChangeRate']}"></em>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>연간 평균</span>
+                <strong th:text="${trendSummary['formattedAverageAmount']}"></strong>
+                <em th:text="|거래 ${trendSummary['formattedTransactionCount']}건|"></em>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>최저 · 최고</span>
+                <strong th:text="|${trendSummary['formattedMinAmount']} ~ ${trendSummary['formattedMaxAmount']}|"></strong>
+                <em th:text="${selectedYear} + '년 기준'"></em>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(priceSeries)}" class="user-empty-message real-estate-inline-empty">
+            <p>선택한 연도에는 확인 가능한 월별 시세 데이터가 없습니다.</p>
+        </div>
+        <div th:unless="${#lists.isEmpty(priceSeries)}" class="real-estate-chart-surface">
+            <canvas id="real-estate-price-chart" aria-label="월별 평균 시세 차트"></canvas>
+        </div>
+    </section>
+
+    <section class="real-estate-comparison-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">거래 비교</p>
+                <h2>같은 물건과 비슷한 조건의 최근 거래</h2>
+            </div>
+        </div>
+
+        <div class="real-estate-comparison-grid">
+            <article class="real-estate-detail-card">
+                <h3>같은 물건 최근 거래</h3>
+                <div th:if="${#lists.isEmpty(samePropertyTransactions)}" class="user-empty-message real-estate-inline-empty">
+                    <p>비교할 같은 물건 거래가 없습니다.</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(samePropertyTransactions)}" class="real-estate-transaction-list">
+                    <a th:each="item : ${samePropertyTransactions}"
+                       th:href="@{/grap/user/content/real-estate/{id}(id=${item['id']})}"
+                       class="real-estate-transaction-row">
+                        <span th:text="${item['formattedDealDate']}"></span>
+                        <strong th:text="${item['formattedDisplayAmount']}"></strong>
+                        <em th:text="${item['formattedAreaLabel']}"></em>
+                    </a>
+                </div>
+            </article>
+
+            <article class="real-estate-detail-card">
+                <h3>비슷한 조건 거래</h3>
+                <div th:if="${#lists.isEmpty(similarConditionTransactions)}" class="user-empty-message real-estate-inline-empty">
+                    <p>비슷한 조건의 최근 거래가 없습니다.</p>
+                </div>
+                <div th:unless="${#lists.isEmpty(similarConditionTransactions)}" class="real-estate-transaction-list">
+                    <a th:each="item : ${similarConditionTransactions}"
+                       th:href="@{/grap/user/content/real-estate/{id}(id=${item['id']})}"
+                       class="real-estate-transaction-row">
+                        <span th:text="${item['displayName']}"></span>
+                        <strong th:text="${item['formattedDisplayAmount']}"></strong>
+                        <em th:text="|${item['formattedDealDate']} · ${item['formattedAreaLabel']}|"></em>
+                    </a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section th:if="${property['mortgageSupported']}" class="real-estate-mortgage-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">대출 계산기</p>
+                <h2>보유 현금으로 얼마나 매수할 수 있을까요?</h2>
+            </div>
+            <p class="real-estate-section-copy">
+                연소득, 보유 현금, DSR, 지역 규제 가정을 바꾸면 대출 가능액과 추가 필요 현금을 바로 계산합니다.
+            </p>
+        </div>
+
+        <div class="real-estate-mortgage-layout">
+            <div class="real-estate-mortgage-context">
+                <p class="real-estate-context-label">기준 매매가</p>
+                <strong th:text="${property['formattedDisplayAmount']}"></strong>
+                <p th:text="${property['displayName'] + ' · ' + property['sggName'] + ' ' + property['umdName']}"></p>
+            </div>
+
+            <form id="mortgage-calculator-form"
+                  class="real-estate-mortgage-form"
+                  th:attr="data-property-price=${property['tradeAmountManwon']}">
+                <label class="real-estate-field">
+                    <span>보유 현금</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="cashAmount" min="0" step="100" th:value="${mortgageDefaults['cashAmount']}">
+                        <em>만원</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>구입자 상태</span>
+                    <select name="buyerProfile">
+                        <option th:each="option : ${calculatorPolicy['buyerProfiles']}"
+                                th:value="${option['value']}"
+                                th:selected="${option['value'] == mortgageDefaults['buyerProfile']}"
+                                th:text="${option['label']}"></option>
+                    </select>
+                </label>
+                <label class="real-estate-field">
+                    <span>지역 규제 가정</span>
+                    <select name="areaPolicy">
+                        <option th:each="option : ${calculatorPolicy['areaPolicies']}"
+                                th:value="${option['value']}"
+                                th:selected="${option['value'] == mortgageDefaults['areaPolicy']}"
+                                th:text="${option['label']}"></option>
+                    </select>
+                </label>
+                <label class="real-estate-field">
+                    <span>연소득</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="annualIncome" min="0" step="100" th:value="${mortgageDefaults['annualIncome']}">
+                        <em>만원/년</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>기존 월 상환액</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="existingMonthlyDebtPayment" min="0" step="10" th:value="${mortgageDefaults['existingMonthlyDebtPayment']}">
+                        <em>만원/월</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>예상 금리</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="interestRate" min="0" max="20" step="0.1" th:value="${mortgageDefaults['interestRate']}">
+                        <em>%</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>대출 만기</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="loanTermYears" min="1" max="40" step="1" th:value="${mortgageDefaults['loanTermYears']}">
+                        <em>년</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>DSR 한도</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="dsrLimitRatio" min="1" max="100" step="1" th:value="${mortgageDefaults['dsrLimitRatio']}">
+                        <em>%</em>
+                    </div>
+                </label>
+            </form>
+        </div>
+
+        <article class="real-estate-status-card" id="mortgage-status-card"
+                 th:classappend="${mortgageScenario['affordable']} ? ' is-success' : ' is-warning'">
+            <p class="real-estate-status-eyebrow" id="mortgage-status-eyebrow"
+               th:text="${mortgageScenario['affordable']} ? '가능성' : '현금 부족'"></p>
+            <h3 id="mortgage-status-title" th:text="${mortgageScenario['statusTitle']}"></h3>
+            <p id="mortgage-status-message" th:text="${mortgageScenario['statusMessage']}"></p>
+        </article>
+
+        <div class="real-estate-mortgage-summary">
+            <div class="real-estate-summary-card">
+                <span>필요 대출액</span>
+                <strong data-mortgage-output="requiredLoanAmount" th:text="${mortgageScenario['formattedRequiredLoanAmount']}"></strong>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>가능 최대 대출</span>
+                <strong data-mortgage-output="maxAvailableLoan" th:text="${mortgageScenario['formattedMaxAvailableLoan']}"></strong>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>추가 필요 현금</span>
+                <strong data-mortgage-output="additionalCashNeeded" th:text="${mortgageScenario['formattedAdditionalCashNeeded']}"></strong>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>월 상환 추정</span>
+                <strong data-mortgage-output="monthlyPaymentForMaxLoan" th:text="${mortgageScenario['formattedMonthlyPaymentForMaxLoan']}"></strong>
+            </div>
+        </div>
+
+        <div class="real-estate-mortgage-detail-grid">
+            <article class="real-estate-detail-card">
+                <h3>대출 한도 요약</h3>
+                <dl>
+                    <div>
+                        <dt>적용 LTV</dt>
+                        <dd data-mortgage-output="applicableLtvRatio" th:text="${mortgageScenario['formattedApplicableLtvRatio']}"></dd>
+                    </div>
+                    <div>
+                        <dt>필요 LTV</dt>
+                        <dd data-mortgage-output="requiredLoanToValueRatio" th:text="${mortgageScenario['formattedRequiredLoanToValueRatio']}"></dd>
+                    </div>
+                    <div>
+                        <dt>가능 LTV</dt>
+                        <dd data-mortgage-output="availableLoanToValueRatio" th:text="${mortgageScenario['formattedAvailableLoanToValueRatio']}"></dd>
+                    </div>
+                    <div>
+                        <dt>LTV 기준 최대</dt>
+                        <dd data-mortgage-output="maxByLtv" th:text="${mortgageScenario['formattedMaxByLtv']}"></dd>
+                    </div>
+                    <div>
+                        <dt>DSR 기준 최대</dt>
+                        <dd data-mortgage-output="maxByDsr" th:text="${mortgageScenario['formattedMaxByDsr']}"></dd>
+                    </div>
+                    <div>
+                        <dt>정책 상한</dt>
+                        <dd data-mortgage-output="policyCapLabel" th:text="${mortgageScenario['policyCapLabel']}"></dd>
+                    </div>
+                </dl>
+            </article>
+
+            <article class="real-estate-detail-card">
+                <h3>계산 기준</h3>
+                <dl>
+                    <div>
+                        <dt>구입자 상태</dt>
+                        <dd data-mortgage-output="buyerProfileLabel" th:text="${mortgageScenario['buyerProfileLabel']}"></dd>
+                    </div>
+                    <div>
+                        <dt>지역 규제 가정</dt>
+                        <dd data-mortgage-output="areaPolicyLabel" th:text="${mortgageScenario['areaPolicyLabel']}"></dd>
+                    </div>
+                    <div>
+                        <dt>스트레스 금리</dt>
+                        <dd data-mortgage-output="stressRate" th:text="${mortgageScenario['formattedStressRate']}"></dd>
+                    </div>
+                    <div>
+                        <dt>월 상환 여력</dt>
+                        <dd data-mortgage-output="monthlyRepaymentBudget" th:text="${mortgageScenario['formattedMonthlyRepaymentBudget']}"></dd>
+                    </div>
+                    <div>
+                        <dt>필요 대출의 월 상환액</dt>
+                        <dd data-mortgage-output="monthlyPaymentForRequiredLoan" th:text="${mortgageScenario['formattedMonthlyPaymentForRequiredLoan']}"></dd>
+                    </div>
+                    <div>
+                        <dt>제한 요인</dt>
+                        <dd data-mortgage-output="constraintLabel" th:text="${mortgageScenario['constraintLabel']}"></dd>
+                    </div>
+                </dl>
+            </article>
+        </div>
+
+        <div class="real-estate-note-list">
+            <p>기본값은 연소득 4,000만원, 보유 현금 5,000만원, DSR 80%, 무주택, 제주/지방 비규제지역입니다.</p>
+            <p>계산 결과는 참고용 시뮬레이션이며 실제 한도는 금융사 심사와 정책상품 요건에 따라 달라질 수 있습니다.</p>
+        </div>
+    </section>
+
+    <section th:if="${property['purchaseCostSupported']}" class="real-estate-purchase-cost-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">총비용 계산기</p>
+                <h2>매수할 때 필요한 현금을 간편 추정합니다</h2>
+            </div>
+            <p class="real-estate-section-copy" th:text="${purchaseCostPolicy['notice']}"></p>
+        </div>
+
+        <div class="real-estate-mortgage-layout">
+            <div class="real-estate-mortgage-context">
+                <p class="real-estate-context-label">기준 매매가</p>
+                <strong th:text="${property['formattedDisplayAmount']}"></strong>
+                <p>취득세 본세, 중개보수 상한, 등기·법무사 비용을 합산합니다.</p>
+            </div>
+
+            <form id="purchase-cost-form"
+                  class="real-estate-mortgage-form"
+                  th:attr="data-property-price=${property['tradeAmountManwon']}">
+                <label class="real-estate-field">
+                    <span>등기·법무사 비용</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="legalServiceAmount" min="0" step="10" th:value="${purchaseCostDefaults['legalServiceAmount']}">
+                        <em>만원</em>
+                    </div>
+                </label>
+                <label class="real-estate-field">
+                    <span>기타 비용</span>
+                    <div class="real-estate-input-row">
+                        <input type="number" name="otherCostAmount" min="0" step="10" th:value="${purchaseCostDefaults['otherCostAmount']}">
+                        <em>만원</em>
+                    </div>
+                </label>
+            </form>
+        </div>
+
+        <div class="real-estate-mortgage-summary">
+            <div class="real-estate-summary-card">
+                <span>취득세 본세 추정</span>
+                <strong data-purchase-cost-output="acquisitionTaxAmount" th:text="${purchaseCostScenario['formattedAcquisitionTaxAmount']}"></strong>
+                <em data-purchase-cost-output="acquisitionTaxRate" th:text="${purchaseCostScenario['formattedAcquisitionTaxRate']}"></em>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>중개보수 상한 추정</span>
+                <strong data-purchase-cost-output="brokerageFeeAmount" th:text="${purchaseCostScenario['formattedBrokerageFeeAmount']}"></strong>
+                <em data-purchase-cost-output="brokerageFeeRate" th:text="${purchaseCostScenario['formattedBrokerageFeeRate']}"></em>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>부대비용 합계</span>
+                <strong data-purchase-cost-output="totalExtraCostAmount" th:text="${purchaseCostScenario['formattedTotalExtraCostAmount']}"></strong>
+                <em>매매가 제외</em>
+            </div>
+            <div class="real-estate-summary-card">
+                <span>총 필요 현금</span>
+                <strong data-purchase-cost-output="totalRequiredCashAmount" th:text="${purchaseCostScenario['formattedTotalRequiredCashAmount']}"></strong>
+                <em>매매가 포함</em>
+            </div>
+        </div>
+
+        <div class="real-estate-mortgage-detail-grid">
+            <article class="real-estate-detail-card">
+                <h3>비용 세부</h3>
+                <dl>
+                    <div>
+                        <dt>매매가</dt>
+                        <dd data-purchase-cost-output="propertyPrice" th:text="${purchaseCostScenario['formattedPropertyPrice']}"></dd>
+                    </div>
+                    <div>
+                        <dt>등기·법무사 비용</dt>
+                        <dd data-purchase-cost-output="legalServiceAmount" th:text="${purchaseCostScenario['formattedLegalServiceAmount']}"></dd>
+                    </div>
+                    <div>
+                        <dt>기타 비용</dt>
+                        <dd data-purchase-cost-output="otherCostAmount" th:text="${purchaseCostScenario['formattedOtherCostAmount']}"></dd>
+                    </div>
+                </dl>
+            </article>
+
+            <article class="real-estate-detail-card">
+                <h3>계산 근거</h3>
+                <dl>
+                    <div th:each="reference : ${purchaseCostPolicy['references']}">
+                        <dt th:text="${reference['label']}"></dt>
+                        <dd>
+                            <a th:href="${reference['url']}" target="_blank" rel="noopener">확인</a>
+                        </dd>
+                    </div>
+                </dl>
+            </article>
+        </div>
+
+        <div class="real-estate-note-list">
+            <p>간편 추정 결과로, 실제 신고 세액과 중개보수는 주택 수, 감면·중과 여부, 계약 조건, 조례 적용에 따라 달라질 수 있습니다.</p>
+        </div>
+    </section>
+
+    <div class="user-content-footer">
+        <a th:href="@{/grap/user/content/real-estate(dealYearMonth=${property['dealYearMonth']}, sort='latest')}"
+           class="user-btn user-btn-secondary">목록으로</a>
+    </div>
+</article>
+
+<script id="real-estate-price-series" type="application/json" th:utext="${priceSeriesJson}"></script>
+<script th:if="${!#lists.isEmpty(priceSeries)}" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/grap/js/user-real-estate-storage.js}"></script>
+<script th:src="@{/grap/js/user-real-estate-detail.js}"></script>

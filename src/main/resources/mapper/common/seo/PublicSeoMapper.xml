@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.common.seo.mapper.PublicSeoMapper">
+
+    <select id="selectGeneralDynamicSitemapUrls" resultType="PublicSeoSitemapUrl">
+        SELECT *
+        FROM (
+            SELECT
+                CONCAT('/grap/user/content/detail/', content_id) AS path,
+                DATE_FORMAT(COALESCE(update_dt, create_dt), '%Y-%m-%d') AS last_modified,
+                'weekly' AS change_frequency,
+                '0.8' AS priority
+            FROM content
+            WHERE is_published = TRUE
+
+            UNION ALL
+
+            SELECT
+                CONCAT('/grap/user/content/festivals/', id) AS path,
+                DATE_FORMAT(COALESCE(updated_at, written_date, created_at), '%Y-%m-%d') AS last_modified,
+                'weekly' AS change_frequency,
+                '0.8' AS priority
+            FROM festivals
+            WHERE is_show = TRUE
+
+            UNION ALL
+
+            SELECT
+                CONCAT('/grap/user/content/exhibitions/', id) AS path,
+                DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS last_modified,
+                'weekly' AS change_frequency,
+                '0.8' AS priority
+            FROM exhibitions
+            WHERE is_show = TRUE
+
+            UNION ALL
+
+            SELECT
+                CONCAT('/grap/user/content/welfare/', id) AS path,
+                DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS last_modified,
+                'monthly' AS change_frequency,
+                '0.7' AS priority
+            FROM welfare_services
+            WHERE is_show = TRUE
+
+            UNION ALL
+
+            SELECT
+                CONCAT('/grap/user/content/gas-stations/', id) AS path,
+                DATE_FORMAT(COALESCE(updated_at, created_at), '%Y-%m-%d') AS last_modified,
+                'daily' AS change_frequency,
+                '0.7' AS priority
+            FROM gas_stations
+        ) sitemap_urls
+        WHERE path IS NOT NULL
+          AND last_modified IS NOT NULL
+        ORDER BY path
+    </select>
+
+    <select id="selectRealEstateSitemapLastModified" resultType="string">
+        SELECT DATE_FORMAT(MAX(COALESCE(updated_at, fetched_at, deal_date)), '%Y-%m-%d')
+        FROM real_estate_transactions
+    </select>
+
+</mapper>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content" class="admin-dashboard">
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">공개 콘텐츠</p>
+            <strong class="admin-card-value" th:text="${dashboardSummary.publishedContentCount}">0</strong>
+            <span class="admin-card-note">비공개 <b th:text="${dashboardSummary.unpublishedContentCount}">0</b></span>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">외부 데이터 미검수</p>
+            <strong class="admin-card-value" th:text="${dashboardSummary.pendingExternalCount}">0</strong>
+            <span class="admin-card-note">외부 데이터 전체 기준</span>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">QR 운영</p>
+            <strong class="admin-card-value" th:text="${dashboardSummary.pendingShopCount}">0</strong>
+            <span class="admin-card-note">비노출 <b th:text="${dashboardSummary.hiddenShopCount}">0</b></span>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 방문 수</p>
+            <strong class="admin-card-value" th:text="${dashboardSummary.visitorTodayPv}">0</strong>
+            <span class="admin-card-note">
+                중복 제외 방문자 수 <b th:text="${dashboardSummary.visitorTodayUv}">0</b>
+                / BOT 요청 <b th:text="${dashboardSummary.visitorTodayBotPv}">0</b>
+            </span>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card">
+            <div class="admin-section-head">
+                <div>
+                    <p class="admin-card-label">QRgen 운영 현황</p>
+                    <h2>최근 7일 생성 추이</h2>
+                </div>
+                <div class="admin-inline-metrics">
+                    <span>회원 <b th:text="${dashboardSummary.qrGenUserCount}">0</b></span>
+                    <span>오늘 생성 <b th:text="${dashboardSummary.todayQrGenHistoryCount}">0</b></span>
+                </div>
+            </div>
+            <div class="admin-mini-chart">
+                <div class="admin-mini-chart-row" th:each="item : ${dashboardSummary.qrGenDailyCounts}">
+                    <span class="admin-mini-chart-label" th:text="${#strings.substring(item.date, 5, 10)}">04-22</span>
+                    <div class="admin-mini-chart-bar-wrap">
+                        <div class="admin-mini-chart-bar"
+                             th:style="'width:' + (${item.count} * 12 + 12) + 'px'"></div>
+                    </div>
+                    <span class="admin-mini-chart-value" th:text="${item.count}">0</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <div class="admin-section-head">
+                <div>
+                    <p class="admin-card-label">QR 서비스 스캔</p>
+                    <h2>오늘 스캔 수</h2>
+                </div>
+                <strong class="admin-large-emphasis" th:text="${dashboardSummary.todayQrScanCount}">0</strong>
+            </div>
+            <div class="admin-mini-chart">
+                <div class="admin-mini-chart-row" th:each="item : ${dashboardSummary.visitorDailyStats}">
+                    <span class="admin-mini-chart-label" th:text="${#strings.substring(item.date, 5, 10)}">04-22</span>
+                    <div class="admin-mini-chart-bar-wrap">
+                        <div class="admin-mini-chart-bar admin-mini-chart-bar-secondary"
+                             th:style="'width:' + (${item.pv} * 4 + 12) + 'px'"></div>
+                    </div>
+                    <span class="admin-mini-chart-value" th:text="${item.pv}">0</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-4">
+        <a th:href="@{/admin/content/articles}" class="admin-card admin-shortcut-card">
+            <p class="admin-card-label">콘텐츠 운영</p>
+            <h3>수기 콘텐츠 관리</h3>
+            <span>게시글 목록, 공개 상태, 대표 이미지 관리</span>
+        </a>
+        <a th:href="@{/admin/content/datasets/festivals}" class="admin-card admin-shortcut-card">
+            <p class="admin-card-label">데이터셋 운영</p>
+            <h3>외부 데이터 검수</h3>
+            <span>축제, 전시, 복지, 주유소, 부동산</span>
+        </a>
+        <a th:href="@{/admin/qr/shops}" class="admin-card admin-shortcut-card">
+            <p class="admin-card-label">QR 운영</p>
+            <h3>상점과 점주 관리</h3>
+            <span>승인, 반려, QR 코드, 스캔 통계</span>
+        </a>
+        <a th:href="@{/admin/analytics/visitors}" class="admin-card admin-shortcut-card">
+            <p class="admin-card-label">통계</p>
+            <h3>방문자 통계</h3>
+            <span>방문 수, 중복 제외 방문자 수, 체류시간, 메뉴별 상세 경로</span>
+        </a>
+    </div>
+</section>
+</body>
+</html>

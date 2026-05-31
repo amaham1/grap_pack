@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">QR 코드 관리</h1>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div th:if="${message}" class="qr-manage-alert qr-manage-alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="qr-manage-alert qr-manage-alert-danger" th:text="${error}"></div>
+
+    <!-- QR 코드 생성 버튼 -->
+    <div class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">QR 코드 생성</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-create-buttons">
+                <form th:action="@{/qr-manage/shop/admin/qrcode/create/shop}" method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-primary">
+                        상점 대표 QR 생성
+                    </button>
+                </form>
+                <form th:action="@{/qr-manage/shop/admin/qrcode/create/menu}" method="post" style="display: inline;">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-success">
+                        메뉴 QR 생성
+                    </button>
+                </form>
+            </div>
+            <p class="qr-manage-help-text">
+                <strong>상점 대표 QR:</strong> 스캔 시 상점 정보 페이지로 이동<br/>
+                <strong>메뉴 QR:</strong> 스캔 시 메뉴 목록 페이지로 이동
+            </p>
+        </div>
+    </div>
+
+    <!-- QR 코드 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">
+                QR 코드 목록 <span style="font-weight: normal; color: #999;">(총 <span th:text="${#lists.size(qrCodes)}">0</span>개)</span>
+            </h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div th:if="${!#lists.isEmpty(qrCodes)}" class="qr-manage-qr-grid">
+                <div th:each="qr : ${qrCodes}" class="qr-manage-qr-item">
+                    <div class="qr-manage-qr-image">
+                        <img th:src="${qr.imagePath}" alt="QR Code"/>
+                        <div class="qr-manage-qr-status">
+                            <span th:if="${qr.isActive and !qr.expired}" class="qr-manage-badge qr-manage-badge-active">활성</span>
+                            <span th:if="${!qr.isActive}" class="qr-manage-badge qr-manage-badge-suspended">비활성</span>
+                            <span th:if="${qr.expired}" class="qr-manage-badge qr-manage-badge-expired">만료됨</span>
+                        </div>
+                    </div>
+                    <div class="qr-manage-qr-info">
+                        <h3 th:text="${qr.qrType.description}">QR 타입</h3>
+                        <p class="qr-manage-qr-stats">
+                            스캔 횟수: <strong th:text="${qr.scanCount ?: 0}">0</strong>회
+                        </p>
+                        <p th:if="${qr.expiresAt}" class="qr-manage-qr-expires">
+                            만료: <span th:text="${#temporals.format(qr.expiresAt, 'yyyy-MM-dd HH:mm')}">2024-12-31 23:59</span>
+                        </p>
+                        <p th:unless="${qr.expiresAt}" class="qr-manage-qr-expires">
+                            만료: 무제한
+                        </p>
+                    </div>
+                    <div class="qr-manage-qr-actions">
+                        <!-- 다운로드 -->
+                        <a th:href="@{/qr-manage/shop/admin/qrcode/download/{id}(id=${qr.id})}"
+                           class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-primary">다운로드</a>
+
+                        <!-- 활성화/비활성화 -->
+                        <form th:action="@{/qr-manage/shop/admin/qrcode/toggle/{id}(id=${qr.id})}" method="post" style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" name="isActive" th:value="${!qr.isActive}"/>
+                            <button type="submit" class="qr-manage-btn qr-manage-btn-sm"
+                                    th:classappend="${qr.isActive ? 'qr-manage-btn-secondary' : 'qr-manage-btn-success'}"
+                                    th:text="${qr.isActive ? '비활성화' : '활성화'}">토글</button>
+                        </form>
+
+                        <!-- 재생성 -->
+                        <form th:action="@{/qr-manage/shop/admin/qrcode/regenerate/{id}(id=${qr.id})}" method="post" style="display: inline;">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-warning"
+                                    onclick="return confirm('QR 코드를 재생성하면 기존 QR은 더 이상 작동하지 않습니다. 계속하시겠습니까?')">재생성</button>
+                        </form>
+
+                        <!-- 만료일 설정 -->
+                        <button type="button" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-outline"
+                                th:onclick="'showExpiresModal(' + ${qr.id} + ')'">만료일 설정</button>
+                    </div>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(qrCodes)}" class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                등록된 QR 코드가 없습니다. 위에서 QR 코드를 생성해주세요.
+            </p>
+        </div>
+    </div>
+
+    <!-- 만료일 설정 모달 -->
+    <div id="expiresModal" class="qr-manage-modal" style="display: none;">
+        <div class="qr-manage-modal-content">
+            <div class="qr-manage-modal-header">
+                <h3>만료일 설정</h3>
+                <button type="button" class="qr-manage-modal-close" onclick="hideExpiresModal()">&times;</button>
+            </div>
+            <form id="expiresForm" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="qr-manage-modal-body">
+                    <div class="qr-manage-form-group">
+                        <label for="expiresAt">만료일시</label>
+                        <input type="datetime-local" id="expiresAt" name="expiresAt"/>
+                        <p class="qr-manage-help-text">비워두면 무제한으로 설정됩니다.</p>
+                    </div>
+                </div>
+                <div class="qr-manage-modal-footer">
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-primary">저장</button>
+                    <button type="button" class="qr-manage-btn qr-manage-btn-secondary" onclick="hideExpiresModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-create-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .qr-manage-help-text {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+        .qr-manage-qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .qr-manage-qr-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .qr-manage-qr-image {
+            position: relative;
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        .qr-manage-qr-image img {
+            max-width: 200px;
+            height: auto;
+        }
+        .qr-manage-qr-status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .qr-manage-qr-info {
+            padding: 15px;
+        }
+        .qr-manage-qr-info h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+        .qr-manage-qr-stats,
+        .qr-manage-qr-expires {
+            margin: 5px 0;
+            font-size: 13px;
+            color: #666;
+        }
+        .qr-manage-qr-actions {
+            padding: 10px 15px 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .qr-manage-badge-expired {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .qr-manage-btn-warning {
+            background-color: #f39c12;
+            color: #fff;
+        }
+        .qr-manage-btn-outline {
+            background: transparent;
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+
+        /* 모달 스타일 */
+        .qr-manage-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-manage-modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .qr-manage-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .qr-manage-modal-header h3 {
+            margin: 0;
+        }
+        .qr-manage-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .qr-manage-modal-body {
+            padding: 20px;
+        }
+        .qr-manage-modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        function showExpiresModal(qrCodeId) {
+            const modal = document.getElementById('expiresModal');
+            const form = document.getElementById('expiresForm');
+            form.action = '/qr-manage/shop/admin/qrcode/expires/' + qrCodeId;
+            modal.style.display = 'flex';
+        }
+
+        function hideExpiresModal() {
+            const modal = document.getElementById('expiresModal');
+            modal.style.display = 'none';
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('expiresModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideExpiresModal();
+            }
+        });
+    </script>
+</th:block>
+
+</html>

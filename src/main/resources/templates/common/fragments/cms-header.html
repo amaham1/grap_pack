@@ -1,0 +1,62 @@
+<!-- 사용자 공통 헤더 -->
+<header
+        th:fragment="user-header"
+        class="site-header"
+        th:with="
+            requestUri=${currentPath != null ? currentPath : ''},
+            isRealEstate=${#strings.startsWith(requestUri, '/grap/user/content/real-estate')},
+            isQrGen=${#strings.startsWith(requestUri, '/qrgen')},
+            isQrHistory=${#strings.startsWith(requestUri, '/qrgen/user/history')},
+            isQrLogin=${#strings.startsWith(requestUri, '/qrgen/auth/login')},
+            isQrRegister=${#strings.startsWith(requestUri, '/qrgen/auth/register')}
+        ">
+    <div class="site-header-inner">
+        <div class="site-header-primary">
+            <a th:href="@{/grap/user/content/real-estate}" class="site-brand">Grap</a>
+
+            <nav class="site-primary-nav" aria-label="주요 서비스">
+                <a
+                        th:href="@{/grap/user/content/real-estate}"
+                        class="site-nav-link"
+                        th:classappend="${isRealEstate} ? ' is-active'">
+                    제주 부동산
+                </a>
+                <a
+                        th:href="@{/qrgen/}"
+                        class="site-nav-link"
+                        th:classappend="${isQrGen} ? ' is-active'">
+                    QR코드 생성
+                </a>
+            </nav>
+        </div>
+
+        <nav class="site-secondary-nav" aria-label="QR 계정 메뉴" th:if="${isQrGen}">
+            <th:block th:if="${#authorization.expression('isAuthenticated()')}">
+                <a
+                        th:href="@{/qrgen/user/history}"
+                        class="site-nav-link site-nav-link-secondary"
+                        th:classappend="${isQrHistory} ? ' is-active'">
+                    생성 기록
+                </a>
+                <form th:action="@{/qrgen/auth/logout}" method="post" class="site-inline-form">
+                    <button type="submit" class="site-nav-button">로그아웃</button>
+                </form>
+            </th:block>
+
+            <th:block th:unless="${#authorization.expression('isAuthenticated()')}">
+                <a
+                        th:href="@{/qrgen/auth/login}"
+                        class="site-nav-link site-nav-link-secondary"
+                        th:classappend="${isQrLogin} ? ' is-active'">
+                    로그인
+                </a>
+                <a
+                        th:href="@{/qrgen/auth/register}"
+                        class="site-nav-link site-nav-link-accent"
+                        th:classappend="${isQrRegister} ? ' is-active'">
+                    회원가입
+                </a>
+            </th:block>
+        </nav>
+    </div>
+</header>

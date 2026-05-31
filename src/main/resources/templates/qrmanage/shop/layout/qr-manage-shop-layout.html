@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title th:text="${title} + ' - QR 관리 상점관리자'">QR 관리 상점관리자</title>
+    <link rel="stylesheet" th:href="@{/qrmanage/css/shop.css}">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="qr-manage-header">
+        <div class="qr-manage-container">
+            <div class="qr-manage-header-content">
+                <a th:href="@{/qr-manage/shop/admin/dashboard}" class="qr-manage-logo">
+                    QR 관리 - 상점
+                </a>
+                <nav class="qr-manage-nav">
+                    <a th:href="@{/qr-manage/shop/admin/dashboard}" class="qr-manage-nav-link">대시보드</a>
+                    <a th:href="@{/qr-manage/shop/admin/info}" class="qr-manage-nav-link">상점정보</a>
+                    <a th:href="@{/qr-manage/shop/admin/category/list}" class="qr-manage-nav-link">카테고리</a>
+                    <a th:href="@{/qr-manage/shop/admin/menu/list}" class="qr-manage-nav-link">메뉴</a>
+                    <a th:href="@{/qr-manage/shop/admin/qrcode/list}" class="qr-manage-nav-link">QR코드</a>
+                    <a th:href="@{/qr-manage/shop/admin/stats}" class="qr-manage-nav-link">통계</a>
+                </nav>
+                <div class="qr-manage-header-right">
+                    <!-- 알림 벨 -->
+                    <a th:href="@{/qr-manage/shop/admin/notification}" class="qr-manage-notification-bell">
+                        <span class="qr-manage-bell-icon">🔔</span>
+                        <span th:if="${unreadNotificationCount > 0}"
+                              class="qr-manage-notification-badge"
+                              th:text="${unreadNotificationCount}">0</span>
+                    </a>
+                    <span class="qr-manage-user-name" th:text="${#authentication.name}">상점관리자</span>
+                    <a th:href="@{/qr-manage/shop/auth/logout}" class="qr-manage-logout-link">로그아웃</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메시지 알림 -->
+    <div th:if="${message}" class="qr-manage-alert qr-manage-alert-success">
+        <div class="qr-manage-container">
+            <p th:text="${message}"></p>
+        </div>
+    </div>
+
+    <div th:if="${error}" class="qr-manage-alert qr-manage-alert-error">
+        <div class="qr-manage-container">
+            <p th:text="${error}"></p>
+        </div>
+    </div>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="qr-manage-main">
+        <div class="qr-manage-container">
+            <th:block layout:fragment="content"></th:block>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="qr-manage-footer">
+        <div class="qr-manage-container">
+            <p>&copy; 2024 QR 관리 시스템. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- 공통 JavaScript -->
+    <script th:src="@{/qrmanage/js/shop.js}"></script>
+</body>
+</html>

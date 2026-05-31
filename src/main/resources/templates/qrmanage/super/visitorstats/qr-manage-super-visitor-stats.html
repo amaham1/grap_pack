@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <div>
+            <h1 class="qr-manage-page-title">방문자 통계</h1>
+            <p class="qr-manage-page-description">
+                방문 수와 중복 제외 방문자 수는 BOT을 제외한 실제 방문 기준입니다.
+                BOT 요청과 BOT 세션은 아래 별도 카드에서 따로 확인할 수 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">필터</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <form method="get" th:action="@{/qr-manage/super/admin/visitor-stats}" class="qr-manage-filter-form">
+                <div class="qr-manage-filter-grid">
+                    <label class="qr-manage-filter-field">
+                        <span>시작일</span>
+                        <input type="date" name="startDate" th:value="${selectedStartDate}">
+                    </label>
+                    <label class="qr-manage-filter-field">
+                        <span>종료일</span>
+                        <input type="date" name="endDate" th:value="${selectedEndDate}">
+                    </label>
+                    <label class="qr-manage-filter-field">
+                        <span>서비스</span>
+                        <select name="serviceCode" onchange="this.form.submit()">
+                            <option value="">전체</option>
+                            <option th:each="service : ${serviceCodes}"
+                                    th:value="${service.name()}"
+                                    th:text="${service.displayName}"
+                                    th:selected="${selectedServiceCode == service}"></option>
+                        </select>
+                    </label>
+                    <label class="qr-manage-filter-field">
+                        <span>메뉴</span>
+                        <select name="menuCode">
+                            <option value="">전체</option>
+                            <option th:each="menu : ${availableMenuCodes}"
+                                    th:value="${menu.name()}"
+                                    th:text="${menu.displayName}"
+                                    th:selected="${selectedMenuCode == menu}"></option>
+                        </select>
+                    </label>
+                </div>
+                <div class="qr-manage-filter-actions">
+                    <button type="submit" class="qr-manage-btn qr-manage-btn-primary">조회</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="qr-manage-stats-grid qr-manage-visitor-summary-grid">
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 방문 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.totalPv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 중복 제외 방문자 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.totalUv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 방문 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.todayPv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 중복 제외 방문자 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.todayUv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">평균 체류시간</div>
+            <div class="qr-manage-stat-value"
+                 th:text="${#numbers.formatDecimal(dashboardStats.averageDurationSeconds, 1, 1)} + '초'">0.0초</div>
+        </div>
+    </div>
+
+    <div class="qr-manage-stats-grid qr-manage-visitor-summary-grid">
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 BOT 요청 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.totalBotPv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">전체 BOT 세션 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.totalBotUv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 BOT 요청 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.todayBotPv}">0</div>
+        </div>
+        <div class="qr-manage-stat-card">
+            <div class="qr-manage-stat-label">오늘 BOT 세션 수</div>
+            <div class="qr-manage-stat-value" th:text="${dashboardStats.todayBotUv}">0</div>
+        </div>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">일별 방문 현황</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-chart-container">
+                <canvas id="visitorDailyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">서비스 / 메뉴별 일반 방문 요약</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-table-wrapper">
+                <table class="qr-manage-table">
+                    <thead>
+                    <tr>
+                        <th>서비스</th>
+                        <th>메뉴</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
+                        <th>평균 체류시간</th>
+                        <th>모바일 비율</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(menuStats)}">
+                        <td colspan="6" class="qr-manage-no-data">조건에 맞는 데이터가 없습니다.</td>
+                    </tr>
+                    <tr th:each="stat : ${menuStats}">
+                        <td th:text="${stat.serviceDisplayName}">서비스</td>
+                        <td th:text="${stat.menuDisplayName}">메뉴</td>
+                        <td th:text="${stat.pv}">0</td>
+                        <td th:text="${stat.uv}">0</td>
+                        <td th:text="${#numbers.formatDecimal(stat.averageDurationSeconds, 1, 1)} + '초'">0.0초</td>
+                        <td th:text="${#numbers.formatDecimal(stat.mobileRatio, 1, 1)} + '%'">0.0%</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">상세 경로별 일반 방문 현황</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <p th:if="${!showRouteBreakdown}" class="qr-manage-no-data">메뉴를 선택하면 상세 경로 기준 방문 통계를 확인할 수 있습니다.</p>
+            <div th:if="${showRouteBreakdown}" class="qr-manage-table-wrapper">
+                <table class="qr-manage-table">
+                    <thead>
+                    <tr>
+                        <th>상세 경로</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
+                        <th>평균 체류시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(routeStats)}">
+                        <td colspan="4" class="qr-manage-no-data">상세 경로 데이터가 없습니다.</td>
+                    </tr>
+                    <tr th:each="stat : ${routeStats}">
+                        <td th:text="${stat.routeKey}">/sample</td>
+                        <td th:text="${stat.pv}">0</td>
+                        <td th:text="${stat.uv}">0</td>
+                        <td th:text="${#numbers.formatDecimal(stat.averageDurationSeconds, 1, 1)} + '초'">0.0초</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">일반 방문 기기 비율</h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-device-grid">
+                <div class="qr-manage-device-card" th:each="stat : ${deviceStats}">
+                    <div class="qr-manage-device-title" th:text="${stat.deviceDisplayName}">기기</div>
+                    <div class="qr-manage-device-value" th:text="${stat.pv}">0</div>
+                    <div class="qr-manage-device-ratio" th:text="${#numbers.formatDecimal(stat.ratio, 1, 1)} + '%'">0.0%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-page-description {
+            margin-top: 6px;
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .qr-manage-filter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .qr-manage-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .qr-manage-filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #4b5563;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .qr-manage-filter-field input,
+        .qr-manage-filter-field select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .qr-manage-filter-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .qr-manage-visitor-summary-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+
+        .qr-manage-chart-container {
+            height: 320px;
+        }
+
+        .qr-manage-device-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .qr-manage-device-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 18px;
+            background: #f9fafb;
+            text-align: center;
+        }
+
+        .qr-manage-device-title {
+            color: #6b7280;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .qr-manage-device-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .qr-manage-device-ratio {
+            margin-top: 6px;
+            color: #2563eb;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1100px) {
+            .qr-manage-filter-grid,
+            .qr-manage-visitor-summary-grid,
+            .qr-manage-device-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .qr-manage-filter-grid,
+            .qr-manage-visitor-summary-grid,
+            .qr-manage-device-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const dailyStats = /*[[${dailyStats}]]*/ [];
+        const chartElement = document.getElementById('visitorDailyChart');
+
+        if (chartElement) {
+            new Chart(chartElement, {
+                type: 'line',
+                data: {
+                    labels: dailyStats.map(item => item.date),
+                    datasets: [
+                        {
+                            label: '방문 수',
+                            data: dailyStats.map(item => item.pv),
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.12)',
+                            fill: true,
+                            tension: 0.25
+                        },
+                        {
+                            label: '중복 제외 방문자 수',
+                            data: dailyStats.map(item => item.uv),
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                            fill: false,
+                            tension: 0.25
+                        },
+                        {
+                            label: 'BOT 요청 수',
+                            data: dailyStats.map(item => item.botPv),
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                            fill: false,
+                            tension: 0.25
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        /*]]>*/
+    </script>
+</th:block>
+</html>

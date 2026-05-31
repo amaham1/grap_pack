@@ -1,0 +1,102 @@
+package co.grap.pack.qrmanage.superadmin.visitorstats.mapper;
+
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDashboardStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDailyStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorDeviceStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorIpAccessLog;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorMenuStats;
+import co.grap.pack.qrmanage.superadmin.visitorstats.model.QrManageSuperVisitorRouteStats;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * 슈퍼 관리자 방문자 통계 Mapper 인터페이스다.
+ */
+@Mapper
+public interface QrManageSuperVisitorStatsMapper {
+
+    /**
+     * 기간 기준 요약 통계를 조회한다.
+     */
+    QrManageSuperVisitorDashboardStats selectDashboardStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 오늘 기준 통계를 조회한다.
+     */
+    QrManageSuperVisitorDashboardStats selectTodayStats(
+            @Param("targetDate") String targetDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 일별 추이 통계를 조회한다.
+     */
+    List<QrManageSuperVisitorDailyStats> selectDailyStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 서비스와 메뉴별 요약 통계를 조회한다.
+     */
+    List<QrManageSuperVisitorMenuStats> selectMenuStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 상세 경로별 통계를 조회한다.
+     */
+    List<QrManageSuperVisitorRouteStats> selectRouteStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 디바이스 유형별 통계를 조회한다.
+     */
+    List<QrManageSuperVisitorDeviceStats> selectDeviceStats(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode
+    );
+
+    /**
+     * 조건에 맞는 IP 접속 기록 전체 수를 조회한다.
+     */
+    Long selectRecentIpAccessLogCount(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode,
+            @Param("includeBots") boolean includeBots
+    );
+
+    /**
+     * 최근 IP 접속 기록을 페이지 단위로 조회한다.
+     */
+    List<QrManageSuperVisitorIpAccessLog> selectRecentIpAccessLogs(
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate,
+            @Param("serviceCode") String serviceCode,
+            @Param("menuCode") String menuCode,
+            @Param("includeBots") boolean includeBots,
+            @Param("offset") int offset,
+            @Param("pageSize") int pageSize
+    );
+}

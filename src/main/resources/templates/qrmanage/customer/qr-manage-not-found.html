@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/customer/layout/qr-manage-customer-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-error-container">
+        <div class="qr-manage-error-icon">🔍</div>
+        <h1 class="qr-manage-error-title">페이지를 찾을 수 없습니다</h1>
+        <p class="qr-manage-error-message">
+            요청하신 상점 또는 메뉴 정보를 찾을 수 없습니다.
+        </p>
+        <p class="qr-manage-error-hint">
+            상점이 비공개 상태이거나 삭제되었을 수 있습니다.
+        </p>
+    </div>
+
+    <style>
+        .qr-manage-error-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .qr-manage-error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .qr-manage-error-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin: 0 0 15px 0;
+        }
+        .qr-manage-error-message {
+            font-size: 15px;
+            color: #666;
+            margin: 0 0 10px 0;
+            line-height: 1.5;
+        }
+        .qr-manage-error-hint {
+            font-size: 14px;
+            color: #999;
+            margin: 0;
+        }
+    </style>
+</th:block>
+
+</html>

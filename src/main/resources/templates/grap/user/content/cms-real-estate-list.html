@@ -1,0 +1,294 @@
+<div class="user-page-header">
+    <h2>제주도 부동산 실거래가</h2>
+    <p class="text-muted">제주도 부동산 매매와 전월세 실거래 데이터를 월별로 검색하고, 상세 시세 흐름과 매수 가능성을 함께 확인하세요.</p>
+</div>
+
+<section class="real-estate-seo-summary" aria-labelledby="real-estate-seo-title">
+    <h3 id="real-estate-seo-title">제주도 부동산 거래 정보를 한눈에</h3>
+    <p>
+        제주도 아파트, 연립·다세대, 오피스텔, 단독·다가구 부동산의 실제 거래 금액과 계약일,
+        면적, 지역 정보를 모아 비교할 수 있습니다.
+    </p>
+</section>
+
+<section class="real-estate-info-panel" aria-labelledby="real-estate-info-title">
+    <div class="real-estate-section-header">
+        <div>
+            <p class="real-estate-section-eyebrow">제주도 부동산 실거래가</p>
+            <h3 id="real-estate-info-title">검색 전에 확인할 수 있는 기준 정보</h3>
+        </div>
+    </div>
+    <div class="real-estate-info-grid">
+        <article class="real-estate-info-card">
+            <span>최신 기준월</span>
+            <strong th:text="${hasData ? formattedCurrentPropertyMonth : '데이터 준비 중'}"></strong>
+            <p th:if="${hasData}">
+                현재 목록 기준 <span th:text="${#numbers.formatInteger(totalCount, 0, 'COMMA')}"></span>건의 제주도 부동산 거래를 확인할 수 있습니다.
+            </p>
+            <p th:unless="${hasData}">관리자 동기화 후 최신 거래 기준월이 표시됩니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>거래 유형</span>
+            <strong>매매 · 전월세</strong>
+            <p>아파트, 연립·다세대, 오피스텔, 단독·다가구 거래를 함께 비교합니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>지역 범위</span>
+            <strong>제주시 · 서귀포시</strong>
+            <p>시군구, 읍면동, 주소, 단지명 기준으로 제주도 부동산 거래를 좁혀 볼 수 있습니다.</p>
+        </article>
+        <article class="real-estate-info-card">
+            <span>데이터 기준</span>
+            <strong>국토교통부 실거래 공개 데이터</strong>
+            <p>거래금액, 계약일, 전용면적, 층수, 준공연도 정보를 화면 표시용으로 정리합니다.</p>
+        </article>
+    </div>
+</section>
+
+<div class="user-search-section real-estate-search-section">
+    <form th:action="@{/grap/user/content/real-estate}" method="get" class="user-search-form real-estate-search-form">
+        <input type="text"
+               name="keyword"
+               th:value="${filters['keyword']}"
+               placeholder="아파트명, 읍면동, 주소 검색"
+               class="user-form-control">
+
+        <select name="dealYearMonth" class="user-form-control real-estate-select">
+            <option value="">월 선택</option>
+            <option th:each="monthOption : ${availableMonths}"
+                    th:value="${monthOption['value']}"
+                    th:selected="${monthOption['value'] == filters['dealYearMonth']}"
+                    th:text="${monthOption['label']}"></option>
+        </select>
+
+        <select name="sort" class="user-form-control real-estate-select">
+            <option th:each="sortOption : ${sortOptions}"
+                    th:value="${sortOption['value']}"
+                    th:selected="${sortOption['value'] == filters['sort']}"
+                    th:text="${sortOption['label']}"></option>
+        </select>
+
+        <div class="real-estate-advanced-filter-grid">
+            <select name="sggName" class="user-form-control real-estate-select">
+                <option value="">시군구 전체</option>
+                <option th:each="option : ${sggOptions}"
+                        th:value="${option['value']}"
+                        th:selected="${option['value'] == filters['sggName']}"
+                        th:text="${option['label']}"></option>
+            </select>
+
+            <select name="umdName" class="user-form-control real-estate-select">
+                <option value="">읍면동 전체</option>
+                <option th:each="option : ${umdOptions}"
+                        th:value="${option['value']}"
+                        th:selected="${option['value'] == filters['umdName']}"
+                        th:text="${option['label']}"></option>
+            </select>
+
+            <select name="propertyCategory" class="user-form-control real-estate-select">
+                <option value="">유형 전체</option>
+                <option th:each="option : ${categoryOptions}"
+                        th:value="${option['value']}"
+                        th:selected="${option['value'] == filters['propertyCategory']}"
+                        th:text="${option['label']}"></option>
+            </select>
+
+            <select name="transactionType" class="user-form-control real-estate-select">
+                <option value="">거래 전체</option>
+                <option th:each="option : ${transactionOptions}"
+                        th:value="${option['value']}"
+                        th:selected="${option['value'] == filters['transactionType']}"
+                        th:text="${option['label']}"></option>
+            </select>
+
+            <input type="number"
+                   name="minAmount"
+                   min="0"
+                   step="100"
+                   th:value="${filters['minAmount']}"
+                   placeholder="최소 금액(만원)"
+                   class="user-form-control">
+
+            <input type="number"
+                   name="maxAmount"
+                   min="0"
+                   step="100"
+                   th:value="${filters['maxAmount']}"
+                   placeholder="최대 금액(만원)"
+                   class="user-form-control">
+
+            <input type="number"
+                   name="minAreaPyeong"
+                   min="0"
+                   step="0.1"
+                   th:value="${filters['minAreaPyeong']}"
+                   placeholder="최소 면적(평)"
+                   class="user-form-control">
+
+            <input type="number"
+                   name="maxAreaPyeong"
+                   min="0"
+                   step="0.1"
+                   th:value="${filters['maxAreaPyeong']}"
+                   placeholder="최대 면적(평)"
+                   class="user-form-control">
+
+            <input type="number"
+                   name="minBuildYear"
+                   min="1900"
+                   step="1"
+                   th:value="${filters['minBuildYear']}"
+                   placeholder="최소 준공연도"
+                   class="user-form-control">
+
+            <input type="number"
+                   name="maxBuildYear"
+                   min="1900"
+                   step="1"
+                   th:value="${filters['maxBuildYear']}"
+                   placeholder="최대 준공연도"
+                   class="user-form-control">
+        </div>
+
+        <div class="real-estate-filter-actions">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
+            <a th:href="@{/grap/user/content/real-estate}" class="user-btn user-btn-secondary">초기화</a>
+        </div>
+    </form>
+</div>
+
+<div class="real-estate-summary">
+    <span th:if="${hasData}">
+        기준월: <strong th:text="${formattedCurrentPropertyMonth}"></strong>
+        (<span th:text="${#numbers.formatInteger(totalCount, 0, 'COMMA')}"></span>건)
+    </span>
+    <span th:unless="${hasData}">
+        아직 적재된 부동산 데이터가 없습니다. 관리자 동기화 후 다시 확인해주세요.
+    </span>
+</div>
+
+<section class="real-estate-saved-panel" aria-label="저장한 부동산 거래">
+    <article class="real-estate-saved-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">관심 거래</p>
+                <h3>나중에 다시 볼 거래</h3>
+            </div>
+        </div>
+        <div data-real-estate-storage-list="favorites"
+             data-empty-message="아직 관심 거래가 없습니다."
+             class="real-estate-storage-list"></div>
+    </article>
+
+    <article class="real-estate-saved-card">
+        <div class="real-estate-section-header">
+            <div>
+                <p class="real-estate-section-eyebrow">최근 본 거래</p>
+                <h3>최근 확인한 상세</h3>
+            </div>
+        </div>
+        <div data-real-estate-storage-list="recent"
+             data-empty-message="아직 최근 본 거래가 없습니다."
+             class="real-estate-storage-list"></div>
+    </article>
+</section>
+
+<div class="real-estate-card-grid" th:if="${hasData and !#lists.isEmpty(propertyList)}">
+    <article th:each="property : ${propertyList}" class="user-content-card real-estate-card">
+        <div class="user-card-header">
+            <div class="real-estate-badges">
+                <span class="user-badge badge-real-estate-location" th:text="${property['sggName'] + ' ' + property['umdName']}"></span>
+                <span class="user-badge badge-real-estate-type" th:text="${property['categoryLabel'] + ' · ' + property['transactionLabel']}"></span>
+            </div>
+        </div>
+
+        <h3>
+            <a th:href="@{/grap/user/content/real-estate/{id}(id=${property['id']})}"
+               th:text="${property['displayName']}"></a>
+        </h3>
+        <p class="real-estate-address" th:text="${property['address']}"></p>
+
+        <div class="real-estate-amount-block">
+            <span class="real-estate-amount-label" th:text="${property['amountLabel']}"></span>
+            <strong class="real-estate-amount-value" th:text="${property['formattedDisplayAmount']}"></strong>
+            <p th:if="${property['transactionType'] == 'rent'}" class="real-estate-rent-note">
+                월세 <span th:text="${property['formattedMonthlyRent']}"></span>
+            </p>
+        </div>
+
+        <dl class="real-estate-meta-list">
+            <div>
+                <dt>계약일</dt>
+                <dd th:text="${property['formattedDealDate']}"></dd>
+            </div>
+            <div>
+                <dt>전용면적</dt>
+                <dd th:text="${property['formattedAreaLabel']}"></dd>
+            </div>
+            <div>
+                <dt>층수</dt>
+                <dd th:text="${property['formattedFloor']}"></dd>
+            </div>
+            <div>
+                <dt>준공연도</dt>
+                <dd th:text="${property['formattedBuildYear']}"></dd>
+            </div>
+        </dl>
+
+        <div class="user-card-footer real-estate-card-footer">
+            <a th:href="@{/grap/user/content/real-estate/{id}(id=${property['id']})}" class="user-btn user-btn-primary">
+                상세 분석 보기
+            </a>
+            <button type="button"
+                    class="user-btn user-btn-secondary real-estate-favorite-button"
+                    data-real-estate-favorite-button
+                    th:attr="data-property-id=${property['id']},
+                             data-property-name=${property['displayName']},
+                             data-property-address=${property['address']},
+                             data-property-transaction-label=${property['transactionLabel']},
+                             data-property-amount-label=${property['formattedDisplayAmount']},
+                             data-property-deal-month=${property['dealYearMonth']}">
+                관심 등록
+            </button>
+            <a th:if="${property['kakaoMapSearchUrl'] != null and property['kakaoMapSearchUrl'] != ''}"
+               th:href="${property['kakaoMapSearchUrl']}"
+               class="real-estate-map-link"
+               target="_blank"
+               rel="noopener noreferrer"
+               th:attr="title=|카카오맵에서 ${property['displayName']} 위치 보기|,
+                        aria-label=|카카오맵에서 ${property['displayName']} 위치 보기|">
+                <span class="real-estate-map-link-icon" aria-hidden="true"></span>
+            </a>
+        </div>
+    </article>
+</div>
+
+<div th:if="${!hasData or #lists.isEmpty(propertyList)}" class="user-empty-message real-estate-empty-message">
+    <p th:if="${hasData}">조건에 맞는 실거래 데이터가 없습니다.</p>
+    <p th:unless="${hasData}">아직 조회할 부동산 실거래 데이터가 없습니다.</p>
+</div>
+
+<div th:if="${totalPages > 0}" class="pagination real-estate-pagination">
+    <a th:if="${pageInfo.hasPrevious}"
+       th:href="@{/grap/user/content/real-estate(page=${currentPage - 1}, keyword=${filters['keyword']}, dealYearMonth=${filters['dealYearMonth']}, sort=${filters['sort']}, sggName=${filters['sggName']}, umdName=${filters['umdName']}, propertyCategory=${filters['propertyCategory']}, transactionType=${filters['transactionType']}, minAmount=${filters['minAmount']}, maxAmount=${filters['maxAmount']}, minAreaPyeong=${filters['minAreaPyeong']}, maxAreaPyeong=${filters['maxAreaPyeong']}, minBuildYear=${filters['minBuildYear']}, maxBuildYear=${filters['maxBuildYear']})}"
+       class="btn btn-sm">이전</a>
+
+    <span th:each="page : ${pageInfo.pages}">
+        <span th:if="${page.isEllipsis}" class="pagination-ellipsis">...</span>
+        <a th:if="${!page.isEllipsis}"
+           th:href="@{/grap/user/content/real-estate(page=${page.number}, keyword=${filters['keyword']}, dealYearMonth=${filters['dealYearMonth']}, sort=${filters['sort']}, sggName=${filters['sggName']}, umdName=${filters['umdName']}, propertyCategory=${filters['propertyCategory']}, transactionType=${filters['transactionType']}, minAmount=${filters['minAmount']}, maxAmount=${filters['maxAmount']}, minAreaPyeong=${filters['minAreaPyeong']}, maxAreaPyeong=${filters['maxAreaPyeong']}, minBuildYear=${filters['minBuildYear']}, maxBuildYear=${filters['maxBuildYear']})}"
+           th:text="${page.number}"
+           th:class="|btn btn-sm ${page.isActive ? 'active' : ''}|"></a>
+    </span>
+
+    <a th:if="${pageInfo.hasNext}"
+       th:href="@{/grap/user/content/real-estate(page=${currentPage + 1}, keyword=${filters['keyword']}, dealYearMonth=${filters['dealYearMonth']}, sort=${filters['sort']}, sggName=${filters['sggName']}, umdName=${filters['umdName']}, propertyCategory=${filters['propertyCategory']}, transactionType=${filters['transactionType']}, minAmount=${filters['minAmount']}, maxAmount=${filters['maxAmount']}, minAreaPyeong=${filters['minAreaPyeong']}, maxAreaPyeong=${filters['maxAreaPyeong']}, minBuildYear=${filters['minBuildYear']}, maxBuildYear=${filters['maxBuildYear']})}"
+       class="btn btn-sm">다음</a>
+</div>
+
+<div class="pagination-info" th:if="${totalPages > 0}">
+    전체 <span th:text="${#numbers.formatInteger(totalCount, 0, 'COMMA')}"></span>건
+    (<span th:text="${currentPage}"></span> / <span th:text="${totalPages}"></span> 페이지)
+</div>
+
+<script th:src="@{/grap/js/user-real-estate-storage.js}"></script>

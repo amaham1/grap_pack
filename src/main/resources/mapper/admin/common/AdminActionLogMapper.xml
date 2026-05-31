@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.admin.common.mapper.AdminActionLogMapper">
+
+    <insert id="insert" parameterType="co.grap.pack.admin.common.model.AdminActionLog" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO admin_action_log (
+            operator_id,
+            domain_code,
+            action_code,
+            target_type,
+            target_id,
+            summary,
+            ip_address,
+            created_at
+        ) VALUES (
+            #{operatorId},
+            #{domainCode},
+            #{actionCode},
+            #{targetType},
+            #{targetId},
+            #{summary},
+            #{ipAddress},
+            NOW()
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,95 @@
+<div class="user-page-header">
+        <h2>제주 축제/행사</h2>
+        <p class="text-muted">제주도의 다양한 축제와 행사 정보를 확인하세요</p>
+    </div>
+
+    <!-- 검색 -->
+    <div class="user-search-section">
+        <form th:action="@{/grap/user/content/festivals}" method="get" class="user-search-form" data-ajax="true">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="축제/행사명 검색" class="user-form-control">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
+        </form>
+    </div>
+
+    <!-- 축제/행사 목록 -->
+    <div class="user-content-grid" id="festival-list">
+        <div th:each="festival : ${festivalList}" class="user-content-card user-festival-card user-clickable-card"
+             th:data-href="@{/grap/user/content/festivals/{id}(id=${festival['id']})}">
+            <!-- 썸네일 이미지 -->
+            <div class="user-card-image">
+                <img th:if="${festival['thumbnailUrl'] != null}"
+                     th:src="${festival['thumbnailUrl']}"
+                     th:alt="${festival['title']}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="user-image-placeholder" th:style="${festival['thumbnailUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                    <span>이미지 없음</span>
+                </div>
+            </div>
+
+            <div class="user-card-content">
+                <div class="user-card-header">
+                    <div class="user-badge-group">
+                        <span class="user-badge badge-festival">축제/행사</span>
+                        <!-- 마감임박 배지 (작성일로부터 7일 이내) -->
+                        <span th:if="${festival['writtenDate'] != null and festival['daysUntil'] != null and festival['daysUntil'] <= 7 and festival['daysUntil'] >= 0}"
+                              class="user-badge user-badge-urgent">마감임박</span>
+                    </div>
+                    <span class="user-date" th:if="${festival['writtenDate'] != null}"
+                          th:text="${#temporals.format(festival['writtenDate'], 'yyyy.MM.dd')}"></span>
+                </div>
+                <h3>
+                    <a th:href="@{/grap/user/content/festivals/{id}(id=${festival['id']})}"
+                       th:text="${festival['title']}"></a>
+                </h3>
+
+                <!-- 내용 미리보기 -->
+                <div class="user-card-preview" th:if="${festival['contentPreview'] != null and !#strings.isEmpty(festival['contentPreview'])}">
+                    <p th:text="${festival['contentPreview']}"></p>
+                </div>
+
+                <div class="user-card-meta">
+                    <span th:if="${festival['writerName'] != null}"
+                          th:text="${festival['writerName']}"></span>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(festivalList)}" class="user-empty-message">
+            <p>등록된 축제/행사가 없습니다.</p>
+        </div>
+    </div>
+
+    <!-- 페이징 (공통 fragment 사용) -->
+    <div th:replace="~{common/fragments/cms-pagination :: user-pagination(
+        baseUrl='/grap/user/content/festivals',
+        pageInfo=${pageInfo},
+        currentPage=${currentPage},
+        totalPages=${totalPages},
+        totalCount=${totalCount},
+        keyword=${keyword},
+        tab=${null}
+    )}"></div>
+
+    <!-- 등록 요청 버튼 -->
+    <div class="user-request-button-wrapper">
+        <a th:href="@{/grap/user/content/festivals/request}" class="user-btn user-btn-request">
+            등록 요청
+        </a>
+    </div>
+
+    <!-- 성공 메시지 alert -->
+    <script th:if="${successMessage}" th:inline="javascript">
+        (function() {
+            const msg = /*[[${successMessage}]]*/ '';
+            alert(msg);
+        })();
+    </script>
+
+    <style>
+        /* 축제/행사 전용 스타일 */
+        .badge-festival {
+            background-color: #ff6b6b;
+            color: white;
+        }
+    </style>

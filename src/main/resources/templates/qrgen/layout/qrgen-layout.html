@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${seoTitle != null ? seoTitle + ' | Grap QR' : 'Grap QR'}">Grap QR</title>
+
+    <meta name="description"
+          th:content="${seoDescription != null ? seoDescription : '무료 QR 코드를 생성하고 저장할 수 있습니다.'}">
+    <meta name="robots" th:content="${seoRobots != null ? seoRobots : 'index, follow'}">
+    <link rel="canonical" th:if="${seoCanonical != null}" th:href="${seoCanonical}">
+
+    <meta property="og:type" th:content="${seoOgType != null ? seoOgType : 'website'}">
+    <meta property="og:title" th:content="${seoTitle != null ? seoTitle : 'Grap QR'}">
+    <meta property="og:description"
+          th:content="${seoDescription != null ? seoDescription : '무료 QR 코드를 생성하고 저장할 수 있습니다.'}">
+    <meta property="og:url" th:if="${seoCanonical != null}" th:content="${seoCanonical}">
+    <meta property="og:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+    <meta property="og:site_name" th:content="${seoSiteName != null ? seoSiteName : 'Grap QR'}">
+    <meta property="og:locale" th:content="${seoLocale != null ? seoLocale : 'ko_KR'}">
+
+    <meta name="twitter:card" th:content="${seoTwitterCard != null ? seoTwitterCard : 'summary'}">
+    <meta name="twitter:title" th:content="${seoTitle != null ? seoTitle : 'Grap QR'}">
+    <meta name="twitter:description"
+          th:content="${seoDescription != null ? seoDescription : '무료 QR 코드를 생성하고 저장할 수 있습니다.'}">
+    <meta name="twitter:image" th:if="${seoOgImage != null}" th:content="${seoOgImage}">
+
+    <link rel="icon" type="image/svg+xml" th:href="@{/qrgen/images/favicon.svg}">
+
+    <link rel="stylesheet" th:href="@{/common/css/base.css}">
+    <link rel="stylesheet" th:href="@{/common/css/site-header.css}">
+    <link rel="stylesheet" th:href="@{/qrgen/css/qrgen.css}">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <th:block th:replace="~{common/fragments/adsense-script :: adsense-script}"></th:block>
+    <th:block th:if="${seoStructuredDataList != null}">
+        <script th:each="seoStructuredData : ${seoStructuredDataList}"
+                type="application/ld+json"
+                th:utext="${seoStructuredData}"></script>
+    </th:block>
+</head>
+<body>
+<div th:replace="~{common/fragments/cms-header :: user-header}"></div>
+
+<main class="qrgen-main">
+    <div layout:fragment="content"></div>
+</main>
+
+<footer class="qrgen-footer">
+    <p>Grap QR</p>
+    <p class="qrgen-footer-contact">문의 : 82grap@gmail.com</p>
+</footer>
+
+<script th:src="@{/qrgen/js/qrgen.js}"></script>
+<script th:if="${packVisitorId != null}">
+    window.PACK_VISITOR_ID = [[${packVisitorId}]];
+</script>
+<script th:if="${packVisitorId != null}" th:src="@{/common/js/pack-visitor.js}"></script>
+</body>
+</html>

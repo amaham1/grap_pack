@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.admin.qr.mapper.AdminQrQueryMapper">
+
+    <resultMap id="shopResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop">
+        <id property="id" column="id"/>
+        <result property="shopAdminId" column="shop_admin_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="shopAdminName" column="shop_admin_name"/>
+        <result property="shopAdminEmail" column="shop_admin_email"/>
+    </resultMap>
+
+    <select id="countSuperAdminNotifications" resultType="int">
+        SELECT COUNT(*)
+        FROM qr_manage_notification
+        WHERE recipient_type = 'SUPER_ADMIN'
+    </select>
+
+    <select id="findShopsByShopAdminId" resultMap="shopResultMap">
+        SELECT s.*, sa.name AS shop_admin_name, sa.email AS shop_admin_email
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE s.shop_admin_id = #{shopAdminId}
+        ORDER BY s.created_at DESC
+    </select>
+
+</mapper>

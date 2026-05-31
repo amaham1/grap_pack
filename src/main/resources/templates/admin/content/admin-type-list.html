@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <div class="admin-toolbar">
+            <div>
+                <p class="admin-card-label">콘텐츠 운영</p>
+                <h2>콘텐츠 타입</h2>
+            </div>
+            <a th:href="@{/admin/content/types/new}" class="admin-primary-button">새 타입</a>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>타입명</th>
+                    <th>설명</th>
+                    <th>상태</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${contentTypes}">
+                    <td th:text="${item.contentTypeId}">1</td>
+                    <td th:text="${item.typeName}">타입</td>
+                    <td th:text="${item.typeDesc}">설명</td>
+                    <td>
+                        <span class="admin-chip" th:if="${item.isActive}">활성</span>
+                        <span class="admin-chip admin-chip-muted" th:unless="${item.isActive}">비활성</span>
+                    </td>
+                    <td>
+                        <div class="admin-actions">
+                            <a th:href="@{/admin/content/types/{id}/edit(id=${item.contentTypeId})}" class="admin-secondary-button">수정</a>
+                            <form th:action="@{/admin/content/types/{id}/delete(id=${item.contentTypeId})}" method="post">
+                                <button type="submit" class="admin-danger-button">삭제</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(contentTypes)}">
+                    <td colspan="5">등록된 콘텐츠 타입이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

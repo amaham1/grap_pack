@@ -1,34 +1,117 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} + ' - CMS 관리자'">CMS 관리자</title>
-    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}"/>
+    <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : ''}"/>
+    <title th:text="${title} + ' - Grap Pack Admin'">Grap Pack Admin</title>
+    <link rel="stylesheet" th:href="@{/admin/css/admin.css}">
 </head>
-<body>
-    <!-- 헤더 -->
-    <div th:replace="~{common/fragments/header :: admin-header}"></div>
+<body class="admin-app-shell">
+<div class="admin-shell">
+    <aside class="admin-sidebar">
+        <a class="admin-brand" th:href="@{/admin/dashboard}">
+            <span class="admin-brand-mark">GP</span>
+            <span class="admin-brand-text">Grap Pack Admin</span>
+        </a>
 
-    <!-- 메시지 알림 -->
-    <div th:if="${message}" class="alert alert-success">
-        <div class="container">
-            <p th:text="${message}"></p>
-        </div>
+        <nav class="admin-nav">
+            <div class="admin-nav-group">
+                <p class="admin-nav-title">메인</p>
+                <a th:href="@{/admin/dashboard}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath == '/admin/dashboard'} ? ' active'">대시보드</a>
+            </div>
+
+            <div class="admin-nav-group">
+                <p class="admin-nav-title">콘텐츠 운영</p>
+                <a th:href="@{/admin/content/articles}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/content/articles')} ? ' active'">수기 콘텐츠</a>
+                <a th:href="@{/admin/content/types}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/content/types')} ? ' active'">콘텐츠 타입</a>
+                <a th:href="@{/admin/content/datasets/festivals}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/content/datasets')} ? ' active'">외부 데이터셋</a>
+                <a th:href="@{/admin/content/sync-jobs}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/content/sync-jobs')} ? ' active'">동기화 작업</a>
+            </div>
+
+            <div class="admin-nav-group">
+                <p class="admin-nav-title">QR 운영</p>
+                <a th:href="@{/admin/qr/shops}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/shops')} ? ' active'">상점</a>
+                <a th:href="@{/admin/qr/shop-admins}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/shop-admins')} ? ' active'">점주 계정</a>
+                <a th:href="@{/admin/qr/qrcodes}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/qrcodes')} ? ' active'">QR 코드</a>
+                <a th:href="@{/admin/qr/notifications}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/notifications')} ? ' active'">알림</a>
+                <a th:href="@{/admin/qr/activity-logs}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/activity-logs')} ? ' active'">활동 로그</a>
+                <a th:href="@{/admin/qr/scan-stats}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qr/scan-stats')} ? ' active'">스캔 통계</a>
+            </div>
+
+            <div class="admin-nav-group">
+                <p class="admin-nav-title">QRgen 운영</p>
+                <a th:href="@{/admin/qrgen/users}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qrgen/users')} ? ' active'">회원</a>
+                <a th:href="@{/admin/qrgen/histories}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/qrgen/histories')} ? ' active'">생성 이력</a>
+            </div>
+
+            <div class="admin-nav-group">
+                <p class="admin-nav-title">통계</p>
+                <a th:href="@{/admin/analytics/visitors}"
+                   class="admin-nav-link"
+                   th:classappend="${currentPath != null and currentPath.startsWith('/admin/analytics/visitors')} ? ' active'">방문자 통계</a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="admin-main-shell">
+        <header class="admin-topbar">
+            <div>
+                <p class="admin-eyebrow">통합 운영 포털</p>
+                <h1 class="admin-page-title" th:text="${title}">운영 페이지</h1>
+            </div>
+            <div class="admin-topbar-right">
+                <a class="admin-notification-link" th:href="@{/admin/qr/notifications}">
+                    알림
+                    <span class="admin-badge"
+                          th:if="${adminUnreadNotificationCount > 0}"
+                          th:text="${adminUnreadNotificationCount}">0</span>
+                </a>
+                <div class="admin-operator-box">
+                    <span class="admin-operator-name" th:text="${adminOperatorName}">운영자</span>
+                    <form th:action="@{/admin/logout}" method="post">
+                        <button type="submit" class="admin-link-button">로그아웃</button>
+                    </form>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-content-shell">
+            <div th:if="${message}" class="admin-flash admin-flash-success" th:text="${message}"></div>
+            <div th:if="${error}" class="admin-flash admin-flash-error" th:text="${error}"></div>
+            <div th:if="${errorMessage}" class="admin-flash admin-flash-error" th:text="${errorMessage}"></div>
+            <div th:if="${successMessage}" class="admin-flash admin-flash-success" th:text="${successMessage}"></div>
+            <th:block layout:fragment="content"></th:block>
+        </main>
     </div>
-
-    <div th:if="${error}" class="alert alert-error">
-        <div class="container">
-            <p th:text="${error}"></p>
-        </div>
-    </div>
-
-    <!-- 메인 컨텐츠 -->
-    <main class="container">
-        <div th:replace="${content}"></div>
-    </main>
-
-    <!-- 푸터 -->
-    <div th:replace="~{common/fragments/footer :: admin-footer}"></div>
+</div>
 </body>
 </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form th:action="@{/admin/content/articles/save}" method="post" class="admin-form-stack">
+            <input type="hidden" name="contentId" th:value="${article.contentId}">
+            <label class="admin-field">
+                <span>콘텐츠 타입</span>
+                <select name="contentTypeId" required>
+                    <option value="">선택</option>
+                    <option th:each="item : ${contentTypes}"
+                            th:value="${item.contentTypeId}"
+                            th:selected="${article.contentTypeId == item.contentTypeId}"
+                            th:text="${item.typeName}">타입</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>제목</span>
+                <input type="text" name="title" th:value="${article.title}" required>
+            </label>
+            <label class="admin-field">
+                <span>본문</span>
+                <textarea name="content" th:text="${article.content}" required></textarea>
+            </label>
+            <label class="admin-field">
+                <span>공개 여부</span>
+                <select name="isPublished">
+                    <option value="true" th:selected="${article.isPublished == true}">공개</option>
+                    <option value="false" th:selected="${article.isPublished == null or article.isPublished == false}">비공개</option>
+                </select>
+            </label>
+            <div class="admin-actions">
+                <button type="submit" class="admin-primary-button">저장</button>
+                <a th:href="@{/admin/content/articles}" class="admin-secondary-button">목록</a>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

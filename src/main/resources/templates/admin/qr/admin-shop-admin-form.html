@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form th:action="@{/admin/qr/shop-admins/create}" method="post" class="admin-form-stack">
+            <label class="admin-field">
+                <span>로그인 ID</span>
+                <input type="text" name="username" required>
+            </label>
+            <label class="admin-field">
+                <span>비밀번호</span>
+                <input type="password" name="password" required>
+            </label>
+            <label class="admin-field">
+                <span>이름</span>
+                <input type="text" name="name" required>
+            </label>
+            <label class="admin-field">
+                <span>이메일</span>
+                <input type="email" name="email" required>
+            </label>
+            <label class="admin-field">
+                <span>전화번호</span>
+                <input type="text" name="phone">
+            </label>
+            <div class="admin-actions">
+                <button type="submit" class="admin-primary-button">생성</button>
+                <a th:href="@{/admin/qr/shop-admins}" class="admin-secondary-button">목록</a>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.grap.external.api.mapper.CmsExternalExhibitionMapper">
+
+    <!-- Result Map -->
+    <resultMap id="exhibitionResultMap" type="co.grap.pack.grap.external.api.model.CmsExternalExhibition">
+        <id property="id" column="id"/>
+        <result property="originalApiId" column="original_api_id"/>
+        <result property="title" column="title"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="coverImageUrl" column="cover_image_url"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="timeInfo" column="time_info"/>
+        <result property="locationName" column="location_name"/>
+        <result property="organizerInfo" column="organizer_info"/>
+        <result property="telNumber" column="tel_number"/>
+        <result property="payInfo" column="pay_info"/>
+        <result property="statusInfo" column="status_info"/>
+        <result property="divisionName" column="division_name"/>
+        <result property="apiRawData" column="api_raw_data"/>
+        <result property="isShow" column="is_show"/>
+        <result property="adminMemo" column="admin_memo"/>
+        <result property="fetchedAt" column="fetched_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- Upsert -->
+    <insert id="upsert" parameterType="co.grap.pack.grap.external.api.model.CmsExternalExhibition">
+        INSERT INTO exhibitions (
+            original_api_id, title, category_name, cover_image_url, start_date, end_date,
+            time_info, location_name, organizer_info, tel_number, pay_info,
+            status_info, division_name, api_raw_data, is_show, admin_memo, fetched_at
+        ) VALUES (
+            #{originalApiId}, #{title}, #{categoryName}, #{coverImageUrl}, #{startDate}, #{endDate},
+            #{timeInfo}, #{locationName}, #{organizerInfo}, #{telNumber}, #{payInfo},
+            #{statusInfo}, #{divisionName}, #{apiRawData}, #{isShow}, #{adminMemo}, #{fetchedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            category_name = VALUES(category_name),
+            cover_image_url = VALUES(cover_image_url),
+            start_date = VALUES(start_date),
+            end_date = VALUES(end_date),
+            time_info = VALUES(time_info),
+            location_name = VALUES(location_name),
+            organizer_info = VALUES(organizer_info),
+            tel_number = VALUES(tel_number),
+            pay_info = VALUES(pay_info),
+            status_info = VALUES(status_info),
+            division_name = VALUES(division_name),
+            api_raw_data = VALUES(api_raw_data),
+            fetched_at = VALUES(fetched_at),
+            updated_at = NOW()
+    </insert>
+
+    <!-- Select by original_api_id -->
+    <select id="findByOriginalApiId" parameterType="string" resultMap="exhibitionResultMap">
+        SELECT * FROM exhibitions WHERE original_api_id = #{originalApiId}
+    </select>
+
+    <!-- Select all -->
+    <select id="findAll" resultMap="exhibitionResultMap">
+        SELECT * FROM exhibitions ORDER BY start_date DESC
+    </select>
+
+    <!-- Select all visible -->
+    <select id="findAllVisible" resultMap="exhibitionResultMap">
+        SELECT * FROM exhibitions WHERE is_show = TRUE ORDER BY start_date DESC
+    </select>
+
+    <!-- Check exists -->
+    <select id="existsByOriginalApiId" parameterType="string" resultType="boolean">
+        SELECT COUNT(*) > 0 FROM exhibitions WHERE original_api_id = #{originalApiId}
+    </select>
+
+</mapper>

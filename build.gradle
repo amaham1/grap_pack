@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
-group = 'com.example'
+group = 'co.grap'
 version = '0.0.1-SNAPSHOT'
 
 java {
@@ -28,6 +28,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 
+    // Thymeleaf Layout Dialect (레이아웃 상속 지원, Spring Boot 3.2.0 + Thymeleaf 3.1.2 호환)
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.2.1'
+
     // MyBatis
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
     implementation 'com.github.pagehelper:pagehelper-spring-boot-starter:2.1.0'
@@ -46,6 +49,13 @@ dependencies {
     implementation 'commons-io:commons-io:2.15.1'
     implementation 'commons-fileupload:commons-fileupload:1.5'
 
+    // 이미지 압축
+    implementation 'net.coobird:thumbnailator:0.4.20'
+
+    // QR 코드 생성 (ZXing)
+    implementation 'com.google.zxing:core:3.5.2'
+    implementation 'com.google.zxing:javase:3.5.2'
+
     // 개발 도구
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
@@ -57,4 +67,9 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// DevTools 핫 리로드를 위한 bootRun 설정
+bootRun {
+    sourceResources sourceSets.main
 }

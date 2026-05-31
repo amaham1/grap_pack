@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/qrgen/users}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>활성 상태</span>
+                <select name="isActive">
+                    <option value="">전체</option>
+                    <option value="true" th:selected="${isActive == true}">활성</option>
+                    <option value="false" th:selected="${isActive == false}">비활성</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>검색어</span>
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="아이디, 이메일, 닉네임">
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>아이디</th>
+                    <th>닉네임</th>
+                    <th>이메일</th>
+                    <th>활성</th>
+                    <th>가입일</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.items}">
+                    <td th:text="${item.qrGenUserId}">1</td>
+                    <td th:text="${item.qrGenUserLoginId}">loginId</td>
+                    <td th:text="${item.qrGenUserNickname}">닉네임</td>
+                    <td th:text="${item.qrGenUserEmail}">email@example.com</td>
+                    <td th:text="${item.qrGenUserIsActive} ? '활성' : '비활성'">활성</td>
+                    <td th:text="${#temporals.format(item.qrGenUserCreatedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                    <td>
+                        <a th:href="@{/admin/qrgen/users/{id}(id=${item.qrGenUserId})}" class="admin-secondary-button">상세</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.items)}">
+                    <td colspan="7">조회된 회원이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qrgen/users')}"></div>
+    </div>
+</section>
+</body>
+</html>

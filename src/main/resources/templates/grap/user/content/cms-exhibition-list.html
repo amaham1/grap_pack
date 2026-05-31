@@ -1,0 +1,178 @@
+<div class="user-page-header">
+        <h2>제주 공연/전시</h2>
+        <p class="text-muted">제주도의 다양한 공연과 전시회 정보를 확인하세요</p>
+    </div>
+
+    <!-- 탭 메뉴 -->
+    <div class="user-tab-container">
+        <a th:href="@{/grap/user/content/exhibitions(tab='ongoing', keyword=${keyword})}"
+           th:classappend="${tab == 'ongoing' or tab == null} ? 'active' : ''"
+           class="user-tab-item">
+            진행 중인 공연
+        </a>
+        <a th:href="@{/grap/user/content/exhibitions(tab='upcoming', keyword=${keyword})}"
+           th:classappend="${tab == 'upcoming'} ? 'active' : ''"
+           class="user-tab-item">
+            다가올 공연
+        </a>
+        <a th:href="@{/grap/user/content/exhibitions(tab='ended', keyword=${keyword})}"
+           th:classappend="${tab == 'ended'} ? 'active' : ''"
+           class="user-tab-item">
+            끝난 공연
+        </a>
+    </div>
+
+    <!-- 검색 -->
+    <div class="user-search-section">
+        <form th:action="@{/grap/user/content/exhibitions}" method="get" class="user-search-form" data-ajax="true">
+            <input type="hidden" name="tab" th:value="${tab}">
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="공연/전시명, 장소, 주최 검색" class="user-form-control">
+            <button type="submit" class="user-btn user-btn-primary">검색</button>
+        </form>
+    </div>
+
+    <!-- 공연/전시 목록 -->
+    <div class="user-content-grid" id="exhibition-list">
+        <div th:each="exhibition : ${exhibitionList}" class="user-content-card user-exhibition-card user-clickable-card"
+             th:data-href="@{/grap/user/content/exhibitions/{id}(id=${exhibition['id']})}">
+            <!-- 커버 이미지 -->
+            <div class="user-card-image">
+                <img th:if="${exhibition['coverImageUrl'] != null}"
+                     th:src="${exhibition['coverImageUrl']}"
+                     alt="공연/전시 이미지"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="user-image-placeholder" th:style="${exhibition['coverImageUrl'] == null ? 'display: flex;' : 'display: none;'}">
+                    <span>이미지 없음</span>
+                </div>
+            </div>
+
+            <div class="user-card-content">
+                <div class="user-card-header">
+                    <div class="user-badge-group">
+                        <span class="user-badge badge-exhibition" th:text="${exhibition['categoryName'] ?: '공연/전시'}"></span>
+                        <!-- 마감임박 배지 (종료일까지 7일 이내) -->
+                        <span th:if="${exhibition['endDate'] != null and exhibition['daysUntilEnd'] != null and exhibition['daysUntilEnd'] <= 7 and exhibition['daysUntilEnd'] >= 0}"
+                              class="user-badge user-badge-urgent">마감임박</span>
+                    </div>
+                </div>
+                <h3>
+                    <a th:href="@{/grap/user/content/exhibitions/{id}(id=${exhibition['id']})}"
+                       th:text="${exhibition['title']}"></a>
+                </h3>
+
+                <!-- 요금 정보 -->
+                <div class="card-price" th:if="${exhibition['payInfo'] != null and !#strings.isEmpty(exhibition['payInfo'])}">
+                    <span class="price-label">요금</span>
+                    <span class="price-value" th:text="${exhibition['payInfo']}"></span>
+                </div>
+
+                <div class="user-card-meta">
+                    <div th:if="${exhibition['startDate'] != null and exhibition['endDate'] != null}">
+                        <i class="icon-calendar"></i>
+                        <span th:text="${#temporals.format(exhibition['startDate'], 'yyyy.MM.dd')}"></span>
+                        ~
+                        <span th:text="${#temporals.format(exhibition['endDate'], 'yyyy.MM.dd')}"></span>
+                    </div>
+                    <div th:if="${exhibition['locationName'] != null}">
+                        <i class="icon-location"></i>
+                        <span th:text="${exhibition['locationName']}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${#lists.isEmpty(exhibitionList)}" class="user-empty-message">
+            <p>등록된 공연/전시가 없습니다.</p>
+        </div>
+    </div>
+
+    <!-- 페이징 (공통 fragment 사용) -->
+    <div th:replace="~{common/fragments/cms-pagination :: user-pagination(
+        baseUrl='/grap/user/content/exhibitions',
+        pageInfo=${pageInfo},
+        currentPage=${currentPage},
+        totalPages=${totalPages},
+        totalCount=${totalCount},
+        keyword=${keyword},
+        tab=${tab}
+    )}"></div>
+
+    <!-- 등록 요청 버튼 -->
+    <div class="user-request-button-wrapper">
+        <a th:href="@{/grap/user/content/exhibitions/request}" class="user-btn user-btn-request">
+            등록 요청
+        </a>
+    </div>
+
+    <!-- 성공 메시지 alert -->
+    <script th:if="${successMessage}" th:inline="javascript">
+        (function() {
+            const msg = /*[[${successMessage}]]*/ '';
+            alert(msg);
+        })();
+    </script>
+
+    <style>
+        /* 탭 스타일 */
+        .user-tab-container {
+            display: flex;
+            gap: 0;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+        .user-tab-item {
+            padding: 0.75rem 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+        }
+        .user-tab-item:hover {
+            color: #495057;
+            background-color: #f8f9fa;
+        }
+        .user-tab-item.active {
+            color: #007bff;
+            border-bottom-color: #007bff;
+            font-weight: 600;
+        }
+
+        /* 공연/전시 전용 스타일 */
+        .badge-exhibition {
+            background-color: #a29bfe;
+            color: white;
+        }
+        .card-price {
+            margin: 0.75rem 0;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .price-label {
+            min-width: 30px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .price-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .user-tab-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .user-tab-item {
+                padding: 0.6rem 1rem;
+                white-space: nowrap;
+                font-size: 0.9rem;
+            }
+        }
+    </style>

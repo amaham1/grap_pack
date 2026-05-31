@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <p class="admin-card-note" style="margin: 0 0 16px; line-height: 1.6;">
+            일반 브라우저 요청 수는 BOT을 제외한 서버 요청 기준입니다.
+            사람 추정 고유 방문자 수는 페이지가 실제로 보인 상태에서 3초 이상 머물고 클릭, 스크롤, 터치, 키 입력 등 사용자 상호작용이 확인된 방문을 로그인 사용자, 방문자 쿠키, 세션 순서로 중복 제거해 집계합니다.
+            BOT 요청은 아래 카드에서 따로 보이고, IP 접속 기록은 체크박스를 켰을 때만 BOT 기록이 함께 보입니다.
+        </p>
+        <form method="get" th:action="@{/admin/analytics/visitors}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>시작일</span>
+                <input type="date" name="startDate" th:value="${selectedStartDate}">
+            </label>
+            <label class="admin-field">
+                <span>종료일</span>
+                <input type="date" name="endDate" th:value="${selectedEndDate}">
+            </label>
+            <label class="admin-field">
+                <span>서비스</span>
+                <select name="serviceCode">
+                    <option value="">전체</option>
+                    <option th:each="item : ${serviceCodes}"
+                            th:value="${item.name()}"
+                            th:selected="${selectedServiceCode == item}"
+                            th:text="${item.displayName}">서비스</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>메뉴</span>
+                <select name="menuCode">
+                    <option value="">전체</option>
+                    <option th:each="item : ${availableMenuCodes}"
+                            th:value="${item.name()}"
+                            th:selected="${selectedMenuCode == item}"
+                            th:text="${item.displayName}">메뉴</option>
+                </select>
+            </label>
+            <label class="admin-check-field">
+                <input type="checkbox" name="includeBots" value="true" th:checked="${includeBots}">
+                <span>BOT 표시</span>
+            </label>
+            <input type="hidden" name="logSize" th:value="${selectedLogSize}">
+            <button type="submit" class="admin-secondary-button">조회</button>
+        </form>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 일반 브라우저 요청 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 일반 브라우저 고유 방문자 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalUv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 일반 브라우저 요청 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 일반 브라우저 고유 방문자 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayUv}">0</strong>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 사람 추정 기록 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalHumanVerifiedPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 사람 추정 고유 방문자 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalHumanVerifiedUv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 사람 추정 기록 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayHumanVerifiedPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 사람 추정 고유 방문자 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayHumanVerifiedUv}">0</strong>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-4">
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 BOT 요청 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalBotPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">전체 BOT 고유 식별 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.totalBotUv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 BOT 요청 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayBotPv}">0</strong>
+        </section>
+        <section class="admin-card admin-metric-card">
+            <p class="admin-card-label">오늘 BOT 고유 식별 수</p>
+            <strong class="admin-card-value" th:text="${dashboardStats.todayBotUv}">0</strong>
+        </section>
+    </div>
+
+    <section class="admin-card admin-visitor-chart-card">
+        <div class="admin-section-head admin-section-head-tight">
+            <div>
+                <p class="admin-card-label">일별 접속량</p>
+                <p class="admin-table-note">
+                    선택한 기간의 일반 브라우저 요청 수, 사람 추정 고유 방문자 수, BOT 요청 수를 일자별로 확인합니다.
+                </p>
+            </div>
+            <div class="admin-list-summary" th:if="${not #lists.isEmpty(dailyStats)}">
+                <span th:text="${selectedStartDate + ' ~ ' + selectedEndDate}">2026-04-01 ~ 2026-04-30</span>
+                <span th:text="${#lists.size(dailyStats) + '일'}">30일</span>
+            </div>
+        </div>
+        <div class="admin-chart-panel">
+            <canvas id="adminVisitorDailyChart"
+                    class="admin-visitor-daily-chart"
+                    role="img"
+                    aria-label="일별 접속량 차트"></canvas>
+            <p id="adminVisitorDailyChartFallback"
+               class="admin-empty-state"
+               th:hidden="${not #lists.isEmpty(dailyStats)}"
+               th:text="${#lists.isEmpty(dailyStats) ? '집계 데이터가 없습니다.' : ''}">집계 데이터가 없습니다.</p>
+        </div>
+        <div id="adminVisitorDailyChartData" hidden>
+            <span th:each="item : ${dailyStats}"
+                  data-admin-daily-stat
+                  th:data-date="${item.date}"
+                  th:data-pv="${item.pv != null ? item.pv : 0}"
+                  th:data-uv="${item.uv != null ? item.uv : 0}"
+                  th:data-human-pv="${item.humanVerifiedPv != null ? item.humanVerifiedPv : 0}"
+                  th:data-human-uv="${item.humanVerifiedUv != null ? item.humanVerifiedUv : 0}"
+                  th:data-bot-pv="${item.botPv != null ? item.botPv : 0}"
+                  th:data-bot-uv="${item.botUv != null ? item.botUv : 0}"></span>
+        </div>
+    </section>
+
+    <div class="admin-card-grid">
+        <section class="admin-card">
+            <p class="admin-card-label">일반 브라우저 요청 기기 비율</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>기기</th>
+                        <th>방문 수</th>
+                        <th>비율</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${deviceStats}">
+                        <td th:text="${item.deviceDisplayName}">모바일</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.ratio} + '%'">0%</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(deviceStats)}">
+                        <td colspan="3">집계 데이터가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <div class="admin-card-grid admin-card-grid-2">
+        <section class="admin-card">
+            <p class="admin-card-label">서비스 / 메뉴별 일반 브라우저 요청 요약</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>서비스</th>
+                        <th>메뉴</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
+                        <th>평균 체류시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${menuStats}">
+                        <td th:text="${item.serviceDisplayName}">Grap CMS</td>
+                        <td th:text="${item.menuDisplayName}">축제 목록</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.uv}">0</td>
+                        <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(menuStats)}">
+                        <td colspan="5">집계 데이터가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="admin-card">
+            <p class="admin-card-label">상세 경로별 일반 브라우저 요청 현황</p>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                    <tr>
+                        <th>상세 경로</th>
+                        <th>방문 수</th>
+                        <th>중복 제외 방문자 수</th>
+                        <th>평균 체류시간</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${routeStats}">
+                        <td class="admin-break-text admin-monospace" th:text="${item.routeKey}">/grap/user/...</td>
+                        <td th:text="${item.pv}">0</td>
+                        <td th:text="${item.uv}">0</td>
+                        <td th:text="${item.averageDurationSeconds} + '초'">0초</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(routeStats)}">
+                        <td colspan="4">선택한 메뉴의 상세 경로 집계가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <section class="admin-card">
+        <div class="admin-section-head admin-section-head-tight">
+            <div>
+                <p class="admin-card-label">IP별 접속 기록</p>
+                <p class="admin-table-note">
+                    현재 필터 조건에 맞는 전체 접속 기록을 페이지 단위로 확인할 수 있습니다.
+                    BOT 기록은 <strong>BOT 표시</strong>를 체크했을 때만 함께 노출됩니다.
+                </p>
+            </div>
+            <div class="admin-list-summary" th:if="${ipAccessLogPage.totalCount > 0}">
+                <span th:text="${'전체 ' + ipAccessLogPage.totalCount + '건'}">전체 0건</span>
+                <span th:text="${ipAccessLogPage.currentPage + ' / ' + ipAccessLogPage.totalPages + ' 페이지'}">1 / 1 페이지</span>
+            </div>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>접속 시각</th>
+                    <th>IP</th>
+                    <th>구분</th>
+                    <th>서비스</th>
+                    <th>메뉴</th>
+                    <th>상세 경로</th>
+                    <th>기기</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${ipAccessLogPage.items}">
+                    <td th:text="${item.visitedAt}">2026-04-22 18:10:00</td>
+                    <td class="admin-monospace" th:text="${item.ipAddress}">127.0.0.1</td>
+                    <td>
+                        <span class="admin-chip"
+                              th:classappend="${item.visitorTypeDisplayName == 'BOT'} ? ' admin-chip-warn' : ' admin-chip-muted'"
+                              th:text="${item.visitorTypeDisplayName}">일반</span>
+                    </td>
+                    <td th:text="${item.serviceDisplayName}">Grap CMS</td>
+                    <td th:text="${item.menuDisplayName}">축제 목록</td>
+                    <td class="admin-break-text admin-monospace" th:text="${item.routeKey}">/grap/user/content/festivals</td>
+                    <td th:text="${item.deviceDisplayName}">모바일</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(ipAccessLogPage.items)}">
+                    <td colspan="7">조건에 맞는 IP 접속 기록이 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="admin-pagination" th:if="${ipAccessLogPage.totalPages > 1}">
+            <a th:if="${ipAccessLogPage.currentPage > 1}"
+               th:href="@{/admin/analytics/visitors(
+                    startDate=${selectedStartDate},
+                    endDate=${selectedEndDate},
+                    serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                    menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                    includeBots=${includeBots},
+                    logSize=${selectedLogSize},
+                    logPage=${ipAccessLogPage.currentPage - 1}
+               )}">이전</a>
+            <span th:if="${ipAccessLogPage.currentPage <= 1}">이전</span>
+
+            <th:block th:each="pageNumber : ${#numbers.sequence(ipAccessLogPage.startPage, ipAccessLogPage.endPage)}">
+                <a th:if="${pageNumber != ipAccessLogPage.currentPage}"
+                   th:href="@{/admin/analytics/visitors(
+                        startDate=${selectedStartDate},
+                        endDate=${selectedEndDate},
+                        serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                        menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                        includeBots=${includeBots},
+                        logSize=${selectedLogSize},
+                        logPage=${pageNumber}
+                   )}"
+                   th:text="${pageNumber}">1</a>
+                <span th:if="${pageNumber == ipAccessLogPage.currentPage}"
+                      class="active"
+                      th:text="${pageNumber}">1</span>
+            </th:block>
+
+            <a th:if="${ipAccessLogPage.currentPage < ipAccessLogPage.totalPages}"
+               th:href="@{/admin/analytics/visitors(
+                    startDate=${selectedStartDate},
+                    endDate=${selectedEndDate},
+                    serviceCode=${selectedServiceCode != null ? selectedServiceCode.name() : null},
+                    menuCode=${selectedMenuCode != null ? selectedMenuCode.name() : null},
+                    includeBots=${includeBots},
+                    logSize=${selectedLogSize},
+                    logPage=${ipAccessLogPage.currentPage + 1}
+               )}">다음</a>
+            <span th:if="${ipAccessLogPage.currentPage >= ipAccessLogPage.totalPages}">다음</span>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"></script>
+    <script th:src="@{/admin/js/admin-visitor-stats.js}"></script>
+</section>
+</body>
+</html>

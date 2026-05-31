@@ -1,0 +1,47 @@
+# QR Generator 서비스 전용 설정
+spring:
+  application:
+    name: qr-gen
+
+  # 공통 저장소는 grap_cms 를 사용한다.
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${GRAP_DB_URL}
+    username: ${GRAP_DB_USERNAME}
+    password: ${GRAP_DB_PASSWORD}
+
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:/mapper/qrgen/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    default-fetch-size: 100
+    default-statement-timeout: 30
+
+# PageHelper 설정
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+# QR Generator 전용 데이터소스는 레거시 qr_gen DB 를 유지한다.
+external-api:
+  real-estate:
+    base-url: ${GRAP_PUBLIC_DATA_BASE_URL:https://apis.data.go.kr/1613000}
+    service-key: ${GRAP_PUBLIC_DATA_SERVICE_KEY}
+    recent-months: ${GRAP_REAL_ESTATE_RECENT_MONTHS:3}
+
+qrgen:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${QRGEN_DB_URL}
+    username: ${QRGEN_DB_USERNAME}
+    password: ${QRGEN_DB_PASSWORD}
+
+  qr-image:
+    save-path: ${user.dir}/uploads/qrgen/images
+  qr-code:
+    default-size: 300
+    max-size: 1000
+    min-size: 100

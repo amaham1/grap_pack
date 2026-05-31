@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">QR 코드 관리</h1>
+    </div>
+
+    <!-- 필터 -->
+    <div class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <form th:action="@{/qr-manage/super/admin/qrcode/list}" method="get" class="qr-manage-search-form">
+                <select name="qrType" class="qr-manage-form-control">
+                    <option value="">전체 유형</option>
+                    <option value="SHOP" th:selected="${qrType == 'SHOP'}">상점</option>
+                    <option value="MENU" th:selected="${qrType == 'MENU'}">메뉴</option>
+                </select>
+                <select name="isActive" class="qr-manage-form-control">
+                    <option value="">전체 상태</option>
+                    <option value="true" th:selected="${isActive == true}">활성</option>
+                    <option value="false" th:selected="${isActive == false}">비활성</option>
+                </select>
+                <input type="number" name="shopId" placeholder="상점 ID"
+                       class="qr-manage-search-input" style="width: 120px;"
+                       th:value="${shopId}">
+                <button type="submit" class="qr-manage-btn qr-manage-btn-primary">검색</button>
+                <a th:href="@{/qr-manage/super/admin/qrcode/list}" class="qr-manage-btn qr-manage-btn-secondary">초기화</a>
+            </form>
+        </div>
+    </div>
+
+    <!-- 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">
+                QR 코드 목록
+                <span style="font-weight: normal; color: #999;">(총 <span th:text="${totalCount}">0</span>개)</span>
+            </h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-table-wrapper">
+                <table class="qr-manage-table" th:if="${!#lists.isEmpty(qrCodes)}">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>상점</th>
+                            <th>유형</th>
+                            <th>QR 코드</th>
+                            <th>스캔 수</th>
+                            <th>상태</th>
+                            <th>만료일</th>
+                            <th>생성일</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="qr : ${qrCodes}">
+                            <td th:text="${qr.id}">1</td>
+                            <td>
+                                <span th:text="${qr.shopName}">상점명</span>
+                                <span style="color: #999; font-size: 12px;" th:text="'(#' + ${qr.shopId} + ')'">(#1)</span>
+                            </td>
+                            <td>
+                                <span class="qr-manage-badge"
+                                      th:classappend="${qr.qrType.name() == 'SHOP'} ? 'qr-manage-badge-shop' : 'qr-manage-badge-menu'"
+                                      th:text="${qr.qrType.name() == 'SHOP'} ? '상점' : '메뉴'">상점</span>
+                            </td>
+                            <td>
+                                <code style="font-size: 11px;" th:text="${#strings.abbreviate(qr.qrCode, 20)}">uuid...</code>
+                            </td>
+                            <td th:text="${qr.scanCount}">0</td>
+                            <td>
+                                <span class="qr-manage-badge"
+                                      th:classappend="${qr.isActive} ? 'qr-manage-badge-active' : 'qr-manage-badge-inactive'"
+                                      th:text="${qr.isActive} ? '활성' : '비활성'">활성</span>
+                            </td>
+                            <td th:text="${qr.expiresAt != null} ? ${#temporals.format(qr.expiresAt, 'yyyy-MM-dd')} : '무제한'">-</td>
+                            <td th:text="${#temporals.format(qr.createdAt, 'yyyy-MM-dd')}">2024-01-01</td>
+                            <td>
+                                <form th:action="@{/qr-manage/super/admin/qrcode/toggle/{id}(id=${qr.id})}" method="post" style="display: inline;">
+                                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                    <input type="hidden" name="isActive" th:value="${!qr.isActive}"/>
+                                    <button type="submit" class="qr-manage-btn qr-manage-btn-sm"
+                                            th:classappend="${qr.isActive} ? 'qr-manage-btn-danger' : 'qr-manage-btn-success'"
+                                            th:text="${qr.isActive} ? '비활성화' : '활성화'">비활성화</button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p th:if="${#lists.isEmpty(qrCodes)}" class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                QR 코드가 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div class="qr-manage-pagination" th:if="${totalPages > 1}">
+        <a th:if="${currentPage > 1}"
+           th:href="@{/qr-manage/super/admin/qrcode/list(page=${currentPage - 1}, qrType=${qrType}, isActive=${isActive}, shopId=${shopId})}">&laquo;</a>
+        <th:block th:each="i : ${#numbers.sequence(1, totalPages)}">
+            <span th:if="${i == currentPage}" class="active" th:text="${i}">1</span>
+            <a th:unless="${i == currentPage}"
+               th:href="@{/qr-manage/super/admin/qrcode/list(page=${i}, qrType=${qrType}, isActive=${isActive}, shopId=${shopId})}"
+               th:text="${i}">1</a>
+        </th:block>
+        <a th:if="${currentPage < totalPages}"
+           th:href="@{/qr-manage/super/admin/qrcode/list(page=${currentPage + 1}, qrType=${qrType}, isActive=${isActive}, shopId=${shopId})}">&raquo;</a>
+    </div>
+
+    <style>
+        .qr-manage-form-control {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-width: 120px;
+        }
+        .qr-manage-badge-shop { background-color: #3498db; color: white; }
+        .qr-manage-badge-menu { background-color: #9b59b6; color: white; }
+    </style>
+</th:block>
+</html>

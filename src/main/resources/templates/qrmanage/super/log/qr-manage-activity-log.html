@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/super/layout/qr-manage-super-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">활동 로그</h1>
+    </div>
+
+    <!-- 필터 -->
+    <div class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <form method="get" class="qr-manage-filter-form">
+                <div class="qr-manage-form-row">
+                    <div class="qr-manage-form-group">
+                        <label>사용자 유형</label>
+                        <select name="userType" class="qr-manage-select">
+                            <option value="">전체</option>
+                            <option value="SUPER_ADMIN" th:selected="${userType == 'SUPER_ADMIN'}">최고관리자</option>
+                            <option value="SHOP_ADMIN" th:selected="${userType == 'SHOP_ADMIN'}">상점관리자</option>
+                        </select>
+                    </div>
+                    <div class="qr-manage-form-group">
+                        <label>활동 유형</label>
+                        <select name="activityType" class="qr-manage-select">
+                            <option value="">전체</option>
+                            <option value="LOGIN" th:selected="${activityType == 'LOGIN'}">로그인</option>
+                            <option value="CREATE" th:selected="${activityType == 'CREATE'}">생성</option>
+                            <option value="UPDATE" th:selected="${activityType == 'UPDATE'}">수정</option>
+                            <option value="DELETE" th:selected="${activityType == 'DELETE'}">삭제</option>
+                            <option value="APPROVE" th:selected="${activityType == 'APPROVE'}">승인</option>
+                            <option value="REJECT" th:selected="${activityType == 'REJECT'}">반려</option>
+                        </select>
+                    </div>
+                    <div class="qr-manage-form-group qr-manage-form-submit">
+                        <button type="submit" class="qr-manage-btn qr-manage-btn-primary">검색</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 로그 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">
+                로그 목록 <span class="qr-manage-count">(총 <span th:text="${totalCount}">0</span>건)</span>
+            </h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <table class="qr-manage-table" th:if="${!#lists.isEmpty(logs)}">
+                <thead>
+                    <tr>
+                        <th>일시</th>
+                        <th>사용자</th>
+                        <th>활동</th>
+                        <th>대상</th>
+                        <th>설명</th>
+                        <th>IP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="log : ${logs}">
+                        <td th:text="${#temporals.format(log.createdAt, 'MM-dd HH:mm:ss')}">시간</td>
+                        <td>
+                            <span class="qr-manage-badge"
+                                  th:classappend="${log.userType == 'SUPER_ADMIN'} ? 'qr-manage-badge-super' : 'qr-manage-badge-shop'"
+                                  th:text="${log.userType == 'SUPER_ADMIN'} ? '최고' : '상점'">유형</span>
+                            <span th:text="${log.userEmail}">이메일</span>
+                        </td>
+                        <td>
+                            <span class="qr-manage-activity-type" th:text="${log.activityType}">활동</span>
+                        </td>
+                        <td>
+                            <span th:if="${log.targetType}" th:text="${log.targetType}">대상</span>
+                            <span th:if="${log.targetId}" class="qr-manage-target-id"
+                                  th:text="'#' + ${log.targetId}">ID</span>
+                        </td>
+                        <td th:text="${log.description}">설명</td>
+                        <td class="qr-manage-ip" th:text="${log.ipAddress}">IP</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${#lists.isEmpty(logs)}" class="qr-manage-no-data">로그가 없습니다.</p>
+
+            <!-- 페이지네이션 -->
+            <div th:if="${totalPages > 1}" class="qr-manage-pagination">
+                <a th:if="${currentPage > 0}"
+                   th:href="@{/qr-manage/super/admin/log(page=${currentPage - 1}, userType=${userType}, activityType=${activityType})}"
+                   class="qr-manage-btn qr-manage-btn-sm">이전</a>
+                <span class="qr-manage-page-info">
+                    <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                </span>
+                <a th:if="${currentPage < totalPages - 1}"
+                   th:href="@{/qr-manage/super/admin/log(page=${currentPage + 1}, userType=${userType}, activityType=${activityType})}"
+                   class="qr-manage-btn qr-manage-btn-sm">다음</a>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-filter-form .qr-manage-form-row {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+        .qr-manage-filter-form .qr-manage-form-group {
+            min-width: 150px;
+        }
+        .qr-manage-filter-form label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .qr-manage-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+        }
+        .qr-manage-count {
+            font-weight: normal;
+            color: #999;
+            font-size: 14px;
+        }
+        .qr-manage-badge-super {
+            background-color: #9b59b6;
+            color: #fff;
+        }
+        .qr-manage-badge-shop {
+            background-color: #3498db;
+            color: #fff;
+        }
+        .qr-manage-activity-type {
+            font-family: monospace;
+            font-size: 12px;
+            padding: 2px 6px;
+            background: #ecf0f1;
+            border-radius: 3px;
+        }
+        .qr-manage-target-id {
+            color: #999;
+            font-size: 12px;
+        }
+        .qr-manage-ip {
+            font-family: monospace;
+            font-size: 12px;
+            color: #999;
+        }
+        .qr-manage-no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+        .qr-manage-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .qr-manage-page-info {
+            color: #666;
+        }
+    </style>
+</th:block>
+
+</html>

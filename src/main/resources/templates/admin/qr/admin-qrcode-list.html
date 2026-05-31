@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/qr/qrcodes}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>상점 ID</span>
+                <input type="number" name="shopId" th:value="${shopId}">
+            </label>
+            <label class="admin-field">
+                <span>타입</span>
+                <select name="qrType">
+                    <option value="">전체</option>
+                    <option value="SHOP" th:selected="${qrType == 'SHOP'}">SHOP</option>
+                    <option value="MENU" th:selected="${qrType == 'MENU'}">MENU</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>활성</span>
+                <select name="isActive">
+                    <option value="">전체</option>
+                    <option value="true" th:selected="${isActive == true}">활성</option>
+                    <option value="false" th:selected="${isActive == false}">비활성</option>
+                </select>
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>상점</th>
+                    <th>타입</th>
+                    <th>QR 코드</th>
+                    <th>스캔</th>
+                    <th>활성</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.items}">
+                    <td th:text="${item.id}">1</td>
+                    <td th:text="${item.shopName}">상점</td>
+                    <td th:text="${item.qrType}">SHOP</td>
+                    <td th:text="${item.qrCode}">code</td>
+                    <td th:text="${item.scanCount}">0</td>
+                    <td th:text="${item.isActive} ? '활성' : '비활성'">활성</td>
+                    <td>
+                        <form th:action="@{/admin/qr/qrcodes/{id}/toggle(id=${item.id})}" method="post">
+                            <input type="hidden" name="isActive" th:value="${!item.isActive}">
+                            <button type="submit" class="admin-secondary-button" th:text="${item.isActive} ? '비활성' : '활성'">상태</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.items)}">
+                    <td colspan="7">조회된 QR 코드가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qr/qrcodes')}"></div>
+    </div>
+</section>
+</body>
+</html>

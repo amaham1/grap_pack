@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.customer.mapper.QrManageCustomerMapper">
+
+    <!-- 상점 ResultMap -->
+    <resultMap id="shopResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop">
+        <id property="id" column="id"/>
+        <result property="shopAdminId" column="shop_admin_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <!-- 영업시간 ResultMap -->
+    <resultMap id="businessHoursResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageBusinessHours">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="dayOfWeek" column="day_of_week"/>
+        <result property="isHoliday" column="is_holiday"/>
+        <result property="openTime" column="open_time"/>
+        <result property="closeTime" column="close_time"/>
+    </resultMap>
+
+    <!-- 카테고리 ResultMap -->
+    <resultMap id="categoryResultMap" type="co.grap.pack.qrmanage.shopadmin.category.model.QrManageCategory">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isVisible" column="is_visible"/>
+    </resultMap>
+
+    <!-- 메뉴 ResultMap -->
+    <resultMap id="menuResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenu">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="price" column="price"/>
+        <result property="primaryImageId" column="primary_image_id"/>
+        <result property="sortOrder" column="sort_order"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="isSoldOut" column="is_sold_out"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="primaryImageUrl" column="primary_image_url"/>
+    </resultMap>
+
+    <!-- 옵션 그룹 ResultMap -->
+    <resultMap id="optionGroupResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOptionGroup">
+        <id property="id" column="id"/>
+        <result property="menuId" column="menu_id"/>
+        <result property="name" column="name"/>
+        <result property="isRequired" column="is_required"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <!-- 옵션 ResultMap -->
+    <resultMap id="optionResultMap" type="co.grap.pack.qrmanage.shopadmin.menu.model.QrManageMenuOption">
+        <id property="id" column="id"/>
+        <result property="optionGroupId" column="option_group_id"/>
+        <result property="name" column="name"/>
+        <result property="sortOrder" column="sort_order"/>
+    </resultMap>
+
+    <!-- 상점 조회 (승인되고 공개된 것만) -->
+    <select id="findShopById" resultMap="shopResultMap">
+        SELECT * FROM qr_manage_shop
+        WHERE id = #{id} AND status = 'APPROVED' AND is_visible = true
+    </select>
+
+    <!-- 영업시간 조회 -->
+    <select id="findBusinessHoursByShopId" resultMap="businessHoursResultMap">
+        SELECT * FROM qr_manage_business_hours
+        WHERE shop_id = #{shopId}
+        ORDER BY day_of_week
+    </select>
+
+    <!-- 공개된 카테고리 목록 조회 -->
+    <select id="findVisibleCategoriesByShopId" resultMap="categoryResultMap">
+        SELECT * FROM qr_manage_category
+        WHERE shop_id = #{shopId} AND is_visible = true
+        ORDER BY sort_order
+    </select>
+
+    <!-- 카테고리별 공개된 메뉴 목록 조회 -->
+    <select id="findVisibleMenusByCategoryId" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.category_id = #{categoryId} AND m.is_visible = true
+        ORDER BY m.sort_order
+    </select>
+
+    <!-- 메뉴 상세 조회 -->
+    <select id="findMenuById" resultMap="menuResultMap">
+        SELECT m.*, c.name as category_name, i.file_path as primary_image_url
+        FROM qr_manage_menu m
+        LEFT JOIN qr_manage_category c ON m.category_id = c.id
+        LEFT JOIN qr_manage_menu_image i ON m.primary_image_id = i.id
+        WHERE m.id = #{id} AND m.is_visible = true
+    </select>
+
+    <!-- 메뉴의 옵션 그룹 목록 조회 -->
+    <select id="findOptionGroupsByMenuId" resultMap="optionGroupResultMap">
+        SELECT * FROM qr_manage_menu_option_group
+        WHERE menu_id = #{menuId}
+        ORDER BY sort_order
+    </select>
+
+    <!-- 옵션 그룹의 옵션 목록 조회 -->
+    <select id="findOptionsByGroupId" resultMap="optionResultMap">
+        SELECT * FROM qr_manage_menu_option
+        WHERE option_group_id = #{optionGroupId}
+        ORDER BY sort_order
+    </select>
+
+    <!-- QR 스캔 로그 등록 -->
+    <insert id="insertScanLog" parameterType="co.grap.pack.qrmanage.customer.model.QrManageQrScanLog">
+        INSERT INTO qr_manage_qr_scan_log (qr_code_id, ip_address, user_agent, scanned_at)
+        VALUES (#{qrCodeId}, #{ipAddress}, #{userAgent}, NOW())
+    </insert>
+
+</mapper>

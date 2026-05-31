@@ -9,7 +9,7 @@ USE grap_cms;
 -- ============================================
 -- 비밀번호: admin123 (실제로는 BCrypt로 암호화 필요)
 INSERT INTO admin (username, password, name, create_name) VALUES
-('admin', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '시스템 관리자', 'SYSTEM'),
+('admin', '$2a$12$IHOlv8HF59gDoxSawFpSdOLACJjPbC5uxFUoI.PT.W66rj7gk1YCq', '시스템 관리자', 'SYSTEM'),
 ('editor', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '에디터', 'SYSTEM');
 
 -- ============================================

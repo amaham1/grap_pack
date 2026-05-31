@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <form method="get" th:action="@{/admin/qr/activity-logs}" class="admin-toolbar-form">
+            <label class="admin-field">
+                <span>사용자 유형</span>
+                <select name="userType">
+                    <option value="">전체</option>
+                    <option value="SUPER_ADMIN" th:selected="${userType == 'SUPER_ADMIN'}">SUPER_ADMIN</option>
+                    <option value="SHOP_ADMIN" th:selected="${userType == 'SHOP_ADMIN'}">SHOP_ADMIN</option>
+                </select>
+            </label>
+            <label class="admin-field">
+                <span>액션 유형</span>
+                <input type="text" name="activityType" th:value="${activityType}" placeholder="LOGIN, APPROVE, DELETE">
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>시각</th>
+                    <th>사용자</th>
+                    <th>액션</th>
+                    <th>대상</th>
+                    <th>설명</th>
+                    <th>IP</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${result.items}">
+                    <td th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                    <td>
+                        <strong th:text="${item.userType}">SUPER_ADMIN</strong>
+                        <div><small th:text="${item.userEmail}">email</small></div>
+                    </td>
+                    <td th:text="${item.activityType}">LOGIN</td>
+                    <td th:text="${item.targetId != null ? item.targetType + ' #' + item.targetId : item.targetType}">SHOP #1</td>
+                    <td th:text="${item.description}">설명</td>
+                    <td th:text="${item.ipAddress}">127.0.0.1</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(result.items)}">
+                    <td colspan="6">활동 로그가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${result.pageInfo}, ${result.currentPage}, ${result.totalPages}, '/admin/qr/activity-logs')}"></div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-detail-grid">
+        <section class="admin-card">
+            <p class="admin-card-label">회원 정보</p>
+            <h2 th:text="${detail.user.qrGenUserLoginId}">loginId</h2>
+            <div class="admin-meta-list">
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">닉네임</span>
+                    <span th:text="${detail.user.qrGenUserNickname}">닉네임</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">이메일</span>
+                    <span th:text="${detail.user.qrGenUserEmail}">email@example.com</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">활성 상태</span>
+                    <span th:text="${detail.user.qrGenUserIsActive} ? '활성' : '비활성'">활성</span>
+                </div>
+                <div class="admin-meta-item">
+                    <span class="admin-meta-label">마지막 로그인</span>
+                    <span th:text="${detail.user.qrGenUserLastLoginAt != null ? #temporals.format(detail.user.qrGenUserLastLoginAt, 'yyyy-MM-dd HH:mm') : '기록 없음'}">기록 없음</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="admin-card-stack">
+            <section class="admin-card">
+                <p class="admin-card-label">타입별 생성 집계</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>콘텐츠 타입</th>
+                            <th>건수</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.typeStats}">
+                            <td th:text="${item.contentType}">URL</td>
+                            <td th:text="${item.count}">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.typeStats)}">
+                            <td colspan="2">집계 데이터가 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="admin-card">
+                <p class="admin-card-label">최근 생성 이력</p>
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                        <tr>
+                            <th>타입</th>
+                            <th>제목</th>
+                            <th>생성일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${detail.recentHistories}">
+                            <td th:text="${item.qrGenHistoryContentType}">URL</td>
+                            <td>
+                                <a th:href="@{/admin/qrgen/histories/{id}(id=${item.qrGenHistoryId})}"
+                                   th:text="${item.qrGenHistoryTitle != null and item.qrGenHistoryTitle != '' ? item.qrGenHistoryTitle : item.qrGenHistoryContentValue}">
+                                    제목
+                                </a>
+                            </td>
+                            <td th:text="${#temporals.format(item.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(detail.recentHistories)}">
+                            <td colspan="3">생성 이력이 없습니다.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <a th:href="@{/admin/qrgen/histories(userId=${detail.user.qrGenUserId})}" class="admin-secondary-button">전체 이력 보기</a>
+            </section>
+        </section>
+    </div>
+</section>
+</body>
+</html>

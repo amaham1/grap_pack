@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{admin/layout/admin-layout}">
+<body>
+<section layout:fragment="content">
+    <div class="admin-card">
+        <div class="admin-toolbar">
+            <div class="admin-toolbar-actions">
+                <a th:each="item : ${datasetTypes}"
+                   th:href="@{/admin/content/datasets/{type}(type=${item.pathSegment})}"
+                   class="admin-secondary-button"
+                   th:classappend="${item == datasetType} ? ' admin-active-button'">
+                    <span th:text="${item.displayName}">데이터셋</span>
+                </a>
+            </div>
+        </div>
+
+        <form method="get" class="admin-toolbar-form"
+              th:action="@{/admin/content/datasets/{type}(type=${datasetType.pathSegment})}">
+            <label class="admin-field">
+                <span>검색어</span>
+                <input type="text" name="keyword" th:value="${datasetResult.keyword}" placeholder="키워드 검색">
+            </label>
+            <label class="admin-field" th:if="${datasetType.pathSegment == 'real-estate'}">
+                <span>거래월</span>
+                <select name="dealYearMonth">
+                    <option th:each="month : ${datasetResult.availableMonths}"
+                            th:value="${month.value}"
+                            th:selected="${datasetResult.dealYearMonth == month.value}"
+                            th:text="${month.label}">2026-04</option>
+                </select>
+            </label>
+            <label class="admin-field" th:if="${datasetType.pathSegment == 'real-estate'}">
+                <span>정렬</span>
+                <select name="sort">
+                    <option th:each="option : ${datasetResult.sortOptions}"
+                            th:value="${option.value}"
+                            th:selected="${datasetResult.sort == option.value}"
+                            th:text="${option.label}">최신 계약일</option>
+                </select>
+            </label>
+            <button type="submit" class="admin-secondary-button">검색</button>
+        </form>
+
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th th:text="${datasetType.pathSegment == 'welfare'} ? '서비스명' : (${datasetType.pathSegment == 'gas-stations'} ? '상호명' : (${datasetType.pathSegment == 'real-estate'} ? '매물명' : '제목'))">제목</th>
+                    <th>보조 정보</th>
+                    <th>상태</th>
+                    <th>최종 수집</th>
+                    <th>액션</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${datasetResult.items}">
+                    <td th:text="${item.id}">1</td>
+                    <td>
+                        <strong th:if="${datasetType.pathSegment == 'welfare'}" th:text="${item.serviceName}">서비스명</strong>
+                        <strong th:if="${datasetType.pathSegment == 'gas-stations'}" th:text="${item.stationName}">상호명</strong>
+                        <strong th:if="${datasetType.pathSegment == 'real-estate'}" th:text="${item.displayName}">매물명</strong>
+                        <strong th:if="${datasetType.pathSegment != 'welfare' and datasetType.pathSegment != 'gas-stations' and datasetType.pathSegment != 'real-estate'}"
+                                th:text="${item.title}">제목</strong>
+                    </td>
+                    <td>
+                        <span th:if="${datasetType.pathSegment == 'festivals'}" th:text="${item.writerName}">작성자</span>
+                        <span th:if="${datasetType.pathSegment == 'exhibitions'}" th:text="${item.locationName}">장소</span>
+                        <span th:if="${datasetType.pathSegment == 'welfare'}" th:text="${item.isAllLocation} ? '전 지역' : '지역 제한'">지역</span>
+                        <span th:if="${datasetType.pathSegment == 'gas-stations'}" th:text="${item.brand}">브랜드</span>
+                        <span th:if="${datasetType.pathSegment == 'real-estate'}" th:text="${item.transactionLabel + ' / ' + item.formattedDisplayAmount}">거래</span>
+                    </td>
+                    <td>
+                        <th:block th:if="${datasetType.supportsConfirm}">
+                            <span class="admin-chip admin-chip-warn" th:if="${item.confirmStatus == 'PENDING' or item.confirmStatus == null}">검수 대기</span>
+                            <span class="admin-chip" th:if="${item.confirmStatus == 'APPROVED'}">승인</span>
+                            <span class="admin-chip admin-chip-danger" th:if="${item.confirmStatus == 'REJECTED'}">반려</span>
+                        </th:block>
+                        <th:block th:unless="${datasetType.supportsConfirm}">
+                            <span class="admin-chip admin-chip-muted">조회 전용</span>
+                        </th:block>
+                    </td>
+                    <td>
+                        <span th:if="${item.fetchedAt != null}" th:text="${#temporals.format(item.fetchedAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</span>
+                        <span th:if="${item.fetchedAt == null and item.createdAt != null}" th:text="${#temporals.format(item.createdAt, 'yyyy-MM-dd HH:mm')}">2026-04-22</span>
+                    </td>
+                    <td>
+                        <a th:href="@{/admin/content/datasets/{type}/{id}(type=${datasetType.pathSegment},id=${item.id})}" class="admin-secondary-button">상세</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(datasetResult.items)}">
+                    <td colspan="6">조회된 데이터가 없습니다.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:replace="~{admin/fragments/admin-pagination :: pager(${datasetResult.pageInfo}, ${datasetResult.currentPage}, ${datasetResult.totalPages}, ${paginationBaseUrl})}"></div>
+    </div>
+</section>
+</body>
+</html>

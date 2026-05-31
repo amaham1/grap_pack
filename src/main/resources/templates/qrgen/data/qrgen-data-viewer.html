@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrgen/layout/qrgen-layout}">
+<head>
+    <title>히스토리 데이터 뷰어</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="qrgen-container" style="max-width: 1400px;">
+        <h1 class="qrgen-title">히스토리 데이터 뷰어</h1>
+        <p class="qrgen-description">방문자 통계는 공통 방문자 통계 화면으로 통합되었으며, 이 화면은 QR 생성 히스토리만 제공합니다.</p>
+
+        <div class="qrgen-history-info">
+            총 <strong th:text="${totalCount}">0</strong>건
+        </div>
+
+        <div th:if="${#lists.isEmpty(historyList)}" class="qrgen-empty">
+            <p>히스토리 데이터가 없습니다.</p>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(historyList)}" class="qrgen-data-table-wrap">
+            <table class="qrgen-data-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>사용자</th>
+                    <th>유형</th>
+                    <th>제목</th>
+                    <th>내용</th>
+                    <th>크기</th>
+                    <th>오류보정</th>
+                    <th>전경색</th>
+                    <th>배경색</th>
+                    <th>이미지 경로</th>
+                    <th>메모</th>
+                    <th>생성일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="history : ${historyList}">
+                    <td th:text="${history.qrGenHistoryId}"></td>
+                    <td th:text="${history.qrGenUserLoginId}"></td>
+                    <td th:text="${history.qrGenHistoryContentType}"></td>
+                    <td th:text="${history.qrGenHistoryTitle}"></td>
+                    <td class="qrgen-data-cell-content" th:text="${history.qrGenHistoryContentValue}"></td>
+                    <td th:text="${history.qrGenHistorySize}"></td>
+                    <td th:text="${history.qrGenHistoryErrorCorrection}"></td>
+                    <td>
+                        <span th:if="${history.qrGenHistoryFgColor}" class="qrgen-color-preview"
+                              th:style="'background-color:' + ${history.qrGenHistoryFgColor}"></span>
+                        <span th:text="${history.qrGenHistoryFgColor}"></span>
+                    </td>
+                    <td>
+                        <span th:if="${history.qrGenHistoryBgColor}" class="qrgen-color-preview"
+                              th:style="'background-color:' + ${history.qrGenHistoryBgColor}"></span>
+                        <span th:text="${history.qrGenHistoryBgColor}"></span>
+                    </td>
+                    <td class="qrgen-data-cell-path" th:text="${history.qrGenHistoryImagePath}"></td>
+                    <td th:text="${history.qrGenHistoryMemo}"></td>
+                    <td th:text="${history.qrGenHistoryCreatedAt != null ? #temporals.format(history.qrGenHistoryCreatedAt, 'yyyy-MM-dd HH:mm:ss') : ''}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${totalPages > 1}" class="qrgen-pagination">
+            <a th:if="${currentPage > 1}"
+               th:href="@{/qrgen/data(page=${currentPage - 1})}"
+               class="qrgen-page-link">이전</a>
+            <span th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a th:if="${i != currentPage}"
+                   th:href="@{/qrgen/data(page=${i})}"
+                   th:text="${i}"
+                   class="qrgen-page-link">1</a>
+                <span th:if="${i == currentPage}"
+                      th:text="${i}"
+                      class="qrgen-page-current">1</span>
+            </span>
+            <a th:if="${currentPage < totalPages}"
+               th:href="@{/qrgen/data(page=${currentPage + 1})}"
+               class="qrgen-page-link">다음</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

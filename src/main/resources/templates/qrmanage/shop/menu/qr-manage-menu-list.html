@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">메뉴 관리</h1>
+        <a th:href="@{/qr-manage/shop/admin/menu/new}" class="qr-manage-btn qr-manage-btn-primary">메뉴 추가</a>
+    </div>
+
+    <!-- 알림 메시지 -->
+    <div th:if="${message}" class="qr-manage-alert qr-manage-alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="qr-manage-alert qr-manage-alert-danger" th:text="${error}"></div>
+    <div th:if="${param.error != null && param.error[0] == 'noCategory'}" class="qr-manage-alert qr-manage-alert-warning">
+        메뉴를 등록하려면 먼저 카테고리를 등록해주세요.
+    </div>
+
+    <!-- 카테고리 필터 -->
+    <div class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-filter-row">
+                <span style="margin-right: 10px;">카테고리:</span>
+                <a th:href="@{/qr-manage/shop/admin/menu/list}"
+                   class="qr-manage-filter-btn"
+                   th:classappend="${selectedCategoryId == null ? 'active' : ''}">전체</a>
+                <a th:each="cat : ${categories}"
+                   th:href="@{/qr-manage/shop/admin/menu/list(categoryId=${cat.id})}"
+                   class="qr-manage-filter-btn"
+                   th:classappend="${selectedCategoryId == cat.id ? 'active' : ''}"
+                   th:text="${cat.name}">카테고리</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메뉴 목록 -->
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-header">
+            <h2 class="qr-manage-card-title">
+                메뉴 목록 <span style="font-weight: normal; color: #999;">(총 <span th:text="${#lists.size(menus)}">0</span>개)</span>
+            </h2>
+        </div>
+        <div class="qr-manage-card-body">
+            <table class="qr-manage-table" th:if="${!#lists.isEmpty(menus)}" id="menuTable">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">순서</th>
+                        <th>메뉴명</th>
+                        <th>카테고리</th>
+                        <th>가격</th>
+                        <th>상태</th>
+                        <th>공개</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody id="sortableMenus">
+                    <tr th:each="menu : ${menus}" th:data-id="${menu.id}">
+                        <td class="qr-manage-drag-handle" style="cursor: move; text-align: center;">☰</td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <img th:if="${menu.primaryImageUrl}" th:src="${menu.primaryImageUrl}"
+                                     style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"/>
+                                <span th:text="${menu.name}">메뉴명</span>
+                            </div>
+                        </td>
+                        <td th:text="${menu.categoryName}">카테고리</td>
+                        <td th:text="${#numbers.formatInteger(menu.price, 3, 'COMMA')} + '원'">10,000원</td>
+                        <td>
+                            <form th:action="@{/qr-manage/shop/admin/menu/soldout/{id}(id=${menu.id})}" method="post" style="display: inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="isSoldOut" th:value="${!menu.isSoldOut}"/>
+                                <button type="submit" class="qr-manage-badge"
+                                        th:classappend="${menu.isSoldOut ? 'qr-manage-badge-suspended' : 'qr-manage-badge-active'}"
+                                        th:text="${menu.isSoldOut ? '품절' : '판매중'}">판매중</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form th:action="@{/qr-manage/shop/admin/menu/visibility/{id}(id=${menu.id})}" method="post" style="display: inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <input type="hidden" name="isVisible" th:value="${!menu.isVisible}"/>
+                                <button type="submit" class="qr-manage-badge"
+                                        th:classappend="${menu.isVisible ? 'qr-manage-badge-active' : 'qr-manage-badge-suspended'}"
+                                        th:text="${menu.isVisible ? '공개' : '비공개'}">공개</button>
+                            </form>
+                        </td>
+                        <td>
+                            <a th:href="@{/qr-manage/shop/admin/menu/{menuId}/options(menuId=${menu.id})}"
+                               class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-outline">옵션</a>
+                            <a th:href="@{/qr-manage/shop/admin/menu/edit/{id}(id=${menu.id})}"
+                               class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-secondary">수정</a>
+                            <form th:action="@{/qr-manage/shop/admin/menu/delete/{id}(id=${menu.id})}" method="post" style="display: inline;">
+                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                                <button type="submit" class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-danger"
+                                        onclick="return confirm('이 메뉴를 삭제하시겠습니까?')">삭제</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <p th:if="${#lists.isEmpty(menus)}" class="qr-manage-text-center" style="color: #999; padding: 40px 0;">
+                등록된 메뉴가 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-filter-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .qr-manage-filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            background: #fff;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .qr-manage-filter-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+        .qr-manage-filter-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: #fff;
+        }
+        .qr-manage-drag-handle:hover {
+            background-color: #f0f0f0;
+        }
+        .sortable-ghost {
+            opacity: 0.4;
+            background-color: #c8ebfb;
+        }
+        .qr-manage-btn-outline {
+            background: transparent;
+            border: 1px solid #3498db;
+            color: #3498db;
+        }
+        .qr-manage-btn-outline:hover {
+            background: #3498db;
+            color: #fff;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('sortableMenus');
+            if (tbody && typeof Sortable !== 'undefined') {
+                new Sortable(tbody, {
+                    handle: '.qr-manage-drag-handle',
+                    animation: 150,
+                    onEnd: function(evt) {
+                        const menuIds = Array.from(tbody.querySelectorAll('tr')).map(row => parseInt(row.dataset.id));
+                        const csrfToken = document.querySelector('meta[name="_csrf"]')?.getAttribute('content') || '';
+
+                        fetch('/qr-manage/shop/admin/menu/sort', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify(menuIds)
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</th:block>
+
+</html>

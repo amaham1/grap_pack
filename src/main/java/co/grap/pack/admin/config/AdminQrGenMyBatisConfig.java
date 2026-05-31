@@ -1,0 +1,39 @@
+package co.grap.pack.admin.config;
+
+import org.apache.ibatis.session.Configuration;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+
+import javax.sql.DataSource;
+
+/**
+ * 통합 운영 포털 QRgen 조회 MyBatis 설정이다.
+ */
+@org.springframework.context.annotation.Configuration
+@MapperScan(
+        basePackages = "co.grap.pack.admin.qrgen.mapper",
+        sqlSessionFactoryRef = "adminQrGenSqlSessionFactory"
+)
+public class AdminQrGenMyBatisConfig {
+
+    @Bean(name = "adminQrGenSqlSessionFactory")
+    public SqlSessionFactory adminQrGenSqlSessionFactory(@Qualifier("qrGenDataSource") DataSource dataSource) throws Exception {
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource);
+
+        PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+        sessionFactory.setMapperLocations(resolver.getResources("classpath:/mapper/admin/qrgen/**/*.xml"));
+
+        Configuration configuration = new Configuration();
+        configuration.setMapUnderscoreToCamelCase(true);
+        configuration.setDefaultFetchSize(100);
+        configuration.setDefaultStatementTimeout(30);
+        sessionFactory.setConfiguration(configuration);
+
+        return sessionFactory.getObject();
+    }
+}

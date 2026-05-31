@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">알림</h1>
+        <button type="button" class="qr-manage-btn qr-manage-btn-secondary" onclick="markAllAsRead()">
+            모두 읽음 처리
+        </button>
+    </div>
+
+    <div class="qr-manage-card">
+        <div class="qr-manage-card-body">
+            <div th:if="${!#lists.isEmpty(notifications)}" class="qr-manage-notification-list">
+                <div th:each="notification : ${notifications}"
+                     class="qr-manage-notification-item"
+                     th:classappend="${!notification.isRead} ? 'qr-manage-notification-unread' : ''"
+                     th:data-id="${notification.id}">
+                    <div class="qr-manage-notification-icon">
+                        <span th:switch="${notification.notificationType?.name()}">
+                            <span th:case="'ACCOUNT_APPROVED'">✓</span>
+                            <span th:case="'ACCOUNT_REJECTED'">✗</span>
+                            <span th:case="'SHOP_APPROVED'">✓</span>
+                            <span th:case="'SHOP_REJECTED'">✗</span>
+                            <span th:case="'QR_EXPIRED'">⏰</span>
+                            <span th:case="*">🔔</span>
+                        </span>
+                    </div>
+                    <div class="qr-manage-notification-content">
+                        <div class="qr-manage-notification-title" th:text="${notification.title}">알림 제목</div>
+                        <div class="qr-manage-notification-message" th:text="${notification.message}">알림 내용</div>
+                        <div class="qr-manage-notification-time"
+                             th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}">시간</div>
+                    </div>
+                    <a th:if="${notification.linkUrl}" th:href="${notification.linkUrl}"
+                       class="qr-manage-btn qr-manage-btn-sm qr-manage-btn-outline"
+                       onclick="markAsRead(this.parentElement.dataset.id)">보기</a>
+                </div>
+            </div>
+            <p th:if="${#lists.isEmpty(notifications)}" class="qr-manage-no-data">
+                알림이 없습니다.
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .qr-manage-notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .qr-manage-notification-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+        .qr-manage-notification-item:hover {
+            background: #ecf0f1;
+        }
+        .qr-manage-notification-unread {
+            background: #e8f4fd;
+            border-left: 3px solid #3498db;
+        }
+        .qr-manage-notification-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 50%;
+            font-size: 18px;
+        }
+        .qr-manage-notification-content {
+            flex: 1;
+        }
+        .qr-manage-notification-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .qr-manage-notification-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .qr-manage-notification-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .qr-manage-no-data {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        const csrfToken = /*[[${_csrf.token}]]*/ '';
+        const csrfHeader = /*[[${_csrf.headerName}]]*/ '';
+
+        function markAsRead(notificationId) {
+            fetch('/qr-manage/shop/admin/notification/read/' + notificationId, {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            });
+        }
+
+        function markAllAsRead() {
+            fetch('/qr-manage/shop/admin/notification/read-all', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken
+                }
+            }).then(() => {
+                document.querySelectorAll('.qr-manage-notification-unread').forEach(el => {
+                    el.classList.remove('qr-manage-notification-unread');
+                });
+            });
+        }
+    </script>
+</th:block>
+
+</html>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav th:fragment="pager(pageInfo, currentPage, totalPages, baseUrl)"
+     class="admin-pagination"
+     th:if="${totalPages != null and totalPages > 1}">
+    <a th:if="${pageInfo.hasPrevious}"
+       th:href="@{${baseUrl}(page=${currentPage - 1})}">이전</a>
+    <th:block th:each="page : ${pageInfo.pages}">
+        <span th:if="${page.ellipsis}">…</span>
+        <a th:if="${!page.ellipsis and !page.active}"
+           th:href="@{${baseUrl}(page=${page.number})}"
+           th:text="${page.number}">1</a>
+        <span th:if="${!page.ellipsis and page.active}"
+              class="active"
+              th:text="${page.number}">1</span>
+    </th:block>
+    <a th:if="${pageInfo.hasNext}"
+       th:href="@{${baseUrl}(page=${currentPage + 1})}">다음</a>
+</nav>
+</body>
+</html>

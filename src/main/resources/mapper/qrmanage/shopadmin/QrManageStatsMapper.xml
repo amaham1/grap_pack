@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.shopadmin.stats.mapper.QrManageStatsMapper">
+
+    <!-- 상점의 일별 스캔 통계 -->
+    <select id="getDailyStats" resultType="co.grap.pack.qrmanage.shopadmin.stats.model.QrManageScanStats">
+        SELECT DATE(l.scanned_at) as date,
+               COUNT(*) as count
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+          AND DATE(l.scanned_at) BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE(l.scanned_at)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 상점의 QR 타입별 스캔 통계 -->
+    <select id="getStatsByQrType" resultType="co.grap.pack.qrmanage.shopadmin.stats.model.QrManageScanStats">
+        SELECT q.qr_type as qrType,
+               COUNT(*) as count
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+        GROUP BY q.qr_type
+    </select>
+
+    <!-- 상점의 총 스캔 횟수 -->
+    <select id="getTotalScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+    </select>
+
+    <!-- 상점의 오늘 스캔 횟수 -->
+    <select id="getTodayScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+          AND DATE(l.scanned_at) = CURDATE()
+    </select>
+
+    <!-- 상점의 이번 주 스캔 횟수 -->
+    <select id="getWeekScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+          AND YEARWEEK(l.scanned_at, 1) = YEARWEEK(CURDATE(), 1)
+    </select>
+
+    <!-- 상점의 이번 달 스캔 횟수 -->
+    <select id="getMonthScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log l
+        JOIN qr_manage_qr_code q ON l.qr_code_id = q.id
+        WHERE q.shop_id = #{shopId}
+          AND YEAR(l.scanned_at) = YEAR(CURDATE())
+          AND MONTH(l.scanned_at) = MONTH(CURDATE())
+    </select>
+
+    <!-- 전체 시스템 일별 스캔 통계 -->
+    <select id="getSystemDailyStats" resultType="co.grap.pack.qrmanage.shopadmin.stats.model.QrManageScanStats">
+        SELECT DATE(scanned_at) as date,
+               COUNT(*) as count
+        FROM qr_manage_qr_scan_log
+        WHERE DATE(scanned_at) BETWEEN #{startDate} AND #{endDate}
+        GROUP BY DATE(scanned_at)
+        ORDER BY date ASC
+    </select>
+
+    <!-- 전체 시스템 총 스캔 횟수 -->
+    <select id="getSystemTotalScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log
+    </select>
+
+    <!-- 전체 시스템 오늘 스캔 횟수 -->
+    <select id="getSystemTodayScanCount" resultType="int">
+        SELECT COALESCE(COUNT(*), 0)
+        FROM qr_manage_qr_scan_log
+        WHERE DATE(scanned_at) = CURDATE()
+    </select>
+
+    <!-- 상점별 스캔 랭킹 -->
+    <select id="getShopScanRanking" resultType="co.grap.pack.qrmanage.shopadmin.stats.model.QrManageScanStats">
+        SELECT s.name as shopName,
+               COUNT(l.id) as count
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_qr_code q ON s.id = q.shop_id
+        LEFT JOIN qr_manage_qr_scan_log l ON q.id = l.qr_code_id
+        WHERE s.status = 'APPROVED'
+        GROUP BY s.id, s.name
+        ORDER BY count DESC
+        LIMIT #{limit}
+    </select>
+
+</mapper>

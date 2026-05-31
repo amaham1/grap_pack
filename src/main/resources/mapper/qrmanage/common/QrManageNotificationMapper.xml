@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.common.notification.mapper.QrManageNotificationMapper">
+
+    <!-- 알림 ResultMap -->
+    <resultMap id="notificationResultMap" type="co.grap.pack.qrmanage.common.notification.model.QrManageNotification">
+        <id property="id" column="id"/>
+        <result property="recipientType" column="recipient_type"/>
+        <result property="recipientId" column="recipient_id"/>
+        <result property="notificationType" column="notification_type"/>
+        <result property="title" column="title"/>
+        <result property="message" column="message"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="isRead" column="is_read"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="readAt" column="read_at"/>
+    </resultMap>
+
+    <!-- 알림 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.common.notification.model.QrManageNotification" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_notification (recipient_type, recipient_id, notification_type, title, message, link_url, is_read, created_at)
+        VALUES (#{recipientType}, #{recipientId}, #{notificationType}, #{title}, #{message}, #{linkUrl}, false, NOW())
+    </insert>
+
+    <!-- 최고관리자 알림 목록 -->
+    <select id="findBySuperAdmin" resultMap="notificationResultMap">
+        SELECT * FROM qr_manage_notification
+        WHERE recipient_type = 'SUPER_ADMIN'
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 상점관리자 알림 목록 -->
+    <select id="findByShopAdminId" resultMap="notificationResultMap">
+        SELECT * FROM qr_manage_notification
+        WHERE recipient_type = 'SHOP_ADMIN' AND recipient_id = #{shopAdminId}
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <!-- 최고관리자 읽지 않은 알림 수 -->
+    <select id="countUnreadBySuperAdmin" resultType="int">
+        SELECT COUNT(*) FROM qr_manage_notification
+        WHERE recipient_type = 'SUPER_ADMIN' AND is_read = false
+    </select>
+
+    <!-- 상점관리자 읽지 않은 알림 수 -->
+    <select id="countUnreadByShopAdminId" resultType="int">
+        SELECT COUNT(*) FROM qr_manage_notification
+        WHERE recipient_type = 'SHOP_ADMIN' AND recipient_id = #{shopAdminId} AND is_read = false
+    </select>
+
+    <!-- 알림 읽음 처리 -->
+    <update id="markAsRead">
+        UPDATE qr_manage_notification
+        SET is_read = true, read_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 전체 알림 읽음 처리 (최고관리자) -->
+    <update id="markAllAsReadBySuperAdmin">
+        UPDATE qr_manage_notification
+        SET is_read = true, read_at = NOW()
+        WHERE recipient_type = 'SUPER_ADMIN' AND is_read = false
+    </update>
+
+    <!-- 전체 알림 읽음 처리 (상점관리자) -->
+    <update id="markAllAsReadByShopAdminId">
+        UPDATE qr_manage_notification
+        SET is_read = true, read_at = NOW()
+        WHERE recipient_type = 'SHOP_ADMIN' AND recipient_id = #{shopAdminId} AND is_read = false
+    </update>
+
+    <!-- 알림 삭제 -->
+    <delete id="delete">
+        DELETE FROM qr_manage_notification WHERE id = #{id}
+    </delete>
+
+    <!-- 오래된 알림 삭제 (30일 이상) -->
+    <delete id="deleteOldNotifications">
+        DELETE FROM qr_manage_notification
+        WHERE created_at &lt; DATE_SUB(NOW(), INTERVAL 30 DAY)
+    </delete>
+
+</mapper>

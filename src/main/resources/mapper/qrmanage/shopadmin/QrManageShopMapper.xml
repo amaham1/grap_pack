@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="co.grap.pack.qrmanage.shopadmin.shop.mapper.QrManageShopMapper">
+
+    <!-- 상점 ResultMap -->
+    <resultMap id="shopResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop">
+        <id property="id" column="id"/>
+        <result property="shopAdminId" column="shop_admin_id"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="address" column="address"/>
+        <result property="phone" column="phone"/>
+        <result property="isVisible" column="is_visible"/>
+        <result property="status" column="status"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="shopAdminName" column="shop_admin_name"/>
+        <result property="shopAdminEmail" column="shop_admin_email"/>
+    </resultMap>
+
+    <!-- 영업시간 ResultMap -->
+    <resultMap id="businessHoursResultMap" type="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageBusinessHours">
+        <id property="id" column="id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="dayOfWeek" column="day_of_week"/>
+        <result property="isHoliday" column="is_holiday"/>
+        <result property="openTime" column="open_time"/>
+        <result property="closeTime" column="close_time"/>
+    </resultMap>
+
+    <!-- 상점관리자 ID로 상점 조회 -->
+    <select id="findByShopAdminId" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE s.shop_admin_id = #{shopAdminId}
+    </select>
+
+    <!-- ID로 상점 조회 -->
+    <select id="findById" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        LEFT JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- 상점 등록 -->
+    <insert id="insert" parameterType="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO qr_manage_shop (shop_admin_id, name, description, address, phone, is_visible, status, created_at, updated_at)
+        VALUES (#{shopAdminId}, #{name}, #{description}, #{address}, #{phone}, #{isVisible}, #{status}, NOW(), NOW())
+    </insert>
+
+    <!-- 상점 수정 -->
+    <update id="update" parameterType="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageShop">
+        UPDATE qr_manage_shop
+        SET name = #{name},
+            description = #{description},
+            address = #{address},
+            phone = #{phone},
+            <if test="status != null">
+                status = #{status},
+            </if>
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 상점 상태 변경 -->
+    <update id="updateStatus">
+        UPDATE qr_manage_shop
+        SET status = #{status},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <!-- 상점의 영업시간 목록 조회 -->
+    <select id="findBusinessHoursByShopId" resultMap="businessHoursResultMap">
+        SELECT id, shop_id, day_of_week, is_holiday, open_time, close_time
+        FROM qr_manage_business_hours
+        WHERE shop_id = #{shopId}
+        ORDER BY day_of_week
+    </select>
+
+    <!-- 영업시간 저장 (upsert) -->
+    <insert id="upsertBusinessHours" parameterType="co.grap.pack.qrmanage.shopadmin.shop.model.QrManageBusinessHours">
+        INSERT INTO qr_manage_business_hours (shop_id, day_of_week, is_holiday, open_time, close_time, created_at, updated_at)
+        VALUES (#{shopId}, #{dayOfWeek}, #{isHoliday}, #{openTime}, #{closeTime}, NOW(), NOW())
+        ON DUPLICATE KEY UPDATE
+            is_holiday = #{isHoliday},
+            open_time = #{openTime},
+            close_time = #{closeTime},
+            updated_at = NOW()
+    </insert>
+
+    <!-- 상점의 모든 영업시간 삭제 -->
+    <delete id="deleteBusinessHoursByShopId">
+        DELETE FROM qr_manage_business_hours WHERE shop_id = #{shopId}
+    </delete>
+
+    <!-- 상점관리자 이메일로 상점 ID 조회 -->
+    <select id="findShopIdByAdminEmail" resultType="java.lang.Long">
+        SELECT s.id
+        FROM qr_manage_shop s
+        INNER JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE sa.email = #{email}
+    </select>
+
+    <!-- 상점관리자 username으로 상점 ID 조회 -->
+    <select id="findShopIdByAdminUsername" resultType="java.lang.Long">
+        SELECT s.id
+        FROM qr_manage_shop s
+        INNER JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE sa.username = #{username}
+    </select>
+
+    <!-- 상점관리자 이메일로 상점 정보 조회 -->
+    <select id="findByAdminEmail" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        INNER JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE sa.email = #{email}
+    </select>
+
+    <!-- 상점관리자 username으로 상점 정보 조회 -->
+    <select id="findByAdminUsername" resultMap="shopResultMap">
+        SELECT s.*, sa.name as shop_admin_name, sa.email as shop_admin_email
+        FROM qr_manage_shop s
+        INNER JOIN qr_manage_shop_admin sa ON s.shop_admin_id = sa.id
+        WHERE sa.username = #{username}
+    </select>
+
+</mapper>

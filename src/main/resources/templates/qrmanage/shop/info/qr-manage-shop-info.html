@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{qrmanage/shop/layout/qr-manage-shop-layout}">
+
+<th:block layout:fragment="content">
+    <div class="qr-manage-page-header">
+        <h1 class="qr-manage-page-title">상점 정보</h1>
+    </div>
+
+    <!-- 상점 등록 필요 안내 (다른 메뉴에서 리다이렉트된 경우, 상점이 없을 때만 표시) -->
+    <div th:if="${param.needShop != null && shop.id == null}" class="qr-manage-alert qr-manage-alert-info qr-manage-mb-20">
+        <span class="qr-manage-alert-icon">&#x2139;</span>
+        <div class="qr-manage-alert-content">
+            <strong>상점 정보 등록이 필요합니다</strong>
+            <p>카테고리, 메뉴, QR코드 등의 기능을 사용하려면 먼저 상점 정보를 등록해주세요.</p>
+        </div>
+    </div>
+
+    <!-- 상태 안내 -->
+    <div th:if="${shop.id != null}" class="qr-manage-card qr-manage-mb-20">
+        <div class="qr-manage-card-body">
+            <div class="qr-manage-status-info">
+                <span>현재 상태: </span>
+                <span class="qr-manage-badge"
+                      th:classappend="${shop.status?.name() == 'APPROVED' ? 'qr-manage-badge-active' :
+                                       (shop.status?.name() == 'PENDING' ? 'qr-manage-badge-pending' : 'qr-manage-badge-suspended')}"
+                      th:text="${shop.status?.description}">검수대기</span>
+                <span th:if="${shop.isVisible}" class="qr-manage-badge qr-manage-badge-visible" style="margin-left: 10px;">노출중</span>
+                <span th:unless="${shop.isVisible}" class="qr-manage-badge qr-manage-badge-hidden" style="margin-left: 10px;">비노출</span>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/qr-manage/shop/admin/info}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <!-- 기본 정보 -->
+        <div class="qr-manage-card qr-manage-mb-20">
+            <div class="qr-manage-card-header">
+                <h2 class="qr-manage-card-title">기본 정보</h2>
+            </div>
+            <div class="qr-manage-card-body">
+                <div class="qr-manage-form-group">
+                    <label for="name">상점명 <span class="qr-manage-required">*</span></label>
+                    <input type="text" id="name" name="name" required
+                           th:value="${shop.name}" placeholder="상점명을 입력하세요">
+                </div>
+
+                <div class="qr-manage-form-group">
+                    <label for="description">상점 설명</label>
+                    <textarea id="description" name="description" rows="4"
+                              placeholder="상점에 대한 설명을 입력하세요" th:text="${shop.description}"></textarea>
+                </div>
+
+                <div class="qr-manage-form-group">
+                    <label for="address">주소</label>
+                    <input type="text" id="address" name="address"
+                           th:value="${shop.address}" placeholder="주소를 입력하세요">
+                </div>
+
+                <div class="qr-manage-form-group">
+                    <label for="phone">연락처</label>
+                    <input type="tel" id="phone" name="phone"
+                           th:value="${shop.phone}" placeholder="010-0000-0000">
+                </div>
+            </div>
+        </div>
+
+        <!-- 영업시간 -->
+        <div class="qr-manage-card qr-manage-mb-20">
+            <div class="qr-manage-card-header">
+                <h2 class="qr-manage-card-title">영업시간</h2>
+            </div>
+            <div class="qr-manage-card-body">
+                <table class="qr-manage-table qr-manage-business-hours-table">
+                    <thead>
+                        <tr>
+                            <th>요일</th>
+                            <th>휴무</th>
+                            <th>오픈</th>
+                            <th>마감</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hours : ${businessHours}">
+                            <td>
+                                <input type="hidden" name="dayOfWeek" th:value="${hours.dayOfWeek}"/>
+                                <span th:text="${hours.dayName}">월</span>요일
+                            </td>
+                            <td>
+                                <input type="checkbox" name="isHoliday" th:checked="${hours.isHoliday}"
+                                       th:value="${hours.isHoliday}" class="qr-manage-checkbox"/>
+                            </td>
+                            <td>
+                                <input type="time" name="openTime"
+                                       th:value="${hours.openTime != null ? #temporals.format(hours.openTime, 'HH:mm') : '09:00'}"/>
+                            </td>
+                            <td>
+                                <input type="time" name="closeTime"
+                                       th:value="${hours.closeTime != null ? #temporals.format(hours.closeTime, 'HH:mm') : '22:00'}"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 저장 버튼 -->
+        <div class="qr-manage-form-actions">
+            <button type="submit" class="qr-manage-btn qr-manage-btn-primary">저장</button>
+        </div>
+    </form>
+
+    <style>
+        .qr-manage-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 16px 20px;
+            border-radius: 8px;
+        }
+        .qr-manage-alert-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+        .qr-manage-alert-icon {
+            font-size: 24px;
+            color: #2196f3;
+        }
+        .qr-manage-alert-content strong {
+            display: block;
+            font-size: 16px;
+            color: #1565c0;
+            margin-bottom: 5px;
+        }
+        .qr-manage-alert-content p {
+            margin: 0;
+            color: #1976d2;
+            font-size: 14px;
+        }
+        .qr-manage-status-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .qr-manage-business-hours-table input[type="time"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .qr-manage-checkbox {
+            width: 18px;
+            height: 18px;
+        }
+        .qr-manage-form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        .qr-manage-form-actions {
+            margin-top: 20px;
+        }
+    </style>
+</th:block>
+
+</html>

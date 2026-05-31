@@ -1,0 +1,1661 @@
+/* 사용자 페이지 CSS - 깔끔한 미니멀 디자인 */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #333333;
+    background: #ffffff;
+}
+
+.user-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* 헤더 */
+.user-header {
+    background: #ffffff;
+    padding: 25px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.user-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    display: inline-block;
+}
+
+.user-header h1 a {
+    color: #333333;
+    text-decoration: none;
+}
+
+.user-header h1 a:hover {
+    color: #ff6b6b;
+}
+
+.user-header nav {
+    float: right;
+}
+
+.user-header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.user-header nav li {
+    display: inline-block;
+    margin-left: 30px;
+}
+
+.user-header nav a {
+    color: #666666;
+    text-decoration: none;
+    padding: 8px 0;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+.user-header nav a:hover,
+.user-header nav a.active {
+    color: #333333;
+    border-bottom: 2px solid #333333;
+}
+
+.user-header .user-container {
+    overflow: auto;
+}
+
+/* 메인 컨텐츠 */
+.user-main {
+    padding: 50px 0;
+    min-height: calc(100vh - 200px);
+}
+
+/* 페이지 헤더 */
+.user-page-header {
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.user-page-header h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+}
+
+/* 검색 섹션 */
+.user-search-section {
+    background: #f9f9f9;
+    padding: 20px;
+    margin-bottom: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+}
+
+.user-search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.user-form-control {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #dddddd;
+    font-size: 14px;
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+
+.user-form-control:focus {
+    outline: none;
+    border-color: #333333;
+}
+
+/* 콘텐츠 그리드 */
+.user-content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.user-content-card {
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    transition: border-color 0.2s ease;
+}
+
+.user-content-card:hover {
+    border-color: #cccccc;
+}
+
+.user-content-card .user-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.user-content-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    line-height: 1.5;
+    color: #333333;
+}
+
+.user-content-card h3 a {
+    color: #333333;
+    text-decoration: none;
+}
+
+.user-content-card h3 a:hover {
+    color: #ff6b6b;
+}
+
+.user-content-card .user-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f5f5f5;
+    color: #999999;
+    font-size: 13px;
+}
+
+/* 배지 */
+.user-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #333333;
+    color: #ffffff;
+    border-radius: 2px;
+}
+
+.user-date {
+    color: #999999;
+    font-size: 13px;
+}
+
+.user-view-count {
+    color: #999999;
+    font-size: 13px;
+}
+
+.user-view-count::before {
+    content: 'views: ';
+}
+
+/* 빈 메시지 */
+.user-empty-message {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: #999999;
+}
+
+.user-empty-message p {
+    font-size: 15px;
+}
+
+/* 콘텐츠 상세 */
+.user-content-detail {
+    background: #ffffff;
+    padding: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+}
+
+.user-content-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.user-content-header .user-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #999999;
+    align-items: center;
+}
+
+.user-content-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.user-content-body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #444444;
+    margin-bottom: 30px;
+}
+
+.user-content-body p {
+    margin-bottom: 15px;
+}
+
+/* 이미지 갤러리 */
+.user-image-gallery {
+    margin: 30px 0;
+    padding: 30px 0;
+}
+
+.user-image-gallery h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+.user-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.user-gallery-item {
+    overflow: hidden;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+}
+
+.user-gallery-item:hover {
+    border-color: #cccccc;
+}
+
+.user-gallery-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.user-content-footer {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+    display: flex;
+    justify-content: center;
+}
+
+/* 버튼 */
+.user-btn, .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid #dddddd;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    background: #ffffff;
+    color: #333333;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.user-btn:hover, .btn:hover {
+    border-color: #333333;
+    background: #333333;
+    color: #ffffff;
+}
+
+.user-btn-primary {
+    background: #333333;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.user-btn-primary:hover {
+    background: #555555;
+    border-color: #555555;
+}
+
+.user-btn-secondary {
+    background: #ffffff;
+    color: #333333;
+    border-color: #dddddd;
+}
+
+.user-btn-secondary:hover {
+    border-color: #333333;
+}
+
+.user-btn-sm, .btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+/* 페이징 */
+.user-pagination, .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 40px 0 20px;
+    flex-wrap: wrap;
+}
+
+.user-pagination .user-btn,
+.user-pagination .btn,
+.pagination .user-btn,
+.pagination .btn {
+    min-width: 36px;
+    padding: 8px 14px;
+    background: #ffffff;
+    color: #666666;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.user-pagination .user-btn:hover,
+.user-pagination .btn:hover,
+.pagination .user-btn:hover,
+.pagination .btn:hover {
+    border-color: #333333;
+    color: #333333;
+    background: #ffffff;
+}
+
+.user-pagination .user-btn.active,
+.user-pagination .btn.active,
+.pagination .user-btn.active,
+.pagination .btn.active {
+    background: #333333;
+    color: #ffffff;
+    border-color: #333333;
+}
+
+.user-pagination-info, .pagination-info {
+    text-align: center;
+    color: #999999;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.pagination-ellipsis {
+    display: inline-block;
+    padding: 8px 6px;
+    color: #999999;
+}
+
+/* 푸터 */
+.user-footer {
+    background: #f9f9f9;
+    color: #666666;
+    padding: 30px 0;
+    text-align: center;
+    margin-top: 60px;
+    border-top: 1px solid #eeeeee;
+}
+
+.user-footer p {
+    margin: 0;
+    font-size: 13px;
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+    .user-content-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .user-search-form {
+        flex-direction: column;
+    }
+
+    .user-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-content-detail {
+        padding: 25px 20px;
+    }
+
+    .user-content-header h1 {
+        font-size: 22px;
+    }
+
+    .user-page-header h2 {
+        font-size: 22px;
+    }
+
+    .user-header {
+        padding: 15px 0;
+    }
+
+    .user-header h1 {
+        font-size: 20px;
+        display: block;
+        margin-bottom: 12px;
+    }
+
+    .user-header nav {
+        float: none;
+    }
+
+    .user-header nav li {
+        margin-left: 0;
+        margin-right: 20px;
+    }
+
+    .user-header nav a {
+        font-size: 14px;
+    }
+}
+
+/* ============================================
+   카드 공통 스타일 (축제/행사, 공연/전시, 복지서비스)
+   ============================================ */
+
+/* 마감임박 배지 */
+.user-badge-urgent {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* 배지 그룹 */
+.user-badge-group {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* 카드 이미지 영역 */
+.user-card-image {
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #f5f5f5;
+    position: relative;
+    margin-bottom: 15px;
+}
+
+/* 공연/전시는 높이가 다름 */
+.user-exhibition-card .user-card-image {
+    height: 180px;
+}
+
+.user-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 이미지 placeholder */
+.user-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #cccccc;
+    font-size: 13px;
+}
+
+/* 카드 콘텐츠 영역 */
+.user-card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 카드 미리보기 (축제/행사용) */
+.user-card-preview {
+    margin: 8px 0;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.user-card-preview p {
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 카드 메타 정보 */
+.user-card-meta {
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 13px;
+    color: #999999;
+}
+
+/* 카드 타입별 레이아웃 */
+.user-festival-card,
+.user-exhibition-card,
+.user-welfare-card {
+    display: flex;
+    flex-direction: column;
+}
+
+/* 클릭 가능한 카드 */
+.user-clickable-card {
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.user-clickable-card:hover {
+    border-color: #cccccc;
+}
+
+/* ============================================
+   게시글 등록 요청 버튼
+   ============================================ */
+
+.user-request-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #eeeeee;
+}
+
+.user-btn-request {
+    background: #333333;
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #333333;
+    transition: all 0.2s ease;
+}
+
+.user-btn-request:hover {
+    background: #555555;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+/* ============================================
+   게시글 등록 요청 폼
+   ============================================ */
+
+.user-request-form-container {
+    background: #ffffff;
+    padding: 40px;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    margin-top: 40px;
+}
+
+.user-request-form-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.user-request-form-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+}
+
+.user-request-form-header p {
+    margin: 10px 0 0;
+    color: #666666;
+    font-size: 14px;
+}
+
+.user-request-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.user-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.user-form-group label {
+    font-weight: 600;
+    color: #333333;
+    font-size: 14px;
+}
+
+.user-form-group label .required {
+    color: #ff6b6b;
+    margin-left: 4px;
+}
+
+.user-form-group input[type="text"],
+.user-form-group input[type="url"],
+.user-form-group input[type="tel"],
+.user-form-group input[type="datetime-local"],
+.user-form-group select,
+.user-form-group textarea {
+    padding: 12px 16px;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #ffffff;
+    transition: border-color 0.2s ease;
+}
+
+.user-form-group input:focus,
+.user-form-group select:focus,
+.user-form-group textarea:focus {
+    outline: none;
+    border-color: #333333;
+}
+
+.user-form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.user-form-group .form-hint {
+    font-size: 12px;
+    color: #999999;
+}
+
+/* 체크박스 그룹 */
+.user-checkbox-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.user-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-checkbox-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.user-checkbox-item label {
+    font-weight: 400;
+    cursor: pointer;
+}
+
+/* 폼 버튼 그룹 */
+.user-form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 30px;
+    border-top: 1px solid #eeeeee;
+}
+
+.user-btn-submit {
+    background: #333333;
+    color: #ffffff;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.user-btn-submit:hover {
+    background: #555555;
+}
+
+.user-btn-cancel {
+    background: #ffffff;
+    color: #666666;
+    padding: 14px 40px;
+    font-size: 15px;
+    font-weight: 500;
+    border: 1px solid #dddddd;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.user-btn-cancel:hover {
+    border-color: #333333;
+    color: #333333;
+}
+
+/* ============================================
+   이미지 업로드 섹션
+   ============================================ */
+
+.user-image-upload-section {
+    background: #f9f9f9;
+    border: 1px solid #eeeeee;
+    border-radius: 4px;
+    padding: 20px;
+}
+
+.user-image-upload-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+    margin: 0 0 15px;
+}
+
+.user-image-dropzone {
+    border: 2px dashed #dddddd;
+    border-radius: 4px;
+    padding: 30px;
+    text-align: center;
+    background: #ffffff;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.user-image-dropzone:hover {
+    border-color: #999999;
+}
+
+.user-image-dropzone.dragover {
+    border-color: #333333;
+    background: #f5f5f5;
+}
+
+.user-image-dropzone p {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+}
+
+.user-image-dropzone .upload-hint {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #999999;
+}
+
+.user-image-dropzone input[type="file"] {
+    display: none;
+}
+
+/* 이미지 미리보기 */
+.user-image-preview-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.user-image-preview-item {
+    position: relative;
+    border: 2px solid #eeeeee;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.user-image-preview-item:hover {
+    border-color: #cccccc;
+}
+
+.user-image-preview-item.is-thumbnail {
+    border-color: #333333;
+}
+
+.user-image-preview-item img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+}
+
+.user-image-preview-item .thumbnail-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: #333333;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 2px;
+}
+
+.user-image-preview-item .delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.user-image-preview-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.user-image-preview-item .delete-btn:hover {
+    background: #ff6b6b;
+}
+
+/* 이미지 업로드 힌트 */
+.user-image-hint {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #999999;
+}
+
+/* ============================================
+   알림 메시지
+   ============================================ */
+
+.user-alert {
+    padding: 15px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.user-alert-success {
+    background: #e8f5e9;
+    border: 1px solid #c8e6c9;
+    color: #2e7d32;
+}
+
+.user-alert-error {
+    background: #ffebee;
+    border: 1px solid #ffcdd2;
+    color: #c62828;
+}
+
+.user-alert-info {
+    background: #e3f2fd;
+    border: 1px solid #bbdefb;
+    color: #1565c0;
+}
+
+/* ============================================
+   반응형 - 등록 폼
+   ============================================ */
+
+@media (max-width: 768px) {
+    .user-request-form-container {
+        padding: 25px 20px;
+    }
+
+    .user-request-form-header h2 {
+        font-size: 20px;
+    }
+
+    .user-form-actions {
+        flex-direction: column;
+    }
+
+    .user-btn-submit,
+    .user-btn-cancel {
+        width: 100%;
+        text-align: center;
+    }
+
+    .user-checkbox-group {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .user-image-preview-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   제주 부동산
+   ============================================ */
+
+.real-estate-search-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(180px, 0.55fr)) auto;
+    gap: 12px;
+}
+
+.real-estate-advanced-filter-grid {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.real-estate-filter-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.real-estate-select {
+    min-width: 0;
+}
+
+.real-estate-seo-summary {
+    margin: -18px 0 28px;
+    padding: 18px 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-seo-summary h3 {
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: #1f2937;
+}
+
+.real-estate-seo-summary p,
+.real-estate-detail-summary {
+    color: #666666;
+    line-height: 1.7;
+}
+
+.real-estate-info-panel {
+    margin: -12px 0 30px;
+}
+
+.real-estate-info-panel .real-estate-section-header {
+    margin-bottom: 14px;
+}
+
+.real-estate-info-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.real-estate-info-card {
+    padding: 18px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-info-card > span {
+    display: block;
+    margin-bottom: 8px;
+    color: #7a8699;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.real-estate-info-card > strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #1f2937;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.real-estate-info-card p {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.real-estate-summary {
+    margin: -20px 0 30px;
+    color: #666666;
+    font-size: 14px;
+}
+
+.real-estate-saved-panel {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: -8px 0 28px;
+}
+
+.real-estate-saved-card {
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-saved-card .real-estate-section-header {
+    margin-bottom: 14px;
+}
+
+.real-estate-saved-card h3 {
+    font-size: 17px;
+}
+
+.real-estate-storage-list {
+    display: grid;
+    gap: 10px;
+}
+
+.real-estate-storage-item {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #f0f1f3;
+    border-radius: 10px;
+    background: #fafbfc;
+}
+
+.real-estate-storage-link {
+    display: grid;
+    gap: 4px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.real-estate-storage-link strong {
+    overflow: hidden;
+    color: #1f2937;
+    font-size: 14px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.real-estate-storage-link span,
+.real-estate-storage-empty {
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.real-estate-storage-remove {
+    min-height: 34px;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 0 10px;
+    background: #ffffff;
+    color: #555555;
+    cursor: pointer;
+}
+
+.real-estate-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.real-estate-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-radius: 12px;
+    padding: 24px;
+}
+
+.real-estate-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge-real-estate-location {
+    background: #edf4ff;
+    color: #2563eb;
+}
+
+.badge-real-estate-type {
+    background: #f5f5f5;
+    color: #444444;
+}
+
+.real-estate-address {
+    margin-top: -8px;
+    color: #666666;
+    line-height: 1.6;
+}
+
+.real-estate-amount-block {
+    display: grid;
+    gap: 6px;
+    padding: 18px 20px;
+    background: #f8f9fb;
+    border-radius: 10px;
+}
+
+.real-estate-amount-label {
+    font-size: 13px;
+    color: #7b8088;
+}
+
+.real-estate-amount-value {
+    font-size: 30px;
+    line-height: 1.1;
+    color: #1f2937;
+}
+
+.real-estate-rent-note {
+    color: #666666;
+    font-size: 14px;
+}
+
+.real-estate-meta-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.real-estate-meta-list div {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: #fbfbfb;
+}
+
+.real-estate-meta-list dt {
+    margin-bottom: 6px;
+    font-size: 13px;
+    color: #7b8088;
+}
+
+.real-estate-meta-list dd {
+    color: #1f2937;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.real-estate-card-footer {
+    justify-content: flex-start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.real-estate-map-link {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #f4d000;
+    border-radius: 8px;
+    background: #fee500;
+    color: #1877f2;
+    text-decoration: none;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.real-estate-map-link:hover,
+.real-estate-map-link:focus-visible {
+    border-color: #d8b900;
+    background: #ffdf1b;
+    color: #0f63d0;
+    transform: translateY(-1px);
+}
+
+.real-estate-map-link:focus-visible {
+    outline: 2px solid #1877f2;
+    outline-offset: 2px;
+}
+
+.real-estate-map-link-icon {
+    position: relative;
+    width: 19px;
+    height: 19px;
+    border-radius: 50% 50% 50% 0;
+    background: currentColor;
+    transform: rotate(-45deg);
+}
+
+.real-estate-map-link-icon::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #fee500;
+    content: "";
+    transform: translate(-50%, -50%);
+}
+
+.real-estate-favorite-button.is-active {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #edf4ff;
+}
+
+.real-estate-empty-message {
+    border: 1px dashed #d8dce2;
+    border-radius: 12px;
+    background: #fafbfc;
+}
+
+.real-estate-detail-page {
+    display: grid;
+    gap: 24px;
+    border-radius: 12px;
+}
+
+.real-estate-detail-header {
+    display: grid;
+    gap: 14px;
+}
+
+.real-estate-hero-amount {
+    display: grid;
+    gap: 6px;
+    padding: 22px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f4f8ff 0%, #f8fbff 100%);
+}
+
+.real-estate-detail-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.real-estate-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.real-estate-meta-card,
+.real-estate-summary-card,
+.real-estate-detail-card,
+.real-estate-chart-card,
+.real-estate-mortgage-card,
+.real-estate-comparison-card,
+.real-estate-purchase-cost-card {
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.real-estate-meta-card {
+    padding: 18px 20px;
+    display: grid;
+    gap: 8px;
+}
+
+.real-estate-meta-card span,
+.real-estate-summary-card span {
+    font-size: 13px;
+    color: #7b8088;
+}
+
+.real-estate-meta-card strong,
+.real-estate-summary-card strong {
+    color: #1f2937;
+    font-size: 19px;
+    line-height: 1.4;
+}
+
+.real-estate-chart-card,
+.real-estate-mortgage-card,
+.real-estate-comparison-card,
+.real-estate-purchase-cost-card {
+    padding: 24px;
+}
+
+.real-estate-section-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.real-estate-section-eyebrow {
+    margin-bottom: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.real-estate-section-copy {
+    max-width: 36ch;
+    color: #666666;
+    line-height: 1.6;
+}
+
+.real-estate-year-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 180px;
+}
+
+.real-estate-year-label {
+    font-size: 13px;
+    color: #7b8088;
+}
+
+.real-estate-chart-surface {
+    position: relative;
+    min-height: 340px;
+}
+
+.real-estate-trend-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.real-estate-summary-card em {
+    color: #666666;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1.5;
+}
+
+.real-estate-summary-card.is-up strong {
+    color: #dc2626;
+}
+
+.real-estate-summary-card.is-down strong {
+    color: #2563eb;
+}
+
+.real-estate-comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.real-estate-transaction-list {
+    display: grid;
+    gap: 10px;
+}
+
+.real-estate-transaction-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f2f2f2;
+    color: inherit;
+    text-decoration: none;
+}
+
+.real-estate-transaction-row:last-child {
+    border-bottom: none;
+}
+
+.real-estate-transaction-row span {
+    overflow: hidden;
+    color: #444444;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.real-estate-transaction-row strong {
+    color: #1f2937;
+}
+
+.real-estate-transaction-row em {
+    grid-column: 1 / -1;
+    color: #666666;
+    font-size: 13px;
+    font-style: normal;
+    line-height: 1.5;
+}
+
+.real-estate-inline-empty {
+    border-radius: 10px;
+    background: #fafbfc;
+}
+
+.real-estate-mortgage-layout {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.35fr) minmax(0, 1fr);
+    gap: 18px;
+    margin-bottom: 20px;
+}
+
+.real-estate-mortgage-context {
+    padding: 20px;
+    border-radius: 12px;
+    background: #f8f9fb;
+    display: grid;
+    gap: 10px;
+}
+
+.real-estate-context-label {
+    font-size: 13px;
+    color: #7b8088;
+}
+
+.real-estate-mortgage-context strong {
+    font-size: 28px;
+    line-height: 1.2;
+    color: #1f2937;
+}
+
+.real-estate-mortgage-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.real-estate-field {
+    display: grid;
+    gap: 8px;
+}
+
+.real-estate-field span {
+    font-size: 13px;
+    color: #666666;
+}
+
+.real-estate-field input,
+.real-estate-field select {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+.real-estate-input-row {
+    position: relative;
+}
+
+.real-estate-input-row input {
+    padding-right: 68px;
+}
+
+.real-estate-input-row em {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #888888;
+    font-size: 12px;
+    font-style: normal;
+}
+
+.real-estate-status-card {
+    padding: 18px 20px;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.real-estate-status-card.is-success {
+    background: #eef8f1;
+    border: 1px solid #cfe8d6;
+}
+
+.real-estate-status-card.is-warning {
+    background: #fff7eb;
+    border: 1px solid #f3dfb7;
+}
+
+.real-estate-status-eyebrow {
+    margin-bottom: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #7b8088;
+}
+
+.real-estate-status-card h3 {
+    margin-bottom: 8px;
+    font-size: 22px;
+}
+
+.real-estate-status-card p:last-child {
+    color: #555555;
+    line-height: 1.6;
+}
+
+.real-estate-mortgage-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.real-estate-summary-card {
+    padding: 18px 20px;
+    display: grid;
+    gap: 8px;
+}
+
+.real-estate-mortgage-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.real-estate-detail-card {
+    padding: 20px;
+}
+
+.real-estate-detail-card h3 {
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+.real-estate-detail-card dl {
+    display: grid;
+    gap: 12px;
+}
+
+.real-estate-detail-card dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f2f2f2;
+}
+
+.real-estate-detail-card dl div:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.real-estate-detail-card dt {
+    color: #666666;
+}
+
+.real-estate-detail-card dd {
+    text-align: right;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.real-estate-note-list {
+    margin-top: 16px;
+    display: grid;
+    gap: 6px;
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+@media (max-width: 1024px) {
+    .real-estate-info-grid,
+    .real-estate-meta-grid,
+    .real-estate-mortgage-summary,
+    .real-estate-trend-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .real-estate-mortgage-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .real-estate-search-form,
+    .real-estate-advanced-filter-grid,
+    .real-estate-saved-panel,
+    .real-estate-mortgage-form,
+    .real-estate-mortgage-detail-grid,
+    .real-estate-comparison-grid,
+    .real-estate-info-grid,
+    .real-estate-meta-grid,
+    .real-estate-mortgage-summary,
+    .real-estate-trend-grid,
+    .real-estate-meta-list {
+        grid-template-columns: 1fr;
+    }
+
+    .real-estate-filter-actions {
+        flex-direction: column;
+    }
+
+    .real-estate-section-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .real-estate-card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .real-estate-chart-surface {
+        min-height: 280px;
+    }
+}
